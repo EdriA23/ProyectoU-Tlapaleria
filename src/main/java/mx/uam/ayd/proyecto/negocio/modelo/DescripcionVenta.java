@@ -1,5 +1,5 @@
 package mx.uam.ayd.proyecto.negocio.modelo;
-
+//hola
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
