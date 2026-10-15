@@ -24,3 +24,5 @@ public interface DevolucionRepository extends CrudRepository<Devolucion, Long> {
     List<Devolucion> findByProducto_IdProducto(Long idProducto);
 
 }
+
+//HOLA AMIGOS ASUSTADORES
