@@ -133,6 +133,16 @@ public class Producto {
         return pedidos;
     }
 
+    /**
+     * Obtiene el margen de ganancia en porcentaje (%) para la HU-28
+     */
+    public Double getMargenGanancia() {
+        if (precio == null || precioCompra == null || precio <= 0) {
+            return 0.0;
+        }
+        return ((precio - precioCompra) / precio) * 100.0;
+    }
+
     // SETTERS
 
     /** Asigna el ID del producto */
