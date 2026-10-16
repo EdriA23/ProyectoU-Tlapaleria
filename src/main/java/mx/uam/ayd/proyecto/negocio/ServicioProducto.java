@@ -217,4 +217,64 @@ public class ServicioProducto {
         log.info("Coordinando registro de producto dañado para ID: {}", idProducto);
         return servicioDevolucion.registrarDevolucionDanado(idProducto, cantidad, motivo);
     }
+
+    // MÉTODOS PARA LA HISTORIA DE USUARIO (HU-28: MARGEN DE GANANCIA)
+
+    /**
+     * Calcula el margen de ganancia en porcentaje (%) para un producto (HU-28).
+     * Fórmula: ((Precio Venta - Precio Compra) / Precio Venta) * 100
+     * 
+     * @param producto Producto al que se le calculará el margen
+     * @return Margen en porcentaje, o 0.0 si los datos no son válidos
+     */
+    public Double calcularMargenGanancia(Producto producto) {
+        if (producto == null) {
+            return 0.0;
+        }
+
+        Double precioVenta = producto.getPrecio();
+        Double precioCosto = producto.getPrecioCompra();
+
+        if (precioVenta == null || precioCosto == null || precioVenta <= 0) {
+            return 0.0;
+        }
+
+        return ((precioVenta - precioCosto) / precioVenta) * 100.0;
+    }
+
+    /**
+     * Actualiza el precio de costo (precioCompra) y el precio de venta (precio) de un producto.
+     * Aplica la Regla de Negocio RN-01: Venta > Costo (HU-28).
+     * 
+     * @param idProducto ID del producto
+     * @param nuevoCosto Nuevo precio de compra/costo
+     * @param nuevoPrecioVenta Nuevo precio de venta al público
+     * @return El objeto Producto actualizado y guardado
+     * @throws IllegalArgumentException si no cumple la regla RN-01 o si el producto no existe
+     */
+    @Transactional
+    public Producto actualizarPreciosMargen(long idProducto, Double nuevoCosto, Double nuevoPrecioVenta) {
+        log.info("Intentando actualizar margen para el producto ID: {}. Nuevo Costo: {}, Nuevo Precio Venta: {}", 
+                 idProducto, nuevoCosto, nuevoPrecioVenta);
+
+        // Regla de Negocio RN-01: El precio de venta debe ser estrictamente mayor al costo
+        if (nuevoPrecioVenta == null || nuevoCosto == null || nuevoPrecioVenta <= nuevoCosto) {
+            log.warn("Intento de actualización violando RN-01 (Venta <= Costo)");
+            throw new IllegalArgumentException("El precio de venta debe ser mayor al precio de costo.");
+        }
+
+        Producto producto = productoRepository.findByIdProducto(idProducto);
+        if (producto == null) {
+            log.warn("No se encontró el producto con el ID: {}", idProducto);
+            throw new IllegalArgumentException("No se encontró ningún producto con el ID: " + idProducto);
+        }
+
+        producto.setPrecioCompra(nuevoCosto);
+        producto.setPrecio(nuevoPrecioVenta);
+
+        Producto productoGuardado = productoRepository.save(producto);
+        log.info("Precios actualizados con éxito para el producto ID: {}", idProducto);
+
+        return productoGuardado;
+    }
 }
