@@ -45,7 +45,7 @@ public class Devolucion {
     private String numeroEmpleado;
 
     /**
-     * Muchas devoluciones pueden ser registradas por el mismo vendedor.
+     * Muchas devoluciones pueden ser registradas por el mismo Trabajador.
      */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_trabajador")
