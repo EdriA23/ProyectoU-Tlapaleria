@@ -51,7 +51,7 @@ public class Producto {
     private Inventario inventario;
 
     /**
-     * Relación con el historial: guarda los movimientos que genera 
+     * Relación con el historial: guarda los movimientos que genera
      * la HU-09 (cambio de precio) y la HU-10 (devoluciones).
      */
     @OneToMany(mappedBy = "producto")
@@ -131,16 +131,6 @@ public class Producto {
 
     public List<Pedido> getPedidos() {
         return pedidos;
-    }
-
-    /**
-     * Obtiene el margen de ganancia en porcentaje (%) para la HU-28
-     */
-    public Double getMargenGanancia() {
-        if (precio == null || precioCompra == null || precio <= 0) {
-            return 0.0;
-        }
-        return ((precio - precioCompra) / precio) * 100.0;
     }
 
     // SETTERS
