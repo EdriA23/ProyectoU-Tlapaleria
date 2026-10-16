@@ -10,12 +10,12 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 
 /**
- * Entidad de negocio Vendedor
+ * Entidad de negocio Trabajador
  *
  * @author javitos
  */
 @Entity
-public class Vendedor {
+public class Trabajador {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,9 +25,11 @@ public class Vendedor {
 
     private int age;
 
-    private String tipoVendedor;
+    private String rol;
 
     private String telefono;
+   
+    private String correoElectronico;
 
     private double salario;
 
@@ -39,13 +41,13 @@ public class Vendedor {
      * mappedBy = "vendedor" hace referencia al atributo
      * vendedor existente dentro de Devolucion.
      */
-    @OneToMany(mappedBy = "vendedor")
+    @OneToMany(mappedBy = "trabajador")
     private List<Devolucion> devoluciones = new ArrayList<>();
 
     /**
      * Constructor vacío requerido por JPA.
      */
-    public Vendedor() {
+    public Trabajador() {
     }
 
     public long getIdEmpleado() {
@@ -71,21 +73,28 @@ public class Vendedor {
     public void setEdad(int edad) {
         this.age = edad;
     }
-
-    public String getTipoVendedor() {
-        return tipoVendedor;
+    public String getRol(){
+        return rol;
     }
 
-    public void setTipoVendedor(String tipoVendedor) {
-        this.tipoVendedor = tipoVendedor;
+    public void setRol(String rol){
+        this.rol=rol;
     }
-
+   
     public String getTelefono() {
         return telefono;
     }
 
     public void setTelefono(String telefono) {
         this.telefono = telefono;
+    }
+
+    public String getCorreoElectronico() {
+        return correoElectronico;
+    }
+
+    public void setCorreoElectronico(String correoElectronico) {
+        this.correoElectronico = correoElectronico;
     }
 
     public double getSalario() {
@@ -129,7 +138,7 @@ public class Vendedor {
             return false;
         }
 
-        Vendedor other = (Vendedor) obj;
+        Trabajador other = (Trabajador) obj;
 
         return idEmpleado == other.idEmpleado;
     }
@@ -141,10 +150,11 @@ public class Vendedor {
 
     @Override
     public String toString() {
-        return "Vendedor [idEmpleado=" + idEmpleado
+        return "Trabajador [idEmpleado=" + idEmpleado
                 + ", nombreCompleto=" + nombreCompleto
-                + ", tipoVendedor=" + tipoVendedor
+                + ", rol=" + rol
                 + ", telefono=" + telefono
+                + ", correoElectronico=" + correoElectronico
                 + ", salario=" + salario
                 + ", numeroEmpleado=" + numeroEmpleado + "]";
     }
