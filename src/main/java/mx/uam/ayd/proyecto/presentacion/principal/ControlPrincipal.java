@@ -18,9 +18,10 @@ import mx.uam.ayd.proyecto.presentacion.alertaStock.ControlRevisarExistencia;
 import mx.uam.ayd.proyecto.presentacion.registroVenta.ControlRegistroVenta;
 import mx.uam.ayd.proyecto.presentacion.agregarProductos.ControlAgregarProductos;
 import mx.uam.ayd.proyecto.presentacion.consultarProveedor.ControlProveedor;
+import mx.uam.ayd.proyecto.presentacion.margenGanancia.ControlMargenDeGanancia;
 
 /**
- * @author humbertocervantes
+ * Control principal del sistema
  */
 @Component
 public class ControlPrincipal {
@@ -38,7 +39,8 @@ public class ControlPrincipal {
     private final ControlRevisarExistencia controlRevisarExistencia;
     private final ControlRegistroVenta controlRegistroVenta;
     private final ControlAgregarProductos controlAgregarProductos;
-    private final ControlProveedor controlProveedor; // Inyección para tu HU
+    private final ControlProveedor controlProveedor;
+    private final ControlMargenDeGanancia controlMargenDeGanancia; // Inyección para HU-28
     private final VentanaPrincipal ventana;
 
     @Autowired
@@ -55,7 +57,8 @@ public class ControlPrincipal {
             ControlRevisarExistencia controlRevisarExistencia,
             ControlRegistroVenta controlRegistroVenta,
             ControlAgregarProductos controlAgregarProductos,
-            ControlProveedor controlProveedor, // Parámetro en constructor
+            ControlProveedor controlProveedor,
+            ControlMargenDeGanancia controlMargenDeGanancia, // Parámetro del constructor
             VentanaPrincipal ventana) {
 
         this.controlAgregarUsuario = controlAgregarUsuario;
@@ -71,6 +74,7 @@ public class ControlPrincipal {
         this.controlRegistroVenta = controlRegistroVenta;
         this.controlAgregarProductos = controlAgregarProductos;
         this.controlProveedor = controlProveedor;
+        this.controlMargenDeGanancia = controlMargenDeGanancia;
         
         this.ventana = ventana;
     }
@@ -130,10 +134,14 @@ public class ControlPrincipal {
         controlAgregarProductos.inicia();
     }
 
-    /**
-     * Inicia la HU-06: Directorio de Proveedores
-     */
     public void consultarProveedor() {
         controlProveedor.buscaProveedores();
+    }
+
+    /**
+     * Inicia la HU-28: Margen de Ganancia
+     */
+    public void margenGanancia() {
+        controlMargenDeGanancia.inicia();
     }
 }

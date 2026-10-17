@@ -31,57 +31,60 @@
 
                   <!-- Logotipo -->
                   <HBox alignment="CENTER_LEFT" spacing="10.0">
-
                      <VBox.margin>
                         <Insets bottom="20.0" />
                      </VBox.margin>
-
                   </HBox>
 
                   <!-- Ventas -->
                   <Button alignment="BASELINE_LEFT" graphicTextGap="15.0" maxWidth="1.7976931348623157E308" minHeight="50.0" mnemonicParsing="false" onAction="#handleRealizarVenta" style="-fx-background-color: PINK; -fx-background-radius: 8;" text="Ventas">
-
                      <font>
                         <Font name="System Bold" size="14.0" />
                      </font>
-
                      <graphic>
                         <Label text="💳">
-
                            <font>
                               <Font size="18.0" />
                            </font>
-
                         </Label>
                      </graphic>
-
                      <padding>
                         <Insets left="20.0" />
                      </padding>
-
                   </Button>
 
                   <!-- Historial -->
                   <Button fx:id="btnHistorial" alignment="BASELINE_LEFT" graphicTextGap="15.0" maxWidth="1.7976931348623157E308" minHeight="50.0" mnemonicParsing="false" onAction="#handleHistorialMovimientos" style="-fx-background-color: PINK;" text="Historial" textFill="#546E7A">
-
                      <font>
                         <Font size="14.0" />
                      </font>
-
                      <graphic>
                         <Label text="🕒" textFill="#546E7A">
-
                            <font>
                               <Font size="18.0" />
                            </font>
-
                         </Label>
                      </graphic>
-
                      <padding>
                         <Insets left="20.0" />
                      </padding>
+                  </Button>
 
+                  <!-- Margen de Ganancia (NUEVO BOTÓN LATERAL) -->
+                  <Button alignment="BASELINE_LEFT" graphicTextGap="15.0" maxWidth="1.7976931348623157E308" minHeight="50.0" mnemonicParsing="false" onAction="#handleMargenGanancia" style="-fx-background-color: PINK; -fx-background-radius: 8;" text="Margen Ganancia" textFill="#546E7A">
+                     <font>
+                        <Font name="System Bold" size="14.0" />
+                     </font>
+                     <graphic>
+                        <Label text="📈">
+                           <font>
+                              <Font size="18.0" />
+                           </font>
+                        </Label>
+                     </graphic>
+                     <padding>
+                        <Insets left="20.0" />
+                     </padding>
                   </Button>
 
                   <!-- Espaciador -->
@@ -97,304 +100,202 @@
 
                   <!-- CABECERA SUPERIOR -->
                   <HBox alignment="CENTER_LEFT" minHeight="70.0" spacing="20.0" style="-fx-background-color: #E399AD; -fx-border-color: #EEEEEE; -fx-border-width: 0 0 1 0;">
-
                      <padding>
                         <Insets left="30.0" right="30.0" />
                      </padding>
-
                      <children>
                         <Label text="🏪">
-
                            <font>
                               <Font size="28.0" />
                            </font>
-
                         </Label>
-
                         <Label text="Tlapalería: La Nueva">
-
                            <font>
                               <Font name="System Bold" size="24.0" />
                            </font>
-
                         </Label>
-
                         <HBox style="-fx-background-color: #E399AD;" HBox.hgrow="ALWAYS" />
-
-                        <!-- Perfil y notificaciones -->
                         <HBox alignment="CENTER" spacing="15.0" />
-
                      </children>
                   </HBox>
 
                   <!-- ÁREA CENTRAL -->
                   <HBox VBox.vgrow="ALWAYS">
-
                      <children>
-
                         <ScrollPane fitToWidth="true" style="-fx-background-color: transparent; -fx-background: transparent;" HBox.hgrow="ALWAYS">
-
                            <content>
-
                               <VBox spacing="30.0">
-
                                  <padding>
                                     <Insets bottom="30.0" left="30.0" right="30.0" top="30.0" />
                                  </padding>
-
                                  <children>
 
                                     <!-- Cabecera del panel -->
                                     <HBox alignment="BOTTOM_LEFT" spacing="10.0">
-
                                        <children>
-
                                           <VBox>
-
                                              <children>
-
                                                 <Label text="CENTRO DE OPERACIONES" textFill="#152d51">
-
                                                    <font>
                                                       <Font name="System Bold" size="12.0" />
                                                    </font>
-
                                                 </Label>
-
                                                 <Label text="Panel de Control" textFill="#212121">
-
                                                    <font>
                                                       <Font name="System Bold" size="32.0" />
                                                    </font>
-
                                                 </Label>
-
                                              </children>
                                           </VBox>
-
                                           <HBox HBox.hgrow="ALWAYS" />
-
-                                          <!-- Tarjetas de estadísticas -->
                                           <HBox spacing="15.0">
-
                                              <children>
-
                                                 <VBox alignment="CENTER" onMouseClicked="#handleRevisarAlertas" prefHeight="35.0" prefWidth="120.0" style="-fx-background-color: RED; -fx-background-radius: 8; -fx-border-color: #EEEEEE; -fx-border-width: 1;">
-
                                                    <children>
-
                                                       <Label onMouseClicked="#handleRevisarAlertas" text="Alerta Bajo Stock" textAlignment="CENTER" textFill="#f7f4f4">
-
                                                          <font>
                                                             <Font size="14.0" />
                                                          </font>
-
                                                       </Label>
-
                                                       <Label textFill="#EF5350">
-
                                                          <font>
                                                             <Font name="System Bold" size="20.0" />
                                                          </font>
-
                                                       </Label>
-
                                                    </children>
                                                 </VBox>
-
                                              </children>
                                           </HBox>
-
                                        </children>
                                     </HBox>
 
                                     <!-- GRID PRINCIPAL -->
                                     <GridPane hgap="20.0" vgap="20.0">
-
                                        <columnConstraints>
-
                                           <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" prefWidth="100.0" />
-
                                           <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" prefWidth="100.0" />
-
                                           <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" prefWidth="100.0" />
-
                                           <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" prefWidth="100.0" />
-
                                        </columnConstraints>
-
                                        <rowConstraints>
-
                                           <RowConstraints minHeight="10.0" prefHeight="250.0" vgrow="ALWAYS" />
-
                                           <RowConstraints minHeight="10.0" prefHeight="130.0" vgrow="SOMETIMES" />
-
                                        </rowConstraints>
-
                                        <children>
 
                                           <!-- 1. Cobro / POS -->
                                           <Button maxWidth="1.7976931348623157E308" minHeight="250.0" mnemonicParsing="false" onAction="#handleRealizarVenta" style="-fx-background-color: #A55CAA; -fx-background-radius: 12;" text="🛒     Nueva venta       " GridPane.columnSpan="2">
                                              <font>
                                                 <Font name="System Bold" size="25.0" />
-                                             </font></Button>
+                                             </font>
+                                          </Button>
 
                                           <!-- 2. Actualizar precio -->
                                           <Button fx:id="btnActualizarPrecio" maxWidth="1.7976931348623157E308" minHeight="250.0" mnemonicParsing="false" onAction="#handleActualizarPrecio" style="-fx-background-color: #FFFFFF; -fx-background-radius: 12; -fx-border-color: #EEEEEE; -fx-border-width: 1;" textFill="#212121" GridPane.columnIndex="2">
-
                                              <graphic>
-
                                                 <VBox alignment="CENTER" spacing="10.0" style="-fx-background-color: #C9CADE;">
-
                                                    <children>
-
                                                       <Label text="🏷️" textFill="#181818">
-
                                                          <font>
                                                             <Font size="48.0" />
                                                          </font>
-
                                                       </Label>
-
                                                       <Label text="Actualizar Precio" textFill="#151515">
-
                                                          <font>
                                                             <Font name="System Bold" size="18.0" />
                                                          </font>
-
                                                       </Label>
-
                                                    </children>
                                                 </VBox>
-
                                              </graphic>
                                           </Button>
 
                                           <!-- 3. Devoluciones -->
                                           <Button fx:id="btnDevoluciones" maxWidth="1.7976931348623157E308" minHeight="250.0" mnemonicParsing="false" onAction="#abrirVentanaDevolucionProducto" style="-fx-background-color: #FFFFFF; -fx-background-radius: 12; -fx-border-color: #EEEEEE; -fx-border-width: 1;" textFill="#212121" GridPane.columnIndex="3">
-
                                              <graphic>
-
                                                 <VBox alignment="CENTER" spacing="10.0" style="-fx-background-color: #C9CADE;">
-
                                                    <children>
-
                                                       <Label text="🔄" textFill="#363636">
-
                                                          <font>
                                                             <Font size="48.0" />
                                                          </font>
-
                                                       </Label>
-
                                                       <Label text="Devoluciones" textFill="#212121">
-
                                                          <font>
                                                             <Font name="System Bold" size="18.0" />
                                                          </font>
-
                                                       </Label>
-
                                                    </children>
                                                 </VBox>
-
                                              </graphic>
                                           </Button>
 
                                           <!-- 4. Entrada mercancía -->
                                           <Button fx:id="btnEntradaMercancia" maxWidth="1.7976931348623157E308" minHeight="130.0" mnemonicParsing="false" onAction="#handleRegistrarMercancia" style="-fx-background-color: #FFFFFF; -fx-background-radius: 12; -fx-border-color: #EEEEEE; -fx-border-width: 1;" textFill="#212121" GridPane.rowIndex="1">
-
                                              <graphic>
-
                                                 <VBox alignment="CENTER" spacing="10.0" style="-fx-background-color: #C9CADE;">
-
                                                    <children>
-
                                                       <Label text="🚚" textFill="#383838">
-
                                                          <font>
                                                             <Font size="24.0" />
                                                          </font>
-
                                                       </Label>
-
                                                       <Label text="Entrada Mercancía" textFill="#212121" wrapText="true">
-
                                                          <font>
                                                             <Font name="System Bold" size="14.0" />
                                                          </font>
-
                                                       </Label>
-
                                                    </children>
                                                 </VBox>
-
                                              </graphic>
                                           </Button>
 
-                                          <!-- 5. Consultar carrito -->
-                                      <Button fx:id="btnConsultarProveedor" maxWidth="1.7976931348623157E308" minHeight="130.0" mnemonicParsing="false" onAction="#handleConsultarProveedor" style="-fx-background-color: #FFFFFF; -fx-background-radius: 12; -fx-border-color: #EEEEEE; -fx-border-width: 1;" textFill="#212121" GridPane.columnIndex="1" GridPane.rowIndex="1">
-                                           <graphic>
-                                              <VBox alignment="CENTER" spacing="10.0" style="-fx-background-color: #C9CADE;">
-                                                    <children>
-                                                       <Label text="🚚" textFill="#181818">
-                                                        <font>
-                                                          <Font size="24.0" />
-                                                       </font>
-                                                    </Label>
-                                                    <Label text="Proveedores" textFill="#212121">
-                                                       <font>
-                                                          <Font name="System Bold" size="14.0" />
-                                                       </font>
+                                          <!-- 5. Proveedores -->
+                                          <Button fx:id="btnConsultarProveedor" maxWidth="1.7976931348623157E308" minHeight="130.0" mnemonicParsing="false" onAction="#handleConsultarProveedor" style="-fx-background-color: #FFFFFF; -fx-background-radius: 12; -fx-border-color: #EEEEEE; -fx-border-width: 1;" textFill="#212121" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                                             <graphic>
+                                                <VBox alignment="CENTER" spacing="10.0" style="-fx-background-color: #C9CADE;">
+                                                   <children>
+                                                      <Label text="🚚" textFill="#181818">
+                                                         <font>
+                                                            <Font size="24.0" />
+                                                         </font>
                                                       </Label>
-                                                 </children>
-                                             </VBox>
-                                          </graphic>
-                                       </Button>
+                                                      <Label text="Proveedores" textFill="#212121">
+                                                         <font>
+                                                            <Font name="System Bold" size="14.0" />
+                                                         </font>
+                                                      </Label>
+                                                   </children>
+                                                </VBox>
+                                             </graphic>
+                                          </Button>
 
                                           <!-- 6. Consultar inventario -->
                                           <Button fx:id="btnConsultarInventario" maxWidth="1.7976931348623157E308" minHeight="130.0" mnemonicParsing="false" onAction="#handleConsultarInventario" style="-fx-background-color: #FFFFFF; -fx-background-radius: 12; -fx-border-color: #EEEEEE; -fx-border-width: 1;" textFill="#212121" GridPane.columnIndex="2" GridPane.columnSpan="2" GridPane.rowIndex="1">
-
                                              <graphic>
-
                                                 <HBox alignment="CENTER" spacing="15.0" style="-fx-background-color: #C9CADE;">
-
                                                    <children>
-
                                                       <Label text="📋" textFill="#080808">
-
                                                          <font>
                                                             <Font size="36.0" />
                                                          </font>
-
                                                       </Label>
-
                                                       <VBox alignment="CENTER_LEFT" spacing="5.0">
-
                                                          <children>
-
                                                             <Label text="Consultar Inventario" textFill="#212121">
-
                                                                <font>
                                                                   <Font name="System Bold" size="18.0" />
                                                                </font>
-
                                                             </Label>
-
                                                             <Label text="Búsqueda global de existencias." textFill="#757575">
-
                                                                <font>
                                                                   <Font size="14.0" />
                                                                </font>
-
                                                             </Label>
-
                                                          </children>
                                                       </VBox>
-
                                                    </children>
                                                 </HBox>
-
                                              </graphic>
                                           </Button>
 
@@ -403,58 +304,46 @@
 
                                     <!-- SECCIÓN INFERIOR -->
                                     <HBox spacing="20.0" VBox.vgrow="ALWAYS">
-
                                        <children>
 
                                           <!-- Administración rápida -->
                                           <VBox prefHeight="62.0" prefWidth="1005.0" spacing="15.0" style="-fx-background-color: #BAA8D6; -fx-background-radius: 12; -fx-border-color: #EEEEEE; -fx-border-width: 1;" HBox.hgrow="ALWAYS">
-
                                              <padding>
                                                 <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
                                              </padding>
-
                                              <children>
-
                                                 <Label text="ADMINISTRACIÓN RÁPIDA" textFill="#232323">
-
                                                    <font>
                                                       <Font name="System Bold" size="12.0" />
                                                    </font>
-
                                                 </Label>
-
                                                 <GridPane hgap="15.0" vgap="15.0">
-
                                                    <columnConstraints>
-
                                                       <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
-
                                                       <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
-
                                                    </columnConstraints>
-
                                                    <rowConstraints>
-
                                                       <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
-
                                                       <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
-
                                                    </rowConstraints>
-
                                                    <children>
 
-                                                      <!-- Botón existente del equipo -->
+                                                      <!-- Registrar Mercancía -->
                                                       <Button fx:id="btnRegistrarMercancia" alignment="BASELINE_LEFT" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleRegistrarMercancia" style="-fx-background-color: transparent;" text="Registrar Mercancía" textFill="#383838">
-
                                                          <graphic>
                                                             <Label text="➕" textFill="#303030" />
                                                          </graphic>
+                                                      </Button>
 
+                                                      <!-- Margen de Ganancia (NUEVO BOTÓN EN ADMIN RÁPIDA) -->
+                                                      <Button alignment="BASELINE_LEFT" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleMargenGanancia" style="-fx-background-color: transparent;" text="Margen de Ganancia" textFill="#383838" GridPane.columnIndex="1">
+                                                         <graphic>
+                                                            <Label text="📊" textFill="#303030" />
+                                                         </graphic>
                                                       </Button>
 
                                                    </children>
                                                 </GridPane>
-
                                              </children>
                                           </VBox>
 
@@ -463,10 +352,8 @@
 
                                  </children>
                               </VBox>
-
                            </content>
                         </ScrollPane>
-
                      </children>
                   </HBox>
 
