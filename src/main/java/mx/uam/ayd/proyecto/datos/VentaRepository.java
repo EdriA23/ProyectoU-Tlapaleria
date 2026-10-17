@@ -10,4 +10,3 @@ import mx.uam.ayd.proyecto.negocio.modelo.Venta;
  */
 public interface VentaRepository extends CrudRepository<Venta, Long> {
 }
-

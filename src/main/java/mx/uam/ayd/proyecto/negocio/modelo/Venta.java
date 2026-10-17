@@ -1,4 +1,3 @@
-//Agregar id cliente cuando se tenga la entidad creada
 package mx.uam.ayd.proyecto.negocio.modelo;
 
 import java.time.LocalDateTime;
@@ -11,6 +10,8 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import mx.uam.ayd.proyecto.presentacion.historialMovimientos.ControlHistorialMovimientos;
 
@@ -39,11 +40,21 @@ public class Venta {
     private double cambio;
 
     /*
-     * Una venta puede contener varios detalles.
-     *
-     * mappedBy = "venta" hace referencia al atributo venta
-     * existente en DescripcionVenta.
+     * es mi hu-17
      */
+    private boolean esDomicilio = false;
+
+    @ManyToOne
+    @JoinColumn(name = "idCliente")
+    private Cliente cliente;
+
+    private double costoEnvio = 0.0;
+
+    private String estadoEntrega;
+
+    private String repartidorAsignado;
+
+
     @OneToMany(
             mappedBy = "venta",
             fetch = FetchType.EAGER,
@@ -54,7 +65,7 @@ public class Venta {
     public Venta() {
     }
 
-  /**
+    /**
      * Agrega un producto a la venta y actualiza el total.
      * Permite cumplir con la HU-05 validando que el producto exista 
      * y la cantidad sea mayor a 0.
@@ -85,7 +96,7 @@ public class Venta {
 
     /**
      * Suma los precios y cantidades de cada producto 
-     * para calcular el total de la venta (HU-05).
+     * para calcular el total de la venta (HU-05), considerando opcionalmente el costo de envío.
      */
     public void calculaTotal() {
 
@@ -99,7 +110,8 @@ public class Venta {
             }
         }
 
-        this.total = acumulado;
+        // Si es a domicilio, sumamos el costo de envío al total general
+        this.total = acumulado + this.costoEnvio;
     }
 
     public void agregarDetalle(DescripcionVenta detalle) {
@@ -170,6 +182,49 @@ public class Venta {
         this.cambio = cambio;
     }
 
+   
+
+    public boolean isEsDomicilio() {
+        return esDomicilio;
+    }
+
+    public void setEsDomicilio(boolean esDomicilio) {
+        this.esDomicilio = esDomicilio;
+    }
+
+    public Cliente getCliente() {
+        return cliente;
+    }
+
+    public void setCliente(Cliente cliente) {
+        this.cliente = cliente;
+    }
+
+    public double getCostoEnvio() {
+        return costoEnvio;
+    }
+
+    public void setCostoEnvio(double costoEnvio) {
+        this.costoEnvio = costoEnvio;
+        calculaTotal(); 
+    }
+
+    public String getEstadoEntrega() {
+        return estadoEntrega;
+    }
+
+    public void setEstadoEntrega(String estadoEntrega) {
+        this.estadoEntrega = estadoEntrega;
+    }
+
+    public String getRepartidorAsignado() {
+        return repartidorAsignado;
+    }
+
+    public void setRepartidorAsignado(String repartidorAsignado) {
+        this.repartidorAsignado = repartidorAsignado;
+    }
+
     public List<DescripcionVenta> getProductos() {
         return productos;
     }
@@ -223,6 +278,8 @@ public class Venta {
                 + ", cambio=" + cambio
                 + ", date=" + date
                 + ", idTrabajador=" + idTrabajador
+                + ", esDomicilio=" + esDomicilio
+                + ", estadoEntrega=" + estadoEntrega
                 + '}';
     }
 

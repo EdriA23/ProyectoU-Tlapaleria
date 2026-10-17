@@ -11,10 +11,12 @@ import mx.uam.ayd.proyecto.datos.InventarioRepository;
 import mx.uam.ayd.proyecto.datos.MovimientoInventarioRepository;
 import mx.uam.ayd.proyecto.datos.ProductoRepository;
 import mx.uam.ayd.proyecto.datos.VentaRepository;
+import mx.uam.ayd.proyecto.negocio.modelo.Cliente;
 import mx.uam.ayd.proyecto.negocio.modelo.DescripcionVenta;
 import mx.uam.ayd.proyecto.negocio.modelo.Inventario;
 import mx.uam.ayd.proyecto.negocio.modelo.MovimientoInventario;
 import mx.uam.ayd.proyecto.negocio.modelo.Producto;
+import mx.uam.ayd.proyecto.negocio.modelo.ServicioCliente;
 import mx.uam.ayd.proyecto.negocio.modelo.Venta;
 
 /**
@@ -38,6 +40,8 @@ public class ServicioVenta {
     @Autowired
     private MovimientoInventarioRepository movimientoRepository;
 
+    @Autowired
+    private ServicioCliente servicioCliente; 
     /**
      * Hace todo el proceso de la venta: descuenta existencias en producto e inventario,
      * genera la salida en el historial de movimientos y calcula el cambio del cliente.
@@ -98,9 +102,65 @@ public class ServicioVenta {
     }
 
     /**
-     * Inicia una nueva venta en blanco para comenzar el flujo de la HU-05.
-     * 
-     * @return una nueva instancia de Venta vacia
+     * Registra un pedido a domicilio.
+     * @param cliente datos del cliente y su domicilio
+     * @param detalles lista de productos
+     * @param montoRecibido dinero recibido
+     * @return la venta a domicilio guardada
+     */
+    @Transactional
+    public Venta registrarPedidoDomicilio(Cliente cliente, List<DescripcionVenta> detalles, double montoRecibido) {
+        
+        // hu-17
+        if (!servicioCliente.validarDatosCliente(cliente)) {
+            throw new IllegalArgumentException("Los datos obligatorios del cliente para domicilio están incompletos.");
+        }
+
+        
+        Venta nuevaVenta = registrarVenta(detalles, montoRecibido);
+
+        
+        nuevaVenta.setEsDomicilio(true);
+        nuevaVenta.setCliente(cliente);
+        
+        double costoEnvio = 50.00; 
+        nuevaVenta.setCostoEnvio(costoEnvio);
+        
+        
+        double totalConEnvio = nuevaVenta.getTotal();
+        nuevaVenta.setCambio(montoRecibido - totalConEnvio);
+        
+        nuevaVenta.setEstadoEntrega("Registrado");
+
+        
+        return ventaRepository.save(nuevaVenta);
+    }
+
+   
+    @Transactional
+    public void asignarRepartidor(long idVenta, String nombreRepartidor) {
+        Venta venta = ventaRepository.findById(idVenta).orElse(null);
+        if (venta != null) {
+            venta.setRepartidorAsignado(nombreRepartidor);
+            venta.setEstadoEntrega("En camino");
+            ventaRepository.save(venta);
+        }
+    }
+
+ 
+    @Transactional
+    public void cerrarPedido(long idVenta) {
+        Venta venta = ventaRepository.findById(idVenta).orElse(null);
+        if (venta != null) {
+            venta.setEstadoEntrega("Entregado");
+            ventaRepository.save(venta);
+        }
+    }
+
+    /**
+     * Crea una nueva venta vacía para iniciar una operación de venta.
+     *
+     * @return una venta nueva y vacía
      */
     public Venta iniciarVenta() {
         return new Venta();
