@@ -51,7 +51,7 @@ public class Producto {
     private Inventario inventario;
 
     /**
-     * Relación con el historial: guarda los movimientos que genera 
+     * Relación con el historial: guarda los movimientos que genera
      * la HU-09 (cambio de precio) y la HU-10 (devoluciones).
      */
     @OneToMany(mappedBy = "producto")

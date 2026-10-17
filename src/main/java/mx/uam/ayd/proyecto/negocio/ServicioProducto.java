@@ -217,4 +217,71 @@ public class ServicioProducto {
         log.info("Coordinando registro de producto dañado para ID: {}", idProducto);
         return servicioDevolucion.registrarDevolucionDanado(idProducto, cantidad, motivo);
     }
+
+    // =========================================================================
+    // MÉTODOS PARA LA HISTORIA DE USUARIO (HU-28: MARGEN DE GANANCIA)
+    // Alineados al diagrama de clases de la capa de Negocio
+    // =========================================================================
+
+    /**
+     * Recupera los productos para la vista de margen de ganancia.
+     * (Equivalente al diagrama: +recuperarProductosConMargen())
+     */
+    public Iterable<Producto> recuperarProductosConMargen() {
+        log.info("Recuperando productos para la vista de Margen de Ganancia");
+        return productoRepository.findAll();
+    }
+
+    /**
+     * Calcula el margen en porcentaje.
+     * (Equivalente al diagrama: +calculaMargen())
+     */
+    public Double calculaMargen(Producto producto) {
+        if (producto == null) return 0.0;
+
+        Double precioVenta = producto.getPrecio();
+        Double precioCosto = producto.getPrecioCompra();
+
+        if (precioVenta == null || precioCosto == null || precioVenta <= 0) {
+            return 0.0;
+        }
+
+        return ((precioVenta - precioCosto) / precioVenta) * 100.0;
+    }
+
+    /**
+     * Valida la regla de negocio RN-01 (Venta > Costo).
+     * (Equivalente al diagrama: +validarPrecio())
+     */
+    public boolean validarPrecio(Double costo, Double venta) {
+        if (venta == null || costo == null || venta <= costo) {
+            return false; // No cumple la RN-01
+        }
+        return true;
+    }
+
+    /**
+     * Actualiza los precios utilizando la validación extraída.
+     * (Equivalente al diagrama: +actualizarPrecios())
+     */
+    @Transactional
+    public Producto actualizarPrecios(long idProducto, Double nuevoCosto, Double nuevoPrecioVenta) {
+        log.info("Actualizando precios para producto ID: {}", idProducto);
+
+        // Uso del método validarPrecio() dictado por el diagrama
+        if (!validarPrecio(nuevoCosto, nuevoPrecioVenta)) {
+            log.warn("Violación de regla de negocio RN-01 en validación de precios.");
+            throw new IllegalArgumentException("El precio de venta debe ser estrictamente mayor al precio de costo.");
+        }
+
+        Producto producto = productoRepository.findByIdProducto(idProducto);
+        if (producto == null) {
+            throw new IllegalArgumentException("No se encontró ningún producto con el ID: " + idProducto);
+        }
+
+        producto.setPrecioCompra(nuevoCosto);
+        producto.setPrecio(nuevoPrecioVenta);
+
+        return productoRepository.save(producto);
+    }
 }
