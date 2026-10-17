@@ -218,19 +218,26 @@ public class ServicioProducto {
         return servicioDevolucion.registrarDevolucionDanado(idProducto, cantidad, motivo);
     }
 
+    // =========================================================================
     // MÉTODOS PARA LA HISTORIA DE USUARIO (HU-28: MARGEN DE GANANCIA)
+    // Alineados al diagrama de clases de la capa de Negocio
+    // =========================================================================
 
     /**
-     * Calcula el margen de ganancia en porcentaje (%) para un producto (HU-28).
-     * Fórmula: ((Precio Venta - Precio Compra) / Precio Venta) * 100
-     * 
-     * @param producto Producto al que se le calculará el margen
-     * @return Margen en porcentaje, o 0.0 si los datos no son válidos
+     * Recupera los productos para la vista de margen de ganancia.
+     * (Equivalente al diagrama: +recuperarProductosConMargen())
      */
-    public Double calcularMargenGanancia(Producto producto) {
-        if (producto == null) {
-            return 0.0;
-        }
+    public Iterable<Producto> recuperarProductosConMargen() {
+        log.info("Recuperando productos para la vista de Margen de Ganancia");
+        return productoRepository.findAll();
+    }
+
+    /**
+     * Calcula el margen en porcentaje.
+     * (Equivalente al diagrama: +calculaMargen())
+     */
+    public Double calculaMargen(Producto producto) {
+        if (producto == null) return 0.0;
 
         Double precioVenta = producto.getPrecio();
         Double precioCosto = producto.getPrecioCompra();
@@ -243,38 +250,38 @@ public class ServicioProducto {
     }
 
     /**
-     * Actualiza el precio de costo (precioCompra) y el precio de venta (precio) de un producto.
-     * Aplica la Regla de Negocio RN-01: Venta > Costo (HU-28).
-     * 
-     * @param idProducto ID del producto
-     * @param nuevoCosto Nuevo precio de compra/costo
-     * @param nuevoPrecioVenta Nuevo precio de venta al público
-     * @return El objeto Producto actualizado y guardado
-     * @throws IllegalArgumentException si no cumple la regla RN-01 o si el producto no existe
+     * Valida la regla de negocio RN-01 (Venta > Costo).
+     * (Equivalente al diagrama: +validarPrecio())
+     */
+    public boolean validarPrecio(Double costo, Double venta) {
+        if (venta == null || costo == null || venta <= costo) {
+            return false; // No cumple la RN-01
+        }
+        return true;
+    }
+
+    /**
+     * Actualiza los precios utilizando la validación extraída.
+     * (Equivalente al diagrama: +actualizarPrecios())
      */
     @Transactional
-    public Producto actualizarPreciosMargen(long idProducto, Double nuevoCosto, Double nuevoPrecioVenta) {
-        log.info("Intentando actualizar margen para el producto ID: {}. Nuevo Costo: {}, Nuevo Precio Venta: {}", 
-                 idProducto, nuevoCosto, nuevoPrecioVenta);
+    public Producto actualizarPrecios(long idProducto, Double nuevoCosto, Double nuevoPrecioVenta) {
+        log.info("Actualizando precios para producto ID: {}", idProducto);
 
-        // Regla de Negocio RN-01: El precio de venta debe ser estrictamente mayor al costo
-        if (nuevoPrecioVenta == null || nuevoCosto == null || nuevoPrecioVenta <= nuevoCosto) {
-            log.warn("Intento de actualización violando RN-01 (Venta <= Costo)");
-            throw new IllegalArgumentException("El precio de venta debe ser mayor al precio de costo.");
+        // Uso del método validarPrecio() dictado por el diagrama
+        if (!validarPrecio(nuevoCosto, nuevoPrecioVenta)) {
+            log.warn("Violación de regla de negocio RN-01 en validación de precios.");
+            throw new IllegalArgumentException("El precio de venta debe ser estrictamente mayor al precio de costo.");
         }
 
         Producto producto = productoRepository.findByIdProducto(idProducto);
         if (producto == null) {
-            log.warn("No se encontró el producto con el ID: {}", idProducto);
             throw new IllegalArgumentException("No se encontró ningún producto con el ID: " + idProducto);
         }
 
         producto.setPrecioCompra(nuevoCosto);
         producto.setPrecio(nuevoPrecioVenta);
 
-        Producto productoGuardado = productoRepository.save(producto);
-        log.info("Precios actualizados con éxito para el producto ID: {}", idProducto);
-
-        return productoGuardado;
+        return productoRepository.save(producto);
     }
 }
