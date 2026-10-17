@@ -1,6 +1,6 @@
 package mx.uam.ayd.proyecto.datos;
 
-import negocio.modelos.Cliente;
+import mx.uam.ayd.proyecto.negocio.modelo.Cliente;
 
 public class ClienteRepository {
 
