@@ -1,3 +1,4 @@
+//Agregar id cliente cuando se tenga la entidad creada
 package mx.uam.ayd.proyecto.negocio.modelo;
 
 import java.time.LocalDateTime;
@@ -31,7 +32,7 @@ public class Venta {
      * Se conserva como atributo normal para no afectar
      * servicios, controladores o pruebas existentes.
      */
-    private int idVendedor;
+    private long idTrabajador;
 
     private double montoRecibido;
 
@@ -145,12 +146,12 @@ public class Venta {
         this.date = date;
     }
 
-    public int getIdVendedor() {
-        return idVendedor;
+    public long getIdTrabajador() {
+        return idTrabajador;
     }
 
-    public void setIdVendedor(int idVendedor) {
-        this.idVendedor = idVendedor;
+    public void setIdTrabajador(long idTrabajador) {
+        this.idTrabajador = idTrabajador;
     }
 
     public double getMontoRecibido() {
@@ -221,7 +222,7 @@ public class Venta {
                 + ", pago=" + montoRecibido
                 + ", cambio=" + cambio
                 + ", date=" + date
-                + ", idVendedor=" + idVendedor
+                + ", idTrabajador=" + idTrabajador
                 + '}';
     }
 
