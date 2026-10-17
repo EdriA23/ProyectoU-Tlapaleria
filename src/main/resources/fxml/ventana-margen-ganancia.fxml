@@ -8,57 +8,32 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="550.0" prefWidth="750.0" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="mx.uam.ayd.proyecto.presentacion.margenGanancia.VentanaMargenDeGanancia">
+<AnchorPane prefHeight="550.0" prefWidth="850.0" style="-fx-background-color: #ffffff;" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="mx.uam.ayd.proyecto.presentacion.margenGanancia.VentanaMargenDeGanancia">
    <children>
-      <!-- Título de la Ventana -->
-      <Label layoutX="25.0" layoutY="20.0" text="Gestión de Margen de Ganancia (HU-28)" textFill="#2c3e50">
+      <!-- Título de la Ventana Principal -->
+      <Label layoutX="25.0" layoutY="20.0" text="Margen de Ganancia por Producto" textFill="#1a252f">
          <font>
-            <Font name="System Bold" size="22.0" />
+            <Font name="System Bold" size="24.0" />
          </font>
       </Label>
-
-      <!-- Barra de Búsqueda -->
-      <Label layoutX="25.0" layoutY="65.0" text="Buscar Producto:">
-         <font>
-            <Font name="System Bold" size="14.0" />
-         </font>
-      </Label>
-      <TextField fx:id="txtBusqueda" layoutX="145.0" layoutY="62.0" prefHeight="25.0" prefWidth="580.0" promptText="Ingrese clave o nombre del producto..." />
-
-      <!-- Tabla de Productos -->
-      <TableView fx:id="tablaMargenes" layoutX="25.0" layoutY="105.0" prefHeight="310.0" prefWidth="700.0">
-      <columns>
-         <TableColumn fx:id="colClave" prefWidth="80.0" text="Clave" />
-         <TableColumn fx:id="colNombre" prefWidth="250.0" text="Nombre del Producto" />
-         <TableColumn fx:id="colCosto" prefWidth="120.0" text="Costo (Compra)" />
-         <TableColumn fx:id="colVenta" prefWidth="120.0" text="Precio (Venta)" />
-         <TableColumn fx:id="colMargen" prefWidth="120.0" text="Margen (%)" />
-      </columns>
-      </TableView>
-
-      <!-- Sección de Actualización de Precios -->
-      <Label layoutX="25.0" layoutY="435.0" text="Nuevo Costo:">
-         <font>
-            <Font name="System Bold" size="14.0" />
-         </font>
-      </Label>
-      <TextField fx:id="txtCosto" layoutX="120.0" layoutY="432.0" prefHeight="25.0" prefWidth="110.0" promptText="0.0" />
-
-      <Label layoutX="250.0" layoutY="435.0" text="Nuevo Precio Venta:">
-         <font>
-            <Font name="System Bold" size="14.0" />
-         </font>
-      </Label>
-      <TextField fx:id="txtVenta" layoutX="395.0" layoutY="432.0" prefHeight="25.0" prefWidth="110.0" promptText="0.0" />
-
-      <Button layoutX="525.0" layoutY="427.0" mnemonicParsing="false" onAction="#handleActualizar" prefHeight="35.0" prefWidth="200.0" style="-fx-background-color: #27ae60;" text="Actualizar Precios" textFill="WHITE">
-         <font>
-            <Font name="System Bold" size="13.0" />
-         </font>
-      </Button>
       
-      <!-- Botón de Cerrar -->
-      <Button layoutX="645.0" layoutY="495.0" mnemonicParsing="false" onAction="#handleCerrar" prefHeight="35.0" prefWidth="80.0" style="-fx-background-color: #e74c3c;" text="Cerrar" textFill="WHITE">
+      <!-- Búsqueda en Tiempo Real -->
+      <TextField fx:id="txtBusqueda" layoutX="25.0" layoutY="70.0" prefHeight="35.0" prefWidth="320.0" promptText="🔍 Buscar producto..." style="-fx-background-radius: 5;" />
+      
+      <!-- Tabla de Productos con Acciones -->
+      <TableView fx:id="tablaMargenes" layoutX="25.0" layoutY="125.0" prefHeight="350.0" prefWidth="800.0">
+        <columns>
+           <TableColumn fx:id="colClave" prefWidth="90.0" text="CLAVE" />
+           <TableColumn fx:id="colNombre" prefWidth="250.0" text="PRODUCTO" />
+           <TableColumn fx:id="colCosto" prefWidth="130.0" text="PRECIO COSTO ($)" />
+           <TableColumn fx:id="colVenta" prefWidth="130.0" text="PRECIO VENTA ($)" />
+           <TableColumn fx:id="colMargen" prefWidth="100.0" text="MARGEN (%)" />
+           <TableColumn fx:id="colAcciones" prefWidth="100.0" text="ACCIONES" />
+        </columns>
+      </TableView>
+      
+      <!-- Botón de Cerrar en la parte inferior -->
+      <Button layoutX="745.0" layoutY="495.0" mnemonicParsing="false" onAction="#handleCerrar" prefHeight="35.0" prefWidth="80.0" style="-fx-background-color: #e74c3c; -fx-background-radius: 5; -fx-cursor: hand;" text="Cerrar" textFill="WHITE">
          <font>
             <Font name="System Bold" size="13.0" />
          </font>

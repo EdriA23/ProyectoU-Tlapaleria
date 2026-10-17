@@ -10,6 +10,8 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.Button;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
@@ -23,7 +25,7 @@ import java.io.IOException;
 import mx.uam.ayd.proyecto.negocio.modelo.Producto;
 
 /**
- * Ventana principal de javafx para la vista de margen de ganancia.
+ * Ventana principal para la visualización del margen de ganancia por producto (HU-28).
  */
 @Component
 public class VentanaMargenDeGanancia {
@@ -31,7 +33,7 @@ public class VentanaMargenDeGanancia {
     private Stage stage;
     private ControlMargenDeGanancia control;
     private ObservableList<Producto> productosData;
-    private FilteredList<Producto> filteredData; // Lista filtrada para la búsqueda en tiempo real
+    private FilteredList<Producto> filteredData; // Lista filtrada para búsqueda en tiempo real
     
     @FXML
     private TableView<Producto> tablaMargenes;
@@ -49,29 +51,26 @@ public class VentanaMargenDeGanancia {
     private TableColumn<Producto, Double> colVenta;
 
     @FXML
-    private TableColumn<Producto, String> colMargen; // Mostraremos el porcentaje aquí
+    private TableColumn<Producto, String> colMargen;
+
+    @FXML
+    private TableColumn<Producto, Void> colAcciones; // Columna para el botón "Editar Margen"
     
     @FXML
     private TextField txtBusqueda;
-
-    @FXML
-    private TextField txtCosto;
-
-    @FXML
-    private TextField txtVenta;
     
     private boolean initialized = false;
 
     /**
-     * Constructor donde inicializamos las listas observables para llenar la tabla
+     * Constructor donde inicializamos las listas observables
      */
     public VentanaMargenDeGanancia() {
         productosData = FXCollections.observableArrayList();
-        filteredData = new FilteredList<>(productosData, p -> true); // Inicializa aceptando todos los elementos
+        filteredData = new FilteredList<>(productosData, p -> true);
     }
     
     /**
-     * Prepara y carga los componentes de la interfaz grafica de javafx desde el fxml
+     * Prepara y carga los componentes de la interfaz desde el FXML
      */
     private void initializeUI() {
         if (initialized) {
@@ -85,12 +84,12 @@ public class VentanaMargenDeGanancia {
         
         try {
             stage = new Stage();
-            stage.setTitle("Gestión de Margen de Ganancia");
+            stage.setTitle("Margen de Ganancia por Producto");
             
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/ventana-margen-ganancia.fxml"));
             loader.setControllerFactory(clazz -> this);
             
-            Scene scene = new Scene(loader.load(), 700, 500);
+            Scene scene = new Scene(loader.load(), 850, 550);
             stage.setScene(scene);
             
             // Configuración de columnas
@@ -99,17 +98,39 @@ public class VentanaMargenDeGanancia {
             colCosto.setCellValueFactory(new PropertyValueFactory<>("precioCompra"));
             colVenta.setCellValueFactory(new PropertyValueFactory<>("precio"));
 
-            // El margen lo calculamos en tiempo real con el controlador
+            // Cálculo dinámico del porcentaje de margen
             colMargen.setCellValueFactory(cellData -> {
                 Producto p = cellData.getValue();
                 Double margen = control.calcularMargen(p);
                 return new SimpleStringProperty(String.format("%.2f %%", margen));
             });
+
+            // Generación dinámica del botón "Editar Margen" en cada fila
+            colAcciones.setCellFactory(param -> new TableCell<>() {
+                private final Button btnEditar = new Button("Editar Margen");
+
+                {
+                    btnEditar.setStyle("-fx-background-color: #eef2f5; -fx-text-fill: #2c3e50; -fx-font-weight: bold; -fx-cursor: hand;");
+                    btnEditar.setOnAction(event -> {
+                        Producto producto = getTableView().getItems().get(getIndex());
+                        control.abrirEdicionMargen(producto);
+                    });
+                }
+
+                @Override
+                protected void updateItem(Void item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (empty) {
+                        setGraphic(null);
+                    } else {
+                        setGraphic(btnEditar);
+                    }
+                }
+            });
             
-            // Ajuste automático del ancho de las columnas
             tablaMargenes.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
-            // Listener de búsqueda en tiempo real
+            // Listener para la barra de búsqueda
             txtBusqueda.textProperty().addListener((observable, oldValue, newValue) -> {
                 filteredData.setPredicate(producto -> {
                     if (newValue == null || newValue.trim().isEmpty()) {
@@ -126,14 +147,6 @@ public class VentanaMargenDeGanancia {
                 });
             });
 
-            // Listener para cuando el usuario seleccione un producto en la tabla
-            tablaMargenes.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
-                if (newSelection != null) {
-                    txtCosto.setText(newSelection.getPrecioCompra() != null ? newSelection.getPrecioCompra().toString() : "0.0");
-                    txtVenta.setText(newSelection.getPrecio() != null ? newSelection.getPrecio().toString() : "0.0");
-                }
-            });
-
             tablaMargenes.setItems(filteredData);
             initialized = true;
             
@@ -144,7 +157,7 @@ public class VentanaMargenDeGanancia {
     }
     
     /**
-     * Muestra la pantalla principal asignandole primero su controlador
+     * Muestra la pantalla principal asignándole primero su controlador
      * 
      * @param control instancia del controlador
      */
@@ -160,9 +173,9 @@ public class VentanaMargenDeGanancia {
     }
     
     /**
-     * Recibe la lista de productos y los manda a la tabla
+     * Recibe la lista de productos y los carga en la tabla
      * 
-     * @param productos iterador de productos recuperados del servicio
+     * @param productos lista de productos del servicio
      */
     public void mostrarProductos(Iterable<Producto> productos) {
         Platform.runLater(() -> {
@@ -176,9 +189,9 @@ public class VentanaMargenDeGanancia {
     }
 
     /**
-     * Despliega un dialogo de alerta generico con un mensaje en pantalla
+     * Despliega un diálogo de alerta genérico con un mensaje en pantalla
      * 
-     * @param mensaje texto a mostrar en la ventana
+     * @param mensaje texto a mostrar
      */
     public void muestraDialogoConMensaje(String mensaje) {
         if (!Platform.isFxApplicationThread()) {
@@ -194,28 +207,7 @@ public class VentanaMargenDeGanancia {
     }
     
     /**
-     * Evento al dar clic en Actualizar Precios
-     */
-    @FXML
-    private void handleActualizar() {
-        Producto seleccionado = tablaMargenes.getSelectionModel().getSelectedItem();
-        
-        if (seleccionado == null) {
-            muestraDialogoConMensaje("Por favor, seleccione un producto de la tabla.");
-            return;
-        }
-
-        try {
-            Double nuevoCosto = Double.parseDouble(txtCosto.getText());
-            Double nuevoVenta = Double.parseDouble(txtVenta.getText());
-            control.actualizarPrecios(seleccionado.getIdProducto(), nuevoCosto, nuevoVenta);
-        } catch (NumberFormatException e) {
-            muestraDialogoConMensaje("Por favor, ingrese valores numéricos válidos para los precios.");
-        }
-    }
-    
-    /**
-     * Cierra la ventana actual
+     * Cierra la ventana principal
      */
     @FXML
     private void handleCerrar() {
