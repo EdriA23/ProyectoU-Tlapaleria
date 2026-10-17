@@ -19,11 +19,9 @@ public class Trabajador {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long idEmpleado;
+    private long idTrabajador;
 
     private String nombreCompleto;
-
-    private int age;
 
     private String rol;
 
@@ -33,7 +31,7 @@ public class Trabajador {
 
     private double salario;
 
-    private String numeroEmpleado;
+    private String numeroTrabajador;
 
     /*
      * Un vendedor puede registrar muchas devoluciones.
@@ -50,12 +48,12 @@ public class Trabajador {
     public Trabajador() {
     }
 
-    public long getIdEmpleado() {
-        return idEmpleado;
+    public long getIdTrabajador() {
+        return idTrabajador;
     }
 
-    public void setIdEmpleado(long idEmpleado) {
-        this.idEmpleado = idEmpleado;
+    public void setIdTrabajador(long idTrabajador) {
+        this.idTrabajador = idTrabajador;
     }
 
     public String getNombreCompleto() {
@@ -66,13 +64,6 @@ public class Trabajador {
         this.nombreCompleto = nombreCompleto;
     }
 
-    public int getEdad() {
-        return age;
-    }
-
-    public void setEdad(int edad) {
-        this.age = edad;
-    }
     public String getRol(){
         return rol;
     }
@@ -105,12 +96,12 @@ public class Trabajador {
         this.salario = salario;
     }
 
-    public String getNumeroEmpleado() {
-        return numeroEmpleado;
+    public String getNumeroTrabajador() {
+        return numeroTrabajador;
     }
 
-    public void setNumeroEmpleado(String numeroEmpleado) {
-        this.numeroEmpleado = numeroEmpleado;
+    public void setNumeroTrabajador(String numeroTrabajador) {
+        this.numeroTrabajador = numeroTrabajador;
     }
 
     public List<Devolucion> getDevoluciones() {
@@ -140,22 +131,22 @@ public class Trabajador {
 
         Trabajador other = (Trabajador) obj;
 
-        return idEmpleado == other.idEmpleado;
+        return idTrabajador == other.idTrabajador;
     }
 
     @Override
     public int hashCode() {
-        return (int) (31 * idEmpleado);
+        return (int) (31 * idTrabajador);
     }
 
     @Override
     public String toString() {
-        return "Trabajador [idEmpleado=" + idEmpleado
+        return "Trabajador [idTrabajador=" + idTrabajador
                 + ", nombreCompleto=" + nombreCompleto
                 + ", rol=" + rol
                 + ", telefono=" + telefono
                 + ", correoElectronico=" + correoElectronico
                 + ", salario=" + salario
-                + ", numeroEmpleado=" + numeroEmpleado + "]";
+                + ", numeroTrabajador=" + numeroTrabajador + "]";
     }
 }

@@ -1,3 +1,4 @@
+//Agregar id cliente cuando se tenga la entidad creada
 package mx.uam.ayd.proyecto.negocio.modelo;
 
 import java.time.LocalDateTime;
