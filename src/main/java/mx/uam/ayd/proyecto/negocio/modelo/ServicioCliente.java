@@ -4,7 +4,14 @@ import mx.uam.ayd.proyecto.datos.ClienteRepository;
 
 public class ServicioCliente {
 
-    private ClienteRepository clienteRepo = new ClienteRepository();
+    private final ClienteRepository clienteRepo;
+
+    public ServicioCliente(ClienteRepository clienteRepo) {
+        if (clienteRepo == null) {
+            throw new IllegalArgumentException("El repositorio de clientes es obligatorio.");
+        }
+        this.clienteRepo = clienteRepo;
+    }
 
     public boolean validarDatosCliente(Cliente cliente) {
         if (cliente == null) return false;
