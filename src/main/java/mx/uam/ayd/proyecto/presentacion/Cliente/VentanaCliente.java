@@ -1,4 +1,4 @@
-package mx.uam.ayd.proyecto.presentacion.registrarPedido;
+package mx.uam.ayd.proyecto.presentacion.Cliente;
 
 import java.net.URL;
 import java.util.ResourceBundle;
