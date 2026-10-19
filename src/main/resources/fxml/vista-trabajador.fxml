@@ -31,13 +31,13 @@
                         </Label>
                      </children>
                   </VBox>
-                  <Button fx:id="btnRegistrarTrabajador" mnemonicParsing="false" style="-fx-background-color: #4F46E5; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 6; -fx-padding: 8 16;" text="+ Registrar Trabajador" />
+                  <Button fx:id="btnRegistrarTrabajador" mnemonicParsing="false" onAction="#handleRegistrarTrabajador" style="-fx-background-color: #4F46E5; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 6; -fx-padding: 8 16; -fx-cursor: hand;" text="+ Registrar Trabajador" />
                </children>
             </HBox>
             <HBox alignment="CENTER_LEFT" spacing="10.0">
                <children>
                   <TextField fx:id="txtBuscar" promptText="Buscar por nombre o ID..." style="-fx-background-radius: 6; -fx-border-color: #D1D5DB; -fx-border-radius: 6; -fx-padding: 8;" HBox.hgrow="ALWAYS" />
-                  <Button mnemonicParsing="false" onAction="#handleBuscar" style="-fx-background-color: #E0E7FF; -fx-text-fill: #4F46E5; -fx-font-weight: bold; -fx-background-radius: 6; -fx-padding: 8 16;" text="Buscar" />
+                  <Button mnemonicParsing="false" onAction="#handleBuscar" style="-fx-background-color: #E0E7FF; -fx-text-fill: #4F46E5; -fx-font-weight: bold; -fx-background-radius: 6; -fx-padding: 8 16; -fx-cursor: hand;" text="Buscar" />
                </children>
             </HBox>
          </children>

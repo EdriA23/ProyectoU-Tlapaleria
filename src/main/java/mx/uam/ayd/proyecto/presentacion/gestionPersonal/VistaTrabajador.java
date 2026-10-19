@@ -219,4 +219,10 @@ public class VistaTrabajador {
             stage.close();
         }
     }
+    @FXML
+    private void handleRegistrarTrabajador() {
+         if (control != null) {
+        control.abrirFormulario();
+    }
+}
 }
