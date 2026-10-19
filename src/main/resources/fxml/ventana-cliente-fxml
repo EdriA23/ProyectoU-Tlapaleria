@@ -1,0 +1,130 @@
+
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="mx.uam.ayd.proyecto.presentacion.registrarPedido.VentanaCliente"
+      spacing="16"
+      prefWidth="560"
+      prefHeight="500"
+       style="background-color: #F4F6F9; -fx-background-color: #F4F6F9;">
+
+    <padding>
+        <Insets top="24" right="28" bottom="24" left="28"/>
+    </padding>
+
+    <!-- Encabezado -->
+    <VBox spacing="5">
+        <Label text="Gestión de cliente"
+               style="font-size: 24px; -fx-font-size: 24px; font-weight: bold; -fx-font-weight: bold; -fx-text-fill: #243447;"/>
+
+        <Label text="Registra o busca los datos del cliente y su domicilio."
+               style="font-size: 13px; -fx-font-size: 13px; -fx-text-fill: #65758B;"/>
+    </VBox>
+
+    <Separator/>
+
+    <!-- Formulario -->
+    <GridPane hgap="14" vgap="13">
+        <columnConstraints>
+            <javafx.scene.layout.ColumnConstraints minWidth="125"/>
+            <javafx.scene.layout.ColumnConstraints hgrow="ALWAYS"/>
+        </columnConstraints>
+
+        <Label text="Nombre completo:"
+               GridPane.rowIndex="0"
+               GridPane.columnIndex="0"/>
+
+        <TextField fx:id="txtNombre"
+                   promptText="Nombre del cliente"
+                   maxWidth="Infinity"
+                   GridPane.rowIndex="0"
+                   GridPane.columnIndex="1"/>
+
+        <Label text="Teléfono:"
+               GridPane.rowIndex="1"
+               GridPane.columnIndex="0"/>
+
+        <TextField fx:id="txtTelefono"
+                   promptText="Número telefónico"
+                   maxWidth="Infinity"
+                   GridPane.rowIndex="1"
+                   GridPane.columnIndex="1"/>
+
+        <Label text="Dirección:"
+               GridPane.rowIndex="2"
+               GridPane.columnIndex="0"/>
+
+        <TextField fx:id="txtDireccion"
+                   promptText="Calle y colonia"
+                   maxWidth="Infinity"
+                   GridPane.rowIndex="2"
+                   GridPane.columnIndex="1"/>
+
+        <Label text="Número de casa:"
+               GridPane.rowIndex="3"
+               GridPane.columnIndex="0"/>
+
+        <TextField fx:id="txtNumeroCasa"
+                   promptText="Número exterior"
+                   maxWidth="Infinity"
+                   GridPane.rowIndex="3"
+                   GridPane.columnIndex="1"/>
+
+        <Label text="Entre calles:"
+               GridPane.rowIndex="4"
+               GridPane.columnIndex="0"/>
+
+        <TextField fx:id="txtEntreCalles"
+                   promptText="Calles de referencia"
+                   maxWidth="Infinity"
+                   GridPane.rowIndex="4"
+                   GridPane.columnIndex="1"/>
+
+        <Label text="Color de casa:"
+               GridPane.rowIndex="5"
+               GridPane.columnIndex="0"/>
+
+        <TextField fx:id="txtColorCasa"
+                   promptText="Color de la fachada"
+                   maxWidth="Infinity"
+                   GridPane.rowIndex="5"
+                   GridPane.columnIndex="1"/>
+    </GridPane>
+
+    <Separator/>
+
+    <!-- Botones -->
+    <HBox spacing="10" alignment="CENTER_RIGHT">
+        <Button fx:id="btnLimpiar"
+                text="Limpiar"
+                onAction="handleLimpiar"
+                prefWidth="100"
+                style="background-color: #E1E7EF; -fx-background-color: #E1E7EF; -fx-text-fill: #243447;"
+                />
+
+        <Button fx:id="btnBuscarCliente"
+                text="Buscar cliente"
+                onAction="handleBuscarCliente"
+                prefWidth="125"
+                style="background-color: #DCEBFA; -fx-background-color: #DCEBFA; -fx-text-fill: #174A7E;"
+                />
+
+        <Button fx:id="btnGuardarCliente"
+                text="Guardar"
+                onAction="handleGuardarCliente"
+                prefWidth="100"
+                style="background-color: #2471A3; -fx-background-color: #2471A3; -fx-text-fill: white; font-weight: bold; -fx-font-weight: bold;"
+                />
+    </HBox>
+
+</VBox>
