@@ -132,8 +132,8 @@ public class DataLoader implements CommandLineRunner {
             // 6. Clientes
             Cliente c1 = new Cliente("Guillermo Amador", "5512345678", "Av. San Rafael", "102", "Entre Calle 1 y Calle 2", "Azul");
             Cliente c2 = new Cliente("María Rodríguez", "5587654321", "Calle Hidalgo", "45", "Entre Benito Juárez y Morelos", "Blanca");
-            clienteRepository.save(c1);
-            clienteRepository.save(c2);
+            clienteRepository.guardar(c1);
+            clienteRepository.guardar(c2);
 
             // 7. Factura
             Factura factura = new Factura();
