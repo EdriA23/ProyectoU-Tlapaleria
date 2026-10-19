@@ -16,7 +16,6 @@ import mx.uam.ayd.proyecto.negocio.modelo.DescripcionVenta;
 import mx.uam.ayd.proyecto.negocio.modelo.Inventario;
 import mx.uam.ayd.proyecto.negocio.modelo.MovimientoInventario;
 import mx.uam.ayd.proyecto.negocio.modelo.Producto;
-import mx.uam.ayd.proyecto.negocio.modelo.ServicioCliente;
 import mx.uam.ayd.proyecto.negocio.modelo.Venta;
 
 /**
