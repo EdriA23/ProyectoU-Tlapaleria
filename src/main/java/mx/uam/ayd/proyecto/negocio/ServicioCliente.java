@@ -58,13 +58,13 @@ public class ServicioCliente {
      * Busca un cliente por su identificador único.
      */
     public Cliente buscarClientePorId(long idCliente) {
-        return clienteRepository.findById(idCliente);
+        return clienteRepository.findById(idCliente).orElse(null);
     }
 
     /**
      * Busca un cliente registrado por su número telefónico.
      */
     public Cliente buscarClientePorTelefono(String telefono) {
-        return clienteRepository.findByTelefono(telefono);
+        return clienteRepository.findByTelefono(telefono).orElse(null);
     }
 }
