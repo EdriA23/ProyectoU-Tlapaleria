@@ -10,7 +10,7 @@ public class Cliente {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
 
-    private int idCliente;
+    private long idCliente;
     private String nombre;
     private String telefono;
     private String direccion;
@@ -29,7 +29,7 @@ public class Cliente {
         this.colorCasa = colorCasa;
     }
 
-    public int getIdCliente() { return idCliente; }
+    public long getIdCliente() { return idCliente; }
     public void setIdCliente(int idCliente) { this.idCliente = idCliente; }
     
     public String getNombre() { return nombre; }
