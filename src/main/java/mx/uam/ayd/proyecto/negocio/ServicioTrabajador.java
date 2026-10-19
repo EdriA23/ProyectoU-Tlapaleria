@@ -16,16 +16,14 @@ import mx.uam.ayd.proyecto.negocio.modelo.Trabajador;
 public class ServicioTrabajador {
 
     @Autowired
-    private TrabajadorRepository trabajadorRepository;
+    private TrabajadorRepository repositoryTrabajador;
 
     /**
      * Recupera todos los trabajadores registrados.
      * 
      * @return Lista con todos los trabajadores
      */
-    public List<Trabajador> recuperaTrabajadores() {
-        List<Trabajador> trabajadores = new ArrayList<>();
-        trabajadorRepository.findAll().forEach(trabajadores::add);
-        return trabajadores;
+    public List<Trabajador> recuperarTrabajador() {
+        return repositoryTrabajador.findAll();
     }
 }
