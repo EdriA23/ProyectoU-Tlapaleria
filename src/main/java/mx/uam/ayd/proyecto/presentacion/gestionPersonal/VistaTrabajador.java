@@ -3,6 +3,8 @@ package mx.uam.ayd.proyecto.presentacion.gestionPersonal;
 import java.io.IOException;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 import javafx.application.Platform;
@@ -25,6 +27,9 @@ import mx.uam.ayd.proyecto.negocio.modelo.Trabajador;
 
 @Component
 public class VistaTrabajador {
+
+    @Autowired
+    private ApplicationContext context;
 
     private Stage stage;
     private ControlTrabajador control;
@@ -64,7 +69,9 @@ public class VistaTrabajador {
             stage.setTitle("Gestión de Personal - Trabajadores");
 
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/vista-trabajador.fxml"));
-            loader.setController(this);
+            
+            // Permite a Spring inyectar el bean gerenciado evitando el conflicto de 'loader.setController(this)'
+            loader.setControllerFactory(context::getBean);
 
             BorderPane root = loader.load();
             Scene scene = new Scene(root, 750, 600);
@@ -219,10 +226,11 @@ public class VistaTrabajador {
             stage.close();
         }
     }
+
     @FXML
     private void handleRegistrarTrabajador() {
-         if (control != null) {
-        control.abrirFormulario();
+        if (control != null) {
+            control.abrirFormulario();
+        }
     }
-}
 }

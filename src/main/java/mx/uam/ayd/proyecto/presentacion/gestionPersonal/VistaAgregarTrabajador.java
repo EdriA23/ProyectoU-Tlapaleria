@@ -21,9 +21,6 @@ import javafx.stage.Stage;
 
 import mx.uam.ayd.proyecto.negocio.modelo.Trabajador;
 
-/**
- * Vista de respaldo para el formulario modal de alta de trabajador (vista-agregar-trabajador.fxml).
- */
 @Component
 public class VistaAgregarTrabajador {
 
@@ -34,7 +31,7 @@ public class VistaAgregarTrabajador {
     private ControlTrabajador control;
     private boolean initialized = false;
 
-    // Componentes mapeados desde el FXML
+    // Componentes FXML
     @FXML
     private TextField txtIdTrabajador;
 
@@ -50,9 +47,6 @@ public class VistaAgregarTrabajador {
     @FXML
     private TextField txtCorreo;
 
-    /**
-     * Carga el archivo FXML e inicializa la ventana modal en el primer uso.
-     */
     private void initializeUI() {
         if (initialized) {
             return;
@@ -61,18 +55,22 @@ public class VistaAgregarTrabajador {
         try {
             stage = new Stage();
             stage.setTitle("Registrar Nuevo Trabajador");
-            stage.initModality(Modality.APPLICATION_MODAL); // Bloquea la ventana principal mientras está abierto
+            stage.initModality(Modality.APPLICATION_MODAL);
 
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/vista-agregar-trabajador.fxml"));
             
-            // Usar Spring para resolver el controlador definido en el FXML
-            loader.setControllerFactory(context::getBean);
+            // Retornamos esta misma instancia de Spring cuando JavaFX pida instanciar la clase del FXML
+            loader.setControllerFactory(clazz -> {
+                if (clazz == VistaAgregarTrabajador.class) {
+                    return this;
+                }
+                return context.getBean(clazz);
+            });
 
             BorderPane root = loader.load();
             Scene scene = new Scene(root);
             stage.setScene(scene);
 
-            // Opciones predefinidas para el rol/puesto
             if (cmbRol != null) {
                 cmbRol.setItems(FXCollections.observableArrayList("Encargado", "Vendedor", "Almacenista", "Administrador"));
             }
@@ -84,9 +82,6 @@ public class VistaAgregarTrabajador {
         }
     }
 
-    /**
-     * Corresponde a muestraFormulario(IdTrabajador) en el diagrama de secuencia.
-     */
     public void muestraFormulario(ControlTrabajador control, String idTrabajador) {
         if (!Platform.isFxApplicationThread()) {
             Platform.runLater(() -> this.muestraFormulario(control, idTrabajador));
@@ -104,10 +99,6 @@ public class VistaAgregarTrabajador {
         stage.showAndWait();
     }
 
-    /**
-     * Corresponde a validaInformacion() en el diagrama de secuencia.
-     * Valida que los campos obligatorios hayan sido proporcionados.
-     */
     private boolean validaInformacion() {
         String nombre = txtNombre.getText() != null ? txtNombre.getText().trim() : "";
         String rol = cmbRol.getValue();
@@ -125,9 +116,6 @@ public class VistaAgregarTrabajador {
         return true;
     }
 
-    /**
-     * Se activa al hacer clic en "Confirmar" o "Guardar" dentro del FXML.
-     */
     @FXML
     private void handleConfirmar() {
         if (validaInformacion()) {
@@ -142,9 +130,6 @@ public class VistaAgregarTrabajador {
         }
     }
 
-    /**
-     * Corresponde a mensajeExito(Trabajador) en el diagrama de secuencia.
-     */
     public void mensajeExito(Trabajador trabajador) {
         if (!Platform.isFxApplicationThread()) {
             Platform.runLater(() -> this.mensajeExito(trabajador));
@@ -158,9 +143,6 @@ public class VistaAgregarTrabajador {
         alert.showAndWait();
     }
 
-    /**
-     * Muestra alertas de advertencia o error.
-     */
     public void muestraError(String mensaje) {
         if (!Platform.isFxApplicationThread()) {
             Platform.runLater(() -> this.muestraError(mensaje));

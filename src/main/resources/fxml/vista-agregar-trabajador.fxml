@@ -33,7 +33,6 @@
    <center>
       <VBox spacing="12.0" BorderPane.alignment="CENTER">
          <children>
-            <!-- Campo: ID Autogenerado (Solo lectura) -->
             <VBox spacing="4.0">
                <children>
                   <Label text="ID Trabajador Generado" textFill="#6B7280">
@@ -45,7 +44,6 @@
                </children>
             </VBox>
 
-            <!-- Campo: Nombre Completo -->
             <VBox spacing="4.0">
                <children>
                   <Label text="Nombre Completo *" textFill="#374151">
@@ -57,7 +55,6 @@
                </children>
             </VBox>
 
-            <!-- Campo: Teléfono -->
             <VBox spacing="4.0">
                <children>
                   <Label text="Teléfono de Contacto" textFill="#374151">
@@ -69,7 +66,6 @@
                </children>
             </VBox>
 
-            <!-- Campo: Rol / Puesto -->
             <VBox spacing="4.0">
                <children>
                   <Label text="Puesto / Rol *" textFill="#374151">
@@ -81,7 +77,31 @@
                </children>
             </VBox>
 
-            <!-- Campo: Correo Electrónico -->
             <VBox spacing="4.0">
                <children>
-                  <Label text="Correo Electrón
+                  <Label text="Correo Electrónico" textFill="#374151">
+                     <font>
+                        <Font name="System Bold" size="12.0" />
+                     </font>
+                  </Label>
+                  <TextField fx:id="txtCorreo" promptText="Ej. juan.perez@email.com" style="-fx-background-radius: 6; -fx-border-color: #D1D5DB; -fx-border-radius: 6; -fx-padding: 6;" />
+               </children>
+            </VBox>
+         </children>
+         <padding>
+            <Insets bottom="15.0" left="20.0" right="20.0" top="15.0" />
+         </padding>
+      </VBox>
+   </center>
+   <bottom>
+      <HBox alignment="CENTER_RIGHT" spacing="10.0" style="-fx-border-color: #E5E7EB; -fx-border-width: 1 0 0 0;" BorderPane.alignment="CENTER">
+         <children>
+            <Button mnemonicParsing="false" onAction="#handleCancelar" style="-fx-background-color: #F3F4F6; -fx-text-fill: #374151; -fx-background-radius: 6; -fx-padding: 8 16; -fx-cursor: hand;" text="Cancelar" />
+            <Button mnemonicParsing="false" onAction="#handleConfirmar" style="-fx-background-color: #4F46E5; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 6; -fx-padding: 8 16; -fx-cursor: hand;" text="Confirmar" />
+         </children>
+         <padding>
+            <Insets bottom="15.0" left="20.0" right="20.0" top="15.0" />
+         </padding>
+      </HBox>
+   </bottom>
+</BorderPane>
