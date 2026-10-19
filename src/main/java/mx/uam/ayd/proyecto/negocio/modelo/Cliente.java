@@ -1,7 +1,16 @@
 package mx.uam.ayd.proyecto.negocio.modelo;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+
+@Entity
 public class Cliente {
-    private int idCliente;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+
+    private long idCliente;
     private String nombre;
     private String telefono;
     private String direccion;
@@ -20,7 +29,7 @@ public class Cliente {
         this.colorCasa = colorCasa;
     }
 
-    public int getIdCliente() { return idCliente; }
+    public long getIdCliente() { return idCliente; }
     public void setIdCliente(int idCliente) { this.idCliente = idCliente; }
     
     public String getNombre() { return nombre; }
