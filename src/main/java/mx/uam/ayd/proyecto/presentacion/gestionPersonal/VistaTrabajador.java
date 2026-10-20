@@ -35,9 +35,6 @@ public class VistaTrabajador {
     private ControlTrabajador control;
     private boolean initialized = false;
 
-    // -------------------------------------------------------------------------
-    // CONTROLES FXML (Mapeados con vista-trabajador.fxml)
-    // -------------------------------------------------------------------------
     @FXML
     private Label lblTotalTrabajadores;
 
@@ -53,9 +50,7 @@ public class VistaTrabajador {
     @FXML
     private Button btnCancelar;
 
-    // -------------------------------------------------------------------------
-    // CONSTRUCTOR E INICIALIZACIÓN DE LA INTERFAZ
-    // -------------------------------------------------------------------------
+
     public VistaTrabajador() {
     }
 
@@ -88,9 +83,7 @@ public class VistaTrabajador {
         this.control = control;
     }
 
-    // -------------------------------------------------------------------------
-    // MÉTODOS DE FLUJO (LLAMADOS DESDE EL CONTROL)
-    // -------------------------------------------------------------------------
+
 
     /**
      * Prepara la vista, recibe la lista de trabajadores y abre el Stage.
@@ -112,7 +105,7 @@ public class VistaTrabajador {
     }
 
     /**
-     * Corresponde al mensaje muestra(trabajadores) en el diagrama de secuencia.
+     * Corresponde al mensaje muestra(trabajadores) 
      */
     public void muestra(List<Trabajador> trabajadores) {
         if (!Platform.isFxApplicationThread()) {
@@ -163,9 +156,7 @@ public class VistaTrabajador {
         }
     }
 
-    // -------------------------------------------------------------------------
-    // CONSTRUCCIÓN DINÁMICA DE TARJETAS DE TRABAJADOR
-    // -------------------------------------------------------------------------
+  
     private HBox crearTarjetaTrabajador(Trabajador t) {
         HBox tarjeta = new HBox(12);
         tarjeta.setAlignment(Pos.CENTER_LEFT);
@@ -210,9 +201,7 @@ public class VistaTrabajador {
         return ("" + partes[0].charAt(0)).toUpperCase();
     }
 
-    // -------------------------------------------------------------------------
-    // HANDLERS FXML (EVENTOS DE BOTONES)
-    // -------------------------------------------------------------------------
+  
     @FXML
     private void handleBuscar() {
         if (control != null) {

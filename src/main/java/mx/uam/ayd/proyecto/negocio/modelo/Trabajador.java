@@ -12,7 +12,7 @@ import jakarta.persistence.OneToMany;
 /**
  * Entidad de negocio Trabajador
  *
- * @author javitos
+ * @author Los asustadores
  */
 @Entity
 public class Trabajador {

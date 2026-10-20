@@ -8,10 +8,7 @@ import org.springframework.stereotype.Component;
 import mx.uam.ayd.proyecto.negocio.ServicioTrabajador;
 import mx.uam.ayd.proyecto.negocio.modelo.Trabajador;
 
-/**
- * Controlador para la HU-16 (Gestión de Personal - Trabajadores).
- * Se encarga de coordinar la interfaz gráfica con la lógica de negocio.
- */
+
 @Component
 public class ControlTrabajador {
 
@@ -33,14 +30,14 @@ public class ControlTrabajador {
     }
 
     /**
-     * Corresponde al mensaje buscarTrabajador() en el diagrama de secuencia.
+     * Metodo que busca a los trabajadores
      */
     public void buscarTrabajador() {
         List<Trabajador> trabajadores = servicioTrabajador.recuperarTrabajador();
         vistaTrabajador.muestra(trabajadores);
     }
     /**
-     * Inicia el flujo de alta solicitando el ID al servicio y abriendo la vista de registro.
+     * Inicia el flujo del formulario generando el id del trabajador y mostrando el formulario 
      */
     public void abrirFormulario() {
         String idTrabajador = servicioTrabajador.generarIdTrabajador();
@@ -48,7 +45,7 @@ public class ControlTrabajador {
     }
 
     /**
-     * Procesa la creación del nuevo trabajador.
+     * Crea al nuevo trabajador
      */
     public void realizarRegistro(String nombre, String telefono, String rol, String correo) {
         try {
@@ -56,7 +53,7 @@ public class ControlTrabajador {
             vistaAgregarTrabajador.mensajeExito(trabajador);
             vistaAgregarTrabajador.cerrar();
 
-            // Refresca la lista en la pantalla principal
+            // Actualiza la lista de trabajadores
             buscarTrabajador();
         } catch (Exception e) {
             vistaAgregarTrabajador.muestraError("Error al registrar: " + e.getMessage());

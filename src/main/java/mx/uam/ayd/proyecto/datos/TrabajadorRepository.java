@@ -4,9 +4,7 @@ import java.util.List;
 import org.springframework.data.repository.CrudRepository;
 import mx.uam.ayd.proyecto.negocio.modelo.Trabajador;
 
-/**
- * Repositorio para la gestión de persistencia de la entidad Trabajador (HU-16)
- */
+
 public interface TrabajadorRepository extends CrudRepository<Trabajador, Long> {
 
     /**
@@ -17,7 +15,7 @@ public interface TrabajadorRepository extends CrudRepository<Trabajador, Long> {
     List<Trabajador> findAll();
 
     /**
-     * Busca trabajadores por su nombre completo ignorando mayúsculas y minúsculas (HU-16).
+     * Busca trabajadores por su nombre completo ignorando mayúsculas y minúsculas 
      */
     List<Trabajador> findByNombreCompletoContainingIgnoreCase(String nombreCompleto);
 

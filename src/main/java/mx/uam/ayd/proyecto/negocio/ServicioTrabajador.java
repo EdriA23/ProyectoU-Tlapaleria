@@ -27,14 +27,14 @@ public class ServicioTrabajador {
         return repositoryTrabajador.findAll();
     }
     /**
-     * Genera un ID automático para el formulario (según diagrama de secuencia)
+     * Genera un ID automático para el formulario
      */
     public String generarIdTrabajador() {
         long cuenta = repositoryTrabajador.count() + 1;
         return String.format("EMP-%03d", cuenta);
     }
     /**
-     * Corresponde a creaTrabajador(datos) en el diagrama de secuencia.
+     * 
      * Crea la instancia de Trabajador y la guarda en la base de datos.
      */
     public Trabajador creaTrabajador(String nombre, String telefono, String rol, String correo) {
@@ -45,10 +45,10 @@ public class ServicioTrabajador {
         trabajador.setRol(rol);
         trabajador.setCorreoElectronico(correo);
         
-        // Asigna el número de trabajador usando el generador
+        // Asigna el número de trabajador 
         trabajador.setNumeroTrabajador(generarIdTrabajador());
 
-        // guarda el trabajador en el repositorio y retorna el objeto guardado
+        // guarda el trabajador en el repositorio
         return repositoryTrabajador.save(trabajador);
     }
 }
