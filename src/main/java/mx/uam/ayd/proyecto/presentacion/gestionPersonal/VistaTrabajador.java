@@ -50,7 +50,6 @@ public class VistaTrabajador {
     @FXML
     private Button btnCancelar;
 
-
     public VistaTrabajador() {
     }
 
@@ -82,8 +81,6 @@ public class VistaTrabajador {
     public void setControl(ControlTrabajador control) {
         this.control = control;
     }
-
-
 
     /**
      * Prepara la vista, recibe la lista de trabajadores y abre el Stage.
@@ -128,6 +125,13 @@ public class VistaTrabajador {
         }
     }
 
+    /**
+     * Alias exacto según la llamada 'mostrar(listaTrabajadoresActualizado)' del Diagrama de Secuencia.
+     */
+    public void mostrar(List<Trabajador> trabajadores) {
+        muestra(trabajadores);
+    }
+
     public void muestraMensajeError(String mensaje) {
         if (!Platform.isFxApplicationThread()) {
             Platform.runLater(() -> this.muestraMensajeError(mensaje));
@@ -156,7 +160,6 @@ public class VistaTrabajador {
         }
     }
 
-  
     private HBox crearTarjetaTrabajador(Trabajador t) {
         HBox tarjeta = new HBox(12);
         tarjeta.setAlignment(Pos.CENTER_LEFT);
@@ -201,11 +204,11 @@ public class VistaTrabajador {
         return ("" + partes[0].charAt(0)).toUpperCase();
     }
 
-  
     @FXML
     private void handleBuscar() {
         if (control != null) {
-            control.buscarTrabajador();
+            // Invoca recuperarPersonal() de acuerdo al flujo definido en el diagrama
+            control.recuperarPersonal();
         }
     }
 

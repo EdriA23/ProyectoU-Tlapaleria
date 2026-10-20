@@ -150,6 +150,6 @@ public class ControlPrincipal {
     }
     
     public void consultarTrabajador() {
-        controlTrabajador.inicia();
+        controlTrabajador.iniciaBusqueda();
     }
 }

@@ -59,7 +59,6 @@ public class VistaAgregarTrabajador {
 
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/vista-agregar-trabajador.fxml"));
             
-            // Retornamos esta misma instancia de Spring cuando JavaFX pida instanciar la clase del FXML
             loader.setControllerFactory(clazz -> {
                 if (clazz == VistaAgregarTrabajador.class) {
                     return this;
@@ -119,13 +118,18 @@ public class VistaAgregarTrabajador {
     @FXML
     private void handleConfirmar() {
         if (validaInformacion()) {
+            // Se obtiene el ID y los demás campos requeridos
+            String idTrabajador = txtIdTrabajador != null ? txtIdTrabajador.getText().trim() : "";
             String nombre = txtNombre.getText().trim();
             String telefono = txtTelefono.getText() != null ? txtTelefono.getText().trim() : "";
             String rol = cmbRol.getValue();
             String correo = txtCorreo.getText() != null ? txtCorreo.getText().trim() : "";
 
             if (control != null) {
-                control.realizarRegistro(nombre, telefono, rol, correo);
+                // Pasa los 5 parámetros al controlador tal como lo indica el diagrama
+                control.realizarRegistro(idTrabajador, nombre, telefono, rol, correo);
+           
+                control.recuperarPersonal();
             }
         }
     }

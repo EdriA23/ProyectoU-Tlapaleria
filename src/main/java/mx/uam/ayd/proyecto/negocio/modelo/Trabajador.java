@@ -26,7 +26,7 @@ public class Trabajador {
     private String rol;
 
     private String telefono;
-   
+    
     private String correoElectronico;
 
     private double salario;
@@ -46,6 +46,17 @@ public class Trabajador {
      * Constructor vacío requerido por JPA.
      */
     public Trabajador() {
+    }
+
+    /**
+     * Constructor utilizado para instanciar el objeto según el diagrama de secuencia.
+     */
+    public Trabajador(String nombreCompleto, String telefono, String rol, String correoElectronico, String numeroTrabajador) {
+        this.nombreCompleto = nombreCompleto;
+        this.telefono = telefono;
+        this.rol = rol;
+        this.correoElectronico = correoElectronico;
+        this.numeroTrabajador = numeroTrabajador;
     }
 
     public long getIdTrabajador() {
@@ -71,7 +82,7 @@ public class Trabajador {
     public void setRol(String rol){
         this.rol=rol;
     }
-   
+    
     public String getTelefono() {
         return telefono;
     }
@@ -108,9 +119,7 @@ public class Trabajador {
         return devoluciones;
     }
 
-    public void setDevoluciones(
-            List<Devolucion> devoluciones) {
-
+    public void setDevoluciones(List<Devolucion> devoluciones) {
         this.devoluciones = devoluciones;
     }
 
