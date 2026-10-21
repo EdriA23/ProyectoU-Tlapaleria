@@ -1,6 +1,7 @@
 package mx.uam.ayd.proyecto.presentacion.Cliente;
 
 import java.io.IOException;
+import java.net.URL;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -12,17 +13,23 @@ import javafx.stage.Stage;
 import mx.uam.ayd.proyecto.negocio.ServicioCliente;
 import mx.uam.ayd.proyecto.negocio.modelo.Cliente;
 
-
 @Component
 public class ControlCliente {
 
     @Autowired
     private ServicioCliente servicioCliente;
 
-    
     public void inicia() {
         try {
-         FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/ventana-cliente.fxml"));
+            // Buscamos de forma segura la ruta del archivo FXML en los recursos
+            URL fxmlLocation = ControlCliente.class.getResource("/fxml/ventana-cliente.fxml");
+            
+            if (fxmlLocation == null) {
+                System.err.println("¡ERROR CRÍTICO! No se encontró el archivo '/fxml/ventana-cliente.fxml' en el classpath de recursos.");
+                return;
+            }
+
+            FXMLLoader loader = new FXMLLoader(fxmlLocation);
             Parent root = loader.load();
 
             VentanaCliente ventana = loader.getController();
@@ -34,17 +41,16 @@ public class ControlCliente {
             stage.show();
 
         } catch (IOException e) {
+            System.err.println("Error al cargar la interfaz FXML del cliente:");
             e.printStackTrace();
         }
     }
 
-    
     public boolean validarDatosCliente(String nombre, String telefono, String direccion, String numeroCasa, String entreCalles, String colorCasa) {
         Cliente cliente = new Cliente(nombre, telefono, direccion, numeroCasa, entreCalles, colorCasa);
         return servicioCliente.validarDatosCliente(cliente);
     }
 
-    
     public Cliente guardarCliente(String nombre, String telefono, String direccion, String numeroCasa, String entreCalles, String colorCasa) {
         try {
             Cliente cliente = new Cliente(nombre, telefono, direccion, numeroCasa, entreCalles, colorCasa);
@@ -55,7 +61,6 @@ public class ControlCliente {
         }
     }
 
-    
     public Cliente buscarClientePorTelefono(String telefono) {
         if (telefono == null || telefono.trim().isEmpty()) {
             return null;
