@@ -21,16 +21,9 @@ public class VentanaPrincipal {
     private ControlPrincipal control;
     private boolean initialized = false;
 
-    /**
-     * Constructor sin inicialización de UI
-     */
     public VentanaPrincipal() {
-        // No inicializar componentes de JavaFX en el constructor
     }
 
-    /**
-     * Inicializa componentes UI en el hilo de aplicación de JavaFX
-     */
     private void initializeUI() {
         if (initialized) {
             return;
@@ -62,9 +55,6 @@ public class VentanaPrincipal {
         this.control = control;
     }
 
-    /**
-     * Muestra la ventana principal
-     */
     public void muestra() {
         if (!Platform.isFxApplicationThread()) {
             Platform.runLater(this::muestra);
@@ -161,14 +151,30 @@ public class VentanaPrincipal {
         }
     }
 
-    /**
-     * Acción del botón de "Gestionar Proveedores".
-     * Delega la responsabilidad a ControlPrincipal para respetar la arquitectura.
-     */
     @FXML
     public void handleConsultarProveedor() {
         if (control != null) {
             control.consultarProveedor();
+        }
+    }
+
+    /**
+     * Handler para la HU-28: Margen de Ganancia
+     */
+    @FXML
+    private void handleMargenGanancia() {
+        if (control != null) {
+            control.margenGanancia();
+        }
+    }
+
+    /**
+     * Handler para la HU-12: Registrar clientes
+     */
+    @FXML
+    private void handleRegistrarCliente() {
+        if (control != null) {
+            control.registrarCliente();
         }
     }
 }
