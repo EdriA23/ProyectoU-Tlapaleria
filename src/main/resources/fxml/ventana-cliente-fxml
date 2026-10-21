@@ -1,4 +1,3 @@
-
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
@@ -12,11 +11,11 @@
 
 <VBox xmlns="http://javafx.com/javafx/17"
       xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="mx.uam.ayd.proyecto.presentacion.registrarPedido.VentanaCliente"
+      fx:controller="mx.uam.ayd.proyecto.presentacion.Cliente.VentanaCliente"
       spacing="16"
       prefWidth="560"
       prefHeight="500"
-       style="background-color: #F4F6F9; -fx-background-color: #F4F6F9;">
+       style="-fx-background-color: #F4F6F9; background-color: #F4F6F9;">
 
     <padding>
         <Insets top="24" right="28" bottom="24" left="28"/>
@@ -25,10 +24,10 @@
     <!-- Encabezado -->
     <VBox spacing="5">
         <Label text="Gestión de cliente"
-               style="font-size: 24px; -fx-font-size: 24px; font-weight: bold; -fx-font-weight: bold; -fx-text-fill: #243447;"/>
+               style="-fx-font-size: 24px; font-size: 24px; -fx-font-weight: bold; font-weight: bold; -fx-text-fill: #243447;"/>
 
         <Label text="Registra o busca los datos del cliente y su domicilio."
-               style="font-size: 13px; -fx-font-size: 13px; -fx-text-fill: #65758B;"/>
+               style="-fx-font-size: 13px; font-size: 13px; -fx-text-fill: #65758B;"/>
     </VBox>
 
     <Separator/>
@@ -109,21 +108,21 @@
                 text="Limpiar"
                 onAction="handleLimpiar"
                 prefWidth="100"
-                style="background-color: #E1E7EF; -fx-background-color: #E1E7EF; -fx-text-fill: #243447;"
+                style="-fx-background-color: #E1E7EF; background-color: #E1E7EF; -fx-text-fill: #243447;"
                 />
 
         <Button fx:id="btnBuscarCliente"
                 text="Buscar cliente"
-                onAction="handleBuscarCliente"
+                onAction="#handleBuscarCliente"
                 prefWidth="125"
-                style="background-color: #DCEBFA; -fx-background-color: #DCEBFA; -fx-text-fill: #174A7E;"
+                style="-fx-background-color: #DCEBFA; background-color: #DCEBFA; -fx-text-fill: #174A7E;"
                 />
 
         <Button fx:id="btnGuardarCliente"
                 text="Guardar"
-                onAction="handleGuardarCliente"
+                onAction="#handleGuardarCliente"
                 prefWidth="100"
-                style="background-color: #2471A3; -fx-background-color: #2471A3; -fx-text-fill: white; font-weight: bold; -fx-font-weight: bold;"
+                style="-fx-background-color: #2471A3; background-color: #2471A3; -fx-text-fill: white; -fx-font-weight: bold; font-weight: bold;"
                 />
     </HBox>
 
