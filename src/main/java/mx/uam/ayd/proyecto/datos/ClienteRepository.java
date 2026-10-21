@@ -1,4 +1,4 @@
-<package mx.uam.ayd.proyecto.datos;
+package mx.uam.ayd.proyecto.datos;
 
 import mx.uam.ayd.proyecto.negocio.modelo.Cliente;
 import org.springframework.data.repository.CrudRepository;
@@ -19,4 +19,4 @@ public interface ClienteRepository extends CrudRepository<Cliente, Long> {
     }
 
     Optional<Cliente> findByTelefono(String telefono);
-}>
+}
