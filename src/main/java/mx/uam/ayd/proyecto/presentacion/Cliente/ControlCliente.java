@@ -22,7 +22,7 @@ public class ControlCliente {
     
     public void inicia() {
         try {
-           FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/VentanaCliente.fxml"));
+         FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/ventana-cliente.fxml"));
             Parent root = loader.load();
 
             VentanaCliente ventana = loader.getController();
