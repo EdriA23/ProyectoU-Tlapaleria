@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="550.0" prefWidth="850.0" style="-fx-background-color: #ffffff;" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="mx.uam.ayd.proyecto.presentacion.margenGanancia.VentanaMargenDeGanancia">
+   <children>
+      <!-- Título de la Ventana Principal -->
+      <Label layoutX="25.0" layoutY="20.0" text="Margen de Ganancia por Producto" textFill="#1a252f">
+         <font>
+            <Font name="System Bold" size="24.0" />
+         </font>
+      </Label>
+      
+      <!-- Búsqueda en Tiempo Real -->
+      <TextField fx:id="txtBusqueda" layoutX="25.0" layoutY="70.0" prefHeight="35.0" prefWidth="320.0" promptText="🔍 Buscar producto..." style="-fx-background-radius: 5;" />
+      
+      <!-- Tabla de Productos con Acciones -->
+      <TableView fx:id="tablaMargenes" layoutX="25.0" layoutY="125.0" prefHeight="350.0" prefWidth="800.0">
+        <columns>
+           <TableColumn fx:id="colClave" prefWidth="90.0" text="CLAVE" />
+           <TableColumn fx:id="colNombre" prefWidth="250.0" text="PRODUCTO" />
+           <TableColumn fx:id="colCosto" prefWidth="130.0" text="PRECIO COSTO ($)" />
+           <TableColumn fx:id="colVenta" prefWidth="130.0" text="PRECIO VENTA ($)" />
+           <TableColumn fx:id="colMargen" prefWidth="100.0" text="MARGEN (%)" />
+           <TableColumn fx:id="colAcciones" prefWidth="100.0" text="ACCIONES" />
+        </columns>
+      </TableView>
+      
+      <!-- Botón de Cerrar en la parte inferior -->
+      <Button layoutX="745.0" layoutY="495.0" mnemonicParsing="false" onAction="#handleCerrar" prefHeight="35.0" prefWidth="80.0" style="-fx-background-color: #e74c3c; -fx-background-radius: 5; -fx-cursor: hand;" text="Cerrar" textFill="WHITE">
+         <font>
+            <Font name="System Bold" size="13.0" />
+         </font>
+      </Button>
+   </children>
+</AnchorPane>

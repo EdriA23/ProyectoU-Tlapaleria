@@ -36,3 +36,8 @@ build/
 .vscode/
 bin/
 doc/
+
+# Archivos de base de datos H2
+data/
+*.mv.db
+*.trace.db
