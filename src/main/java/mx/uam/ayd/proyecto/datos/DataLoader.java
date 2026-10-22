@@ -100,6 +100,16 @@ public class DataLoader implements CommandLineRunner {
             trabajador.setNumeroTrabajador("EMP-001");
             trabajador = trabajadorRepository.save(trabajador);
 
+            // 3.1 Trabajador (Repartidor para la HU-17)
+            Trabajador repartidor = new Trabajador();
+            repartidor.setNombreCompleto("Pedro Mota (Repartidor)");
+            repartidor.setRol("Repartidor");
+            repartidor.setTelefono("5559876543");
+            repartidor.setCorreoElectronico("pedro.repartidor@tlapaleria.com");
+            repartidor.setSalario(7500.00);
+            repartidor.setNumeroTrabajador("REP-001");
+            trabajadorRepository.save(repartidor);
+
             // 4. Usuario y Grupo (Grupo tiene CascadeType.ALL, así que save(grupo) guarda también al Usuario)
             Usuario usuario = new Usuario();
             usuario.setNombre("Carlos");
