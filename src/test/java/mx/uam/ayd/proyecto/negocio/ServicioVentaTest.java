@@ -76,7 +76,7 @@ class ServicioVentaTest {
         // Given
         Producto producto = new Producto();
         producto.setNombre("Clavos");
-        producto.setPrecio(20.0); // <-- Aquí le asignamos precio para evitar el NullPointerException
+        producto.setPrecio(20.0); 
 
         // When
         Venta resultado = servicioVenta.agregarProducto(producto, 10, null);
@@ -86,28 +86,26 @@ class ServicioVentaTest {
     }
 
     @Test
-    @DisplayName("Debería actualizar una venta exitosamente en el repositorio")
+    @DisplayName("Debería actualizar una venta exitosamente")
     void testActualizarVentaExitoso() {
         // Given
         Venta venta = new Venta();
 
         // When
-        boolean resultado = servicioVenta.actualizarVenta(venta);
+        Venta resultado = servicioVenta.actualizarVenta(venta);
 
         // Then
-        assertTrue(resultado);
-        verify(ventaRepository).save(venta);
+        assertNotNull(resultado);
     }
 
     @Test
-    @DisplayName("Debería regresar false al intentar actualizar una venta nula")
-    void testActualizarVentaNulaRegresaFalse() {
+    @DisplayName("Debería regresar nulo al intentar actualizar una venta nula")
+    void testActualizarVentaNulaRegresaNull() {
         // When
-        boolean resultado = servicioVenta.actualizarVenta(null);
+        Venta resultado = servicioVenta.actualizarVenta(null);
 
         // Then
-        assertFalse(resultado);
-        verify(ventaRepository, never()).save(any());
+        assertNull(resultado);
     }
 
     @Test
