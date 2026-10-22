@@ -372,6 +372,8 @@
                                                          <Label text="📊" textFill="#303030" />
                                                       </graphic>
                                                    </Button>
+                                                         </graphic>
+                                                      </Button>
 
                                                    </children>
                                                 </GridPane>

@@ -176,6 +176,8 @@ public class VentanaPrincipal {
     private void handleConsultarPedidosDomicilio() {
         if (control != null) {
             control.consultarPedidosDomicilio();
+        }
+    }
 
     @FXML
     private void handleConsultarTrabajador() {

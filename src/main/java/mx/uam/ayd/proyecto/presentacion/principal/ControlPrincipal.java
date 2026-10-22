@@ -45,7 +45,6 @@ public class ControlPrincipal {
     private final ControlMargenDeGanancia controlMargenDeGanancia; 
     private final ControlConsultaPedidos controlConsultaPedidos; // Para HU-17
 
-    private final ControlMargenDeGanancia controlMargenDeGanancia1; // Inyección para HU-28
     private final ControlTrabajador controlTrabajador;
 
     private final VentanaPrincipal ventana;
@@ -90,8 +89,6 @@ public class ControlPrincipal {
         this.controlMargenDeGanancia = controlMargenDeGanancia1;
 
         this.controlConsultaPedidos = controlConsultaPedidos;
-        this.controlMargenDeGanancia1 = null; 
-
         this.controlTrabajador = controlTrabajador;
 
         this.ventana = ventana;
@@ -173,8 +170,8 @@ public class ControlPrincipal {
         if (controlConsultaPedidos != null) {
             controlConsultaPedidos.inicia(); // <--- Abre la ventana correcta de pedidos a domicilio
         }
+    }
 
-    
     public void consultarTrabajador() {
         controlTrabajador.iniciaBusqueda();
 
