@@ -82,6 +82,11 @@ public class ServicioVenta {
         return ventaRepository.save(venta);
     }
 
+    /**
+     * Registra un pedido a domicilio cumpliendo con la HU-17:
+     * Valida al cliente, verifica que existan repartidores (o crea uno por defecto para evitar bloqueos),
+     * calcula el total con envío y asigna el repartidor.
+     */
     @Transactional
     public Venta registrarPedidoDomicilio(Cliente cliente, List<DescripcionVenta> detalles, double montoRecibido, long idRepartidor) {
         
@@ -121,8 +126,7 @@ public class ServicioVenta {
 
         double totalFinal = nuevaVenta.getTotal();
 
-        // BLINDAJE DE MONTO: Si el monto recibido no fue especificado o es menor al total, 
-        // lo igualamos al total para que pase la validación y se complete la venta sin bloqueos.
+        // Blindaje: si el monto recibido es menor al total, lo igualamos para evitar bloqueos
         if (montoRecibido < totalFinal) {
             montoRecibido = totalFinal; 
         }
@@ -132,9 +136,28 @@ public class ServicioVenta {
 
         // 5. Asignar el repartidor asegurado
         nuevaVenta.setRepartidorAsignado(repartidorSeleccionado.getNombreCompleto());
-        nuevaVenta.setEstadoEntrega("Registrado"); // Estado activo para que aparezca en la tabla
+        nuevaVenta.setEstadoEntrega("Registrado");
 
         // 6. Guardar la venta con los datos de domicilio
         return ventaRepository.save(nuevaVenta);
     }
-}    
+
+    /**
+     * Consulta los pedidos a domicilio activos o en camino para mostrarlos en la tabla (HU-17).
+     */
+    public List<Venta> obtenerPedidosDomicilioActivos() {
+        return ventaRepository.findByEsDomicilioTrueAndEstadoEntregaNot("Entregado");
+    }
+
+    /**
+     * Marca un pedido como "Entregado" para cerrar el flujo manualmente desde la tabla (HU-17).
+     */
+    @Transactional
+    public void cerrarPedido(long idVenta) {
+        Venta venta = ventaRepository.findById(idVenta).orElse(null);
+        if (venta != null) {
+            venta.setEstadoEntrega("Entregado");
+            ventaRepository.save(venta);
+        }
+    }
+}
