@@ -303,4 +303,9 @@ public class Venta {
         throw new UnsupportedOperationException(
                 "Unimplemented method 'setControl'");
     }
+
+    public int getPago() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getPago'");
+    }
 }

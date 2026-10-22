@@ -66,16 +66,11 @@ public class ControlRegistroVenta {
         }
     }
 
-    /**
-     * Método para abrir el formulario de cliente y domicilio (Pedidos a Domicilio / HU-17)
-     */
     public void iniciarPedidoADomicilio() {
-        if (controlCliente != null) {
-            // Opcional: Si necesitas pasar la venta actual al control de cliente para asociarla al domicilio, 
-            // puedes hacerlo aquí. Por ahora, inicializamos la ventana de cliente de forma limpia:
-            controlCliente.inicia(); 
-        } else {
-            System.err.println("Error: ControlCliente no fue inyectado correctamente.");
+        if (controlCliente != null && ventaActual != null) {
+            controlCliente.iniciaConVenta(ventaActual); // Le pasamos la venta actual al flujo del cliente
+        } else if (controlCliente != null) {
+            controlCliente.inicia();
         }
     }
 

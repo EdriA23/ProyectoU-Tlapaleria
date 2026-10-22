@@ -13,6 +13,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
+import javafx.stage.Stage;
 import mx.uam.ayd.proyecto.negocio.modelo.Cliente;
 
 /**
@@ -88,7 +89,7 @@ public class VentanaCliente implements Initializable {
     }
 
     /**
-     * Maneja el registro y la validación de un cliente.
+     * Maneja el registro, la validación del cliente y la generación del pedido a domicilio (HU-17).
      */
     @FXML
     public void handleGuardarCliente(ActionEvent event) {
@@ -106,12 +107,19 @@ public class VentanaCliente implements Initializable {
             return;
         }
 
-        Cliente clienteGuardado = control.guardarCliente(nombre, telefono, direccion, numeroCasa, entreCalles, colorCasa);
+        try {
+            // Llama al método que guarda el cliente y registra formalmente el pedido a domicilio vinculado a la venta
+            control.guardarClienteYGenerarPedido(nombre, telefono, direccion, numeroCasa, entreCalles, colorCasa);
 
-        if (clienteGuardado != null) {
-            mostrarAlerta("Éxito", "Cliente guardado correctamente.", AlertType.INFORMATION);
-        } else {
-            mostrarAlerta("Error", "Ocurrió un problema al guardar el cliente.", AlertType.ERROR);
+            mostrarAlerta("Éxito", "Cliente guardado y pedido a domicilio registrado correctamente.", AlertType.INFORMATION);
+
+            // Cierra la ventana actual de gestión de cliente tras el éxito
+            Stage stage = (Stage) btnGuardarCliente.getScene().getWindow();
+            stage.close();
+
+        } catch (Exception e) {
+            mostrarAlerta("Error", "Ocurrió un problema al registrar el pedido: " + e.getMessage(), AlertType.ERROR);
+            e.printStackTrace();
         }
     }
 
