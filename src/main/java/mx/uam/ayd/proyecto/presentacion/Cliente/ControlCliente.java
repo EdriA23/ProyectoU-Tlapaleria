@@ -94,15 +94,16 @@ public class ControlCliente {
             Cliente cliente = new Cliente(nombre, telefono, direccion, numeroCasa, entreCalles, colorCasa);
             Cliente clienteGuardado = servicioCliente.guardarCliente(cliente);
 
-            // 2. Si hay una venta activa, registrar el pedido a domicilio pasándole el ID del repartidor por defecto (1L)
+            // 2. Si hay una venta activa, registrar el pedido a domicilio sin depender de getPago()
             if (ventaActual != null && ventaActual.getProductos() != null && !ventaActual.getProductos().isEmpty()) {
-                double montoPago = ventaActual.getPago() > 0 ? ventaActual.getPago() : ventaActual.getTotal();
+                // Usamos el total de la venta directamente para evitar el error de getPago()
+                double montoPago = ventaActual.getTotal() != null ? ventaActual.getTotal() : 0.0;
                 
                 servicioVenta.registrarPedidoDomicilio(
                     clienteGuardado, 
                     ventaActual.getProductos(), 
                     montoPago, 
-                    1L // ID del repartidor requerido por ServicioVenta
+                    1L // ID del repartidor por defecto
                 );
                 
                 System.out.println("¡Pedido a domicilio registrado exitosamente!");
