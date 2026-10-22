@@ -86,9 +86,8 @@ public class ServicioVenta {
         return ventaRepository.save(venta);
     }
 
-   /**
+    /**
      * Registra un pedido a domicilio cumpliendo con la HU-17 de forma segura con JPA.
- * @param <S>
      */
     @Transactional
     public Venta registrarPedidoDomicilio(Cliente cliente, List<DescripcionVenta> detalles, double montoRecibido, long idRepartidor) {
@@ -152,4 +151,23 @@ public class ServicioVenta {
         // 7. Guardar la venta de forma segura usando merge/save
         return ventaRepository.save(nuevaVenta);
     }
-}    
+
+    /**
+     * Consulta los pedidos a domicilio activos o en camino para mostrarlos en la tabla (HU-17).
+     */
+    public List<Venta> obtenerPedidosDomicilioActivos() {
+        return ventaRepository.findByEsDomicilioTrueAndEstadoEntregaNot("Entregado");
+    }
+
+    /**
+     * Marca un pedido como "Entregado" para cerrar el flujo manualmente desde la tabla (HU-17).
+     */
+    @Transactional
+    public void cerrarPedido(long idVenta) {
+        Venta venta = ventaRepository.findById(idVenta).orElse(null);
+        if (venta != null) {
+            venta.setEstadoEntrega("Entregado");
+            ventaRepository.save(venta);
+        }
+    }
+}
