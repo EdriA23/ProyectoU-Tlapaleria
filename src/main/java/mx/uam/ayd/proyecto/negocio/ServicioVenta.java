@@ -43,11 +43,10 @@ public class ServicioVenta {
     /**
      * Agrega un producto a una venta existente (Método requerido por ControlAgregarProductos).
      */
-    public Venta agregarProducto(Producto producto, int cantidad, Venta venta) {
+    public void agregarProducto(Producto producto, int cantidad, Venta venta) {
         if (venta != null && producto != null) {
             venta.agregaProducto(producto, cantidad);
         }
-        return venta;
     }
 
     /**
@@ -79,6 +78,11 @@ public class ServicioVenta {
         return ventaRepository.save(venta);
     }
 
+    /**
+     * Registra un pedido a domicilio cumpliendo con la HU-17:
+     * Valida al cliente, verifica que existan repartidores (o crea uno por defecto para evitar bloqueos),
+     * calcula el total con envío y asigna el repartidor.
+     */
     @Transactional
     public Venta registrarPedidoDomicilio(Cliente cliente, List<DescripcionVenta> detalles, double montoRecibido, long idRepartidor) {
         
@@ -87,12 +91,11 @@ public class ServicioVenta {
             throw new IllegalArgumentException("Los datos obligatorios del cliente para domicilio están incompletos.");
         }
 
-        // 2. BUSCAR O ASEGURAR UN REPARTIDOR (Solución blindada)
+        // 2. Buscar o asegurar un repartidor disponible (Blindado contra bases de datos vacías)
         List<Trabajador> repartidoresDisponibles = trabajadorRepository.findByRol("Repartidor");
         Trabajador repartidorSeleccionado = null;
 
         if (repartidoresDisponibles == null || repartidoresDisponibles.isEmpty()) {
-            // Si no encuentra ninguno por rol, creamos y guardamos un repartidor por defecto al instante
             repartidorSeleccionado = new Trabajador();
             repartidorSeleccionado.setNombreCompleto("Repartidor General");
             repartidorSeleccionado.setRol("Repartidor");
@@ -100,7 +103,6 @@ public class ServicioVenta {
             repartidorSeleccionado.setNumeroTrabajador("REP-DEF");
             repartidorSeleccionado = trabajadorRepository.save(repartidorSeleccionado);
         } else {
-            // Tomamos el primero que encuentre disponible
             repartidorSeleccionado = repartidoresDisponibles.get(0);
         }
 
@@ -127,9 +129,28 @@ public class ServicioVenta {
 
         // 5. Asignar el repartidor asegurado
         nuevaVenta.setRepartidorAsignado(repartidorSeleccionado.getNombreCompleto());
-        nuevaVenta.setEstadoEntrega("Pedido en camino");
+        nuevaVenta.setEstadoEntrega("Registrado");
 
         // 6. Guardar la venta con los datos de domicilio
         return ventaRepository.save(nuevaVenta);
+    }
+
+    /**
+     * Consulta los pedidos a domicilio activos o en camino para mostrarlos en la tabla (HU-17).
+     */
+    public List<Venta> obtenerPedidosDomicilioActivos() {
+        return ventaRepository.findByEsDomicilioTrueAndEstadoEntregaNot("Entregado");
+    }
+
+    /**
+     * Marca un pedido como "Entregado" para cerrar el flujo manualmente desde la tabla (HU-17).
+     */
+    @Transactional
+    public void cerrarPedido(long idVenta) {
+        Venta venta = ventaRepository.findById(idVenta).orElse(null);
+        if (venta != null) {
+            venta.setEstadoEntrega("Entregado");
+            ventaRepository.save(venta);
+        }
     }
 }
