@@ -22,7 +22,7 @@ public class ControlRegistroVenta {
     private final VentanaCarrito ventanaCarrito;
     private final VentanaCobro ventanaCobro;
     
-    // NUEVA DEPENDENCIA para gestionar el flujo de clientes y domicilio (HU-17)
+    // Dependencia para gestionar el flujo de clientes y domicilio (HU-17)
     private final ControlCliente controlCliente;
 
     // Estado del proceso: Guardamos directamente la Venta
@@ -30,11 +30,6 @@ public class ControlRegistroVenta {
 
     /**
      * Constructor donde Spring inyecta el servicio de ventas, las vistas y el control de cliente.
-     * 
-     * @param servicioVenta servicio con la lógica de negocio
-     * @param v1 vista del carrito de compras
-     * @param v2 vista para cobrar y dar cambio
-     * @param controlCliente control para la gestión de datos del cliente
      */
     @Autowired
     public ControlRegistroVenta(ServicioVenta servicioVenta, VentanaCarrito v1, VentanaCobro v2, ControlCliente controlCliente) {
@@ -55,8 +50,6 @@ public class ControlRegistroVenta {
 
     /**
      * Recibe la venta completa creada en la HU de selección de productos.
-     * 
-     * @param venta objeto venta con la lista de productos acumulados
      */
     public void iniciaConVenta(Venta venta) {
         this.ventaActual = venta;
@@ -78,7 +71,11 @@ public class ControlRegistroVenta {
      */
     public void iniciarPedidoADomicilio() {
         if (controlCliente != null) {
-            controlCliente.inicia(); // Esto abre la ventana VentanaCliente.fxml con sus respectivos botones
+            // Opcional: Si necesitas pasar la venta actual al control de cliente para asociarla al domicilio, 
+            // puedes hacerlo aquí. Por ahora, inicializamos la ventana de cliente de forma limpia:
+            controlCliente.inicia(); 
+        } else {
+            System.err.println("Error: ControlCliente no fue inyectado correctamente.");
         }
     }
 
@@ -105,18 +102,16 @@ public class ControlRegistroVenta {
 
         // Ocultar carrito y mostrar pantalla de cobro
         if (ventanaCarrito != null) {
-            ventanaCarrito.setVisible(false); // Oculta la ventana de Carrito
+            ventanaCarrito.setVisible(false);
         }
 
         if (ventanaCobro != null) {
-            ventanaCobro.muestra(ventaActual.getTotal()); // Abre la ventana de Cobro con el total
+            ventanaCobro.muestra(ventaActual.getTotal());
         }
     }
 
     /**
      * Revisa si el dinero que entregó el cliente alcanza para la venta y calcula el cambio.
-     * 
-     * @param efectivoRecibido dinero en efectivo ingresado por el usuario
      */
     public void calcularCambio(double efectivoRecibido) {
         if (ventanaCobro == null || ventaActual == null) return;
@@ -133,8 +128,6 @@ public class ControlRegistroVenta {
 
     /**
      * Finaliza la compra pasando la Venta al servicio
-     * 
-     * @param efectivoRecibido dinero en efectivo entregado para procesar el pago
      */
     public void finalizarCompra(double efectivoRecibido) {
         if (servicioVenta == null || ventanaCobro == null || ventaActual == null) return;

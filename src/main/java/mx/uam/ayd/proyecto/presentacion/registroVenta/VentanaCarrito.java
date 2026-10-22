@@ -77,7 +77,7 @@ public class VentanaCarrito {
         try {
             FXMLLoader loader = new FXMLLoader(fxmlUrl);
             
-            //Usar setControllerFactory para que utilice la misma instancia de Spring
+            // Usar setControllerFactory para que utilice la misma instancia de Spring
             loader.setControllerFactory(clazz -> this);
 
             Parent root = loader.load();

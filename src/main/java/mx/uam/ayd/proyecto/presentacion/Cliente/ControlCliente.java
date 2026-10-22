@@ -21,11 +21,16 @@ public class ControlCliente {
 
     public void inicia() {
         try {
-            // Buscamos de forma segura la ruta del archivo FXML en los recursos
-            URL fxmlLocation = ControlCliente.class.getResource("/fxml/ventana-cliente.fxml");
+            // Usamos ruta relativa para asegurar que encuentre el archivo en su paquete o ajusta si está en /fxml/
+            URL fxmlLocation = ControlCliente.class.getResource("VentanaCliente.fxml");
             
             if (fxmlLocation == null) {
-                System.err.println("¡ERROR CRÍTICO! No se encontró el archivo '/fxml/ventana-cliente.fxml' en el classpath de recursos.");
+                // Alternativa por si está en la carpeta global /fxml/
+                fxmlLocation = ControlCliente.class.getResource("/fxml/ventana-cliente.fxml");
+            }
+
+            if (fxmlLocation == null) {
+                System.err.println("¡ERROR CRÍTICO! No se encontró el archivo FXML de la ventana de cliente.");
                 return;
             }
 
