@@ -7,9 +7,10 @@ import org.springframework.stereotype.Component;
 import mx.uam.ayd.proyecto.negocio.ServicioVenta;
 import mx.uam.ayd.proyecto.negocio.modelo.DescripcionVenta;
 import mx.uam.ayd.proyecto.negocio.modelo.Venta;
+import mx.uam.ayd.proyecto.presentacion.Cliente.ControlCliente;
 
 /**
- * Controlador de la HU-04 para gestionar el flujo del carrito de compras y el cobro.
+ * Controlador de la HU-04 para gestionar el flujo del carrito de compras, el cobro y los pedidos a domicilio.
  * 
  * @author kevin dydier
  */
@@ -20,26 +21,26 @@ public class ControlRegistroVenta {
     private final ServicioVenta servicioVenta;
     private final VentanaCarrito ventanaCarrito;
     private final VentanaCobro ventanaCobro;
+    
+    // Dependencia para gestionar el flujo de clientes y domicilio (HU-17)
+    private final ControlCliente controlCliente;
 
     // Estado del proceso: Guardamos directamente la Venta
     private Venta ventaActual;
 
     /**
-     * Constructor donde spring inyecta el servicio de ventas y las dos pantallas.
-     * 
-     * @param servicioVenta servicio con la logica de negocio
-     * @param v1 vista del carrito de compras
-     * @param v2 vista para cobrar y dar cambio
+     * Constructor donde Spring inyecta el servicio de ventas, las vistas y el control de cliente.
      */
     @Autowired
-    public ControlRegistroVenta(ServicioVenta servicioVenta, VentanaCarrito v1, VentanaCobro v2) {
+    public ControlRegistroVenta(ServicioVenta servicioVenta, VentanaCarrito v1, VentanaCobro v2, ControlCliente controlCliente) {
         this.servicioVenta = servicioVenta;
         this.ventanaCarrito = v1;
         this.ventanaCobro = v2;
+        this.controlCliente = controlCliente;
     }
 
     /**
-     * Se ejecuta despues de crear el componente para conectar las ventanas con este controlador
+     * Se ejecuta después de crear el componente para conectar las ventanas con este controlador
      */
     @PostConstruct
     public void init() {
@@ -49,24 +50,29 @@ public class ControlRegistroVenta {
 
     /**
      * Recibe la venta completa creada en la HU de selección de productos.
-     * 
-     * @param venta objeto venta con la lista de productos acumulados
      */
     public void iniciaConVenta(Venta venta) {
-    this.ventaActual = venta;
-    
-    // Debug en consola (solo son comentarios de prueba)
-    if (venta != null) {
-        System.out.println(" Productos recibidos: " + (venta.getProductos() != null ? venta.getProductos().size() : 0));
-        System.out.println(" Total recibido: $" + venta.getTotal());
-    } else {
-        System.out.println("Objeto Venta recibido es NULL");
+        this.ventaActual = venta;
+        
+        if (venta != null) {
+            System.out.println("Productos recibidos: " + (venta.getProductos() != null ? venta.getProductos().size() : 0));
+            System.out.println("Total recibido: $" + venta.getTotal());
+        } else {
+            System.out.println("Objeto Venta recibido es NULL");
+        }
+
+        if (ventanaCarrito != null) {
+            ventanaCarrito.muestra(this.ventaActual);
+        }
     }
 
-    if (ventanaCarrito != null) {
-        ventanaCarrito.muestra(this.ventaActual);
+    public void iniciarPedidoADomicilio() {
+        if (controlCliente != null && ventaActual != null) {
+            controlCliente.iniciaConVenta(ventaActual); // Le pasamos la venta actual al flujo del cliente
+        } else if (controlCliente != null) {
+            controlCliente.inicia();
+        }
     }
-}
 
     /**
      * Valida reglas de negocio antes de permitir el cobro.
@@ -83,26 +89,24 @@ public class ControlRegistroVenta {
         for (DescripcionVenta d : ventaActual.getProductos()) {
             if (d != null && d.getPrecioUnitario() <= 0) {
                 if (ventanaCarrito != null) {
-                    ventanaCarrito.muestraDialogoConMensaje("RN-04: Todo precio asignado debe ser strictly mayor a cero.");
+                    ventanaCarrito.muestraDialogoConMensaje("RN-04: Todo precio asignado debe ser mayor a cero.");
                 }
                 return;
             }
         }
 
-        //Ocultar carrito y mostrar pantalla de cobro
+        // Ocultar carrito y mostrar pantalla de cobro
         if (ventanaCarrito != null) {
-            ventanaCarrito.setVisible(false); // Oculta la ventana de Carrito
+            ventanaCarrito.setVisible(false);
         }
 
         if (ventanaCobro != null) {
-            ventanaCobro.muestra(ventaActual.getTotal()); // Abre la ventana de Cobro con el total
+            ventanaCobro.muestra(ventaActual.getTotal());
         }
     }
 
     /**
-     * Checa si el dinero que entrego el cliente alcanza para la venta y saca la resta del cambio.
-     * 
-     * @param efectivoRecibido dinero en efectivo ingresado por el usuario
+     * Revisa si el dinero que entregó el cliente alcanza para la venta y calcula el cambio.
      */
     public void calcularCambio(double efectivoRecibido) {
         if (ventanaCobro == null || ventaActual == null) return;
@@ -119,14 +123,11 @@ public class ControlRegistroVenta {
 
     /**
      * Finaliza la compra pasando la Venta al servicio
-     * 
-     * @param efectivoRecibido dinero en efectivo entregado para procesar el pago
      */
     public void finalizarCompra(double efectivoRecibido) {
         if (servicioVenta == null || ventanaCobro == null || ventaActual == null) return;
 
         try {
-            // Pasamos la venta o sus detalles según tu ServicioVenta
             servicioVenta.registrarVenta(ventaActual.getProductos(), efectivoRecibido);
             
             ventanaCobro.muestraDialogoConMensaje("La venta ha sido exitosa.");
@@ -139,7 +140,7 @@ public class ControlRegistroVenta {
     }
 
     /**
-     * Oculta las dos pantallas para cerrar o reiniciar la transaccion
+     * Oculta las dos pantallas para cerrar o reiniciar la transacción
      */
     public void termina() {
         if (ventanaCobro != null) ventanaCobro.setVisible(false);

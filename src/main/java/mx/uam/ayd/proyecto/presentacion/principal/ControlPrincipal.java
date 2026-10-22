@@ -5,6 +5,7 @@ import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import mx.uam.ayd.proyecto.presentacion.ConsultaPedidos.ControlConsultaPedidos;
 import mx.uam.ayd.proyecto.presentacion.actualizarPrecioProductos.ControlActualizarPrecio;
 import mx.uam.ayd.proyecto.presentacion.agregarUsuario.ControlAgregarUsuario;
 import mx.uam.ayd.proyecto.presentacion.consultarInventario.ControlConsultarInventario;
@@ -35,14 +36,17 @@ public class ControlPrincipal {
     private final ControlRegistrarMercancia controlRegistrarMercancia;
     private final ControlActualizarPrecio controlActualizarPrecio;
     private final ControlDevolucionProducto controlDevolucion;
-    private final ControlConsultarInventario controlConsultarInventario;
+    private final ControlConsultarInventario controlConsultarInventario; // <--- Recuperado como atributo original
     private final ControlHistorialMovimientos controlHistorialMovimientos;
     private final ControlRevisarExistencia controlRevisarExistencia;
-    private final ControlRegistroVenta controlRegistroVenta;
     private final ControlAgregarProductos controlAgregarProductos;
     private final ControlProveedor controlProveedor;
-    private final ControlMargenDeGanancia controlMargenDeGanancia; // Inyección para HU-28
+
+    private final ControlMargenDeGanancia controlMargenDeGanancia; 
+    private final ControlConsultaPedidos controlConsultaPedidos; // Para HU-17
+
     private final ControlTrabajador controlTrabajador;
+
     private final VentanaPrincipal ventana;
     
 
@@ -55,14 +59,19 @@ public class ControlPrincipal {
             ControlRegistrarMercancia controlRegistrarMercancia,
             ControlActualizarPrecio controlActualizarPrecio,
             ControlDevolucionProducto controlDevolucion,
-            ControlConsultarInventario controlConsultarInventario,
+            ControlConsultarInventario controlConsultarInventario, // <--- Incluido en el constructor original
             ControlHistorialMovimientos controlHistorialMovimientos,
             ControlRevisarExistencia controlRevisarExistencia,
             ControlRegistroVenta controlRegistroVenta,
             ControlAgregarProductos controlAgregarProductos,
             ControlProveedor controlProveedor,
-            ControlMargenDeGanancia controlMargenDeGanancia, // Parámetro del constructor
+
+            ControlMargenDeGanancia controlMargenDeGanancia,
+            ControlConsultaPedidos controlConsultaPedidos, 
+
+            ControlMargenDeGanancia controlMargenDeGanancia1, // Parámetro del constructor
             ControlTrabajador controlTrabajador,
+
             VentanaPrincipal ventana) {
 
         this.controlAgregarUsuario = controlAgregarUsuario;
@@ -72,14 +81,16 @@ public class ControlPrincipal {
         this.controlRegistrarMercancia = controlRegistrarMercancia;
         this.controlActualizarPrecio = controlActualizarPrecio;
         this.controlDevolucion = controlDevolucion;
-        this.controlConsultarInventario = controlConsultarInventario;
+        this.controlConsultarInventario = controlConsultarInventario; // <--- Asignado
         this.controlHistorialMovimientos = controlHistorialMovimientos;
         this.controlRevisarExistencia = controlRevisarExistencia;
-        this.controlRegistroVenta = controlRegistroVenta;
         this.controlAgregarProductos = controlAgregarProductos;
         this.controlProveedor = controlProveedor;
-        this.controlMargenDeGanancia = controlMargenDeGanancia;
+        this.controlMargenDeGanancia = controlMargenDeGanancia1;
+
+        this.controlConsultaPedidos = controlConsultaPedidos;
         this.controlTrabajador = controlTrabajador;
+
         this.ventana = ventana;
     }
 
@@ -123,7 +134,9 @@ public class ControlPrincipal {
     }
 
     public void consultarInventario() {
-        controlConsultarInventario.inicia();
+        if (controlConsultarInventario != null) {
+            ControlConsultarInventario.inicia(); // <--- Llamada limpia al objeto inyectado
+        }
     }
 
     public void historialMovimientos() {
@@ -148,8 +161,19 @@ public class ControlPrincipal {
     public void margenGanancia() {
         controlMargenDeGanancia.inicia();
     }
-    
+
+
+    /**
+     * Inicia la HU-17: Consulta y Gestión de Pedidos a Domicilio
+     */
+    public void consultarPedidosDomicilio() {
+        if (controlConsultaPedidos != null) {
+            controlConsultaPedidos.inicia(); // <--- Abre la ventana correcta de pedidos a domicilio
+        }
+    }
+
     public void consultarTrabajador() {
         controlTrabajador.iniciaBusqueda();
+
     }
 }

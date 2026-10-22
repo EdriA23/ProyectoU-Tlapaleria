@@ -70,13 +70,30 @@
                      </padding>
                   </Button>
 
-                  <!-- Margen de Ganancia (NUEVO BOTÓN LATERAL) -->
+                  <!-- Margen de Ganancia -->
                   <Button alignment="BASELINE_LEFT" graphicTextGap="15.0" maxWidth="1.7976931348623157E308" minHeight="50.0" mnemonicParsing="false" onAction="#handleMargenGanancia" style="-fx-background-color: PINK; -fx-background-radius: 8;" text="Margen Ganancia" textFill="#546E7A">
                      <font>
                         <Font name="System Bold" size="14.0" />
                      </font>
                      <graphic>
                         <Label text="📈">
+                           <font>
+                              <Font size="18.0" />
+                           </font>
+                        </Label>
+                     </graphic>
+                     <padding>
+                        <Insets left="20.0" />
+                     </padding>
+                  </Button>
+
+                  <!-- Pedidos a Domicilio (NUEVO BOTÓN LATERAL - HU-17) -->
+                  <Button alignment="BASELINE_LEFT" graphicTextGap="15.0" maxWidth="1.7976931348623157E308" minHeight="50.0" mnemonicParsing="false" onAction="#handleConsultarPedidosDomicilio" style="-fx-background-color: PINK; -fx-background-radius: 8;" text="Pedidos Domicilio" textFill="#546E7A">
+                     <font>
+                        <Font name="System Bold" size="14.0" />
+                     </font>
+                     <graphic>
+                        <Label text="🛵">
                            <font>
                               <Font size="18.0" />
                            </font>
@@ -335,10 +352,17 @@
                                                        </graphic>
                                                    </Button>
 
+
+                                                      <!-- Margen de Ganancia -->
+                                                      <Button alignment="BASELINE_LEFT" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleMargenGanancia" style="-fx-background-color: transparent;" text="Margen de Ganancia" textFill="#383838" GridPane.columnIndex="1">
+                                                         <graphic>
+                                                            <Label text="📊" textFill="#303030" />
+
                                                 <!-- Personal  -->
                                                   <Button fx:id="btnConsultarTrabajador" alignment="BASELINE_LEFT" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleConsultarTrabajador" style="-fx-background-color: transparent;" text="Registrar Personal" textFill="#383838" GridPane.columnIndex="1">
                                                        <graphic>
                                                              <Label text="➕" textFill="#303030" />
+
                                                          </graphic>
                                                    </Button>
 
@@ -348,6 +372,8 @@
                                                          <Label text="📊" textFill="#303030" />
                                                       </graphic>
                                                    </Button>
+                                                         </graphic>
+                                                      </Button>
 
                                                    </children>
                                                 </GridPane>

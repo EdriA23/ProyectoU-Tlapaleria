@@ -38,13 +38,19 @@
          </font>
       </Label>
 
-      <!-- Botones de Acción (Transición a la Pantalla de Cobro) -->
+      <!-- Botones de Acción -->
       <Button layoutX="560.0" layoutY="500.0" mnemonicParsing="false" onAction="#onConfirmarVenta" prefHeight="35.0" prefWidth="165.0" style="-fx-background-color: #27ae60;" text="Confirmar y Cobrar" textFill="WHITE">
          <font>
             <Font name="System Bold" size="13.0" />
          </font>
       </Button>
       
-      <Button layoutX="430.0" layoutY="500.0" mnemonicParsing="false" onAction="#onCancelarVenta" prefHeight="35.0" prefWidth="110.0" style="-fx-background-color: #e74c3c;" text="Limpiar (RN-12)" textFill="WHITE" />
+      <Button fx:id="btnPedidoADomicilio" layoutX="250.0" layoutY="500.0" mnemonicParsing="false" onAction="#onPedidoADomicilio" prefHeight="35.0" prefWidth="165.0" style="-fx-background-color: #2980b9;" text="Pedido a Domicilio" textFill="WHITE">
+         <font>
+            <Font name="System Bold" size="13.0" />
+         </font>
+      </Button>
+
+      <Button layoutX="120.0" layoutY="500.0" mnemonicParsing="false" onAction="#onCancelarVenta" prefHeight="35.0" prefWidth="110.0" style="-fx-background-color: #e74c3c;" text="Limpiar (RN-12)" textFill="WHITE" />
    </children>
 </AnchorPane>
