@@ -20,6 +20,7 @@ import mx.uam.ayd.proyecto.presentacion.registroVenta.ControlRegistroVenta;
 import mx.uam.ayd.proyecto.presentacion.agregarProductos.ControlAgregarProductos;
 import mx.uam.ayd.proyecto.presentacion.consultarProveedor.ControlProveedor;
 import mx.uam.ayd.proyecto.presentacion.margenGanancia.ControlMargenDeGanancia;
+import mx.uam.ayd.proyecto.presentacion.gestionPersonal.ControlTrabajador; // Import HU-1
 
 /**
  * Control principal del sistema
@@ -40,9 +41,15 @@ public class ControlPrincipal {
     private final ControlRevisarExistencia controlRevisarExistencia;
     private final ControlAgregarProductos controlAgregarProductos;
     private final ControlProveedor controlProveedor;
+
     private final ControlMargenDeGanancia controlMargenDeGanancia; 
     private final ControlConsultaPedidos controlConsultaPedidos; // Para HU-17
+
+    private final ControlMargenDeGanancia controlMargenDeGanancia1; // Inyección para HU-28
+    private final ControlTrabajador controlTrabajador;
+
     private final VentanaPrincipal ventana;
+    
 
     @Autowired
     public ControlPrincipal(
@@ -59,8 +66,13 @@ public class ControlPrincipal {
             ControlRegistroVenta controlRegistroVenta,
             ControlAgregarProductos controlAgregarProductos,
             ControlProveedor controlProveedor,
+
             ControlMargenDeGanancia controlMargenDeGanancia,
             ControlConsultaPedidos controlConsultaPedidos, 
+
+            ControlMargenDeGanancia controlMargenDeGanancia1, // Parámetro del constructor
+            ControlTrabajador controlTrabajador,
+
             VentanaPrincipal ventana) {
 
         this.controlAgregarUsuario = controlAgregarUsuario;
@@ -75,8 +87,13 @@ public class ControlPrincipal {
         this.controlRevisarExistencia = controlRevisarExistencia;
         this.controlAgregarProductos = controlAgregarProductos;
         this.controlProveedor = controlProveedor;
-        this.controlMargenDeGanancia = controlMargenDeGanancia;
-        this.controlConsultaPedidos = controlConsultaPedidos; 
+        this.controlMargenDeGanancia = controlMargenDeGanancia1;
+
+        this.controlConsultaPedidos = controlConsultaPedidos;
+        this.controlMargenDeGanancia1 = null; 
+
+        this.controlTrabajador = controlTrabajador;
+
         this.ventana = ventana;
     }
 
@@ -148,6 +165,7 @@ public class ControlPrincipal {
         controlMargenDeGanancia.inicia();
     }
 
+
     /**
      * Inicia la HU-17: Consulta y Gestión de Pedidos a Domicilio
      */
@@ -155,5 +173,10 @@ public class ControlPrincipal {
         if (controlConsultaPedidos != null) {
             controlConsultaPedidos.inicia(); // <--- Abre la ventana correcta de pedidos a domicilio
         }
+
+    
+    public void consultarTrabajador() {
+        controlTrabajador.iniciaBusqueda();
+
     }
 }

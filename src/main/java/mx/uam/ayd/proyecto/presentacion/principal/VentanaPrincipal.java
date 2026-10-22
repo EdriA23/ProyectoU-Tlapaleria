@@ -168,6 +168,7 @@ public class VentanaPrincipal {
         }
     }
 
+
     /**
      * Handler para la HU-17: Consulta de Pedidos a Domicilio
      */
@@ -175,6 +176,12 @@ public class VentanaPrincipal {
     private void handleConsultarPedidosDomicilio() {
         if (control != null) {
             control.consultarPedidosDomicilio();
+
+    @FXML
+    private void handleConsultarTrabajador() {
+        if (control != null) {
+            control.consultarTrabajador();
+
         }
     }
 }
