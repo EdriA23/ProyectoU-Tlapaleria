@@ -23,24 +23,23 @@ public class ControlCliente {
     private ServicioCliente servicioCliente;
 
     @Autowired
-    private ServicioVenta servicioVenta; // Necesario para registrar el pedido a domicilio
+    private ServicioVenta servicioVenta; // Para registrar el pedido a domicilio
 
     @Autowired
     private ApplicationContext applicationContext;
 
-    private Venta ventaActual; // Guardamos la venta que viene del carrito
+    private Venta ventaActual; // Venta que viene del carrito
 
     public void inicia() {
-        abrirVentana(null);
+        abrirVentana();
     }
 
-    // Método que recibe la venta desde el carrito de compras
     public void iniciaConVenta(Venta venta) {
         this.ventaActual = venta;
-        abrirVentana(venta);
+        abrirVentana();
     }
 
-    private void abrirVentana(Venta venta) {
+    private void abrirVentana() {
         try {
             URL fxmlLocation = ControlCliente.class.getResource("VentanaCliente.fxml");
             if (fxmlLocation == null) {
@@ -66,41 +65,65 @@ public class ControlCliente {
     }
 
     /**
-     * Guarda el cliente y registra formalmente el pedido a domicilio para que aparezca en la tabla
+     * Valida los datos del cliente utilizando el servicio de negocio.
      */
-    public void guardarClienteYGenerarPedido(String nombre, String telefono, String direccion, String numeroCasa, String entreCalles, String colorCasa) {
+    public boolean validarDatosCliente(String nombre, String telefono, String direccion, String numeroCasa, String entreCalles, String colorCasa) {
+        Cliente cliente = new Cliente(nombre, telefono, direccion, numeroCasa, entreCalles, colorCasa);
+        return servicioCliente.validarDatosCliente(cliente);
+    }
+
+    /**
+     * Guarda el cliente en la base de datos a través del servicio.
+     */
+    public Cliente guardarCliente(String nombre, String telefono, String direccion, String numeroCasa, String entreCalles, String colorCasa) {
         try {
-            // 1. Crear o guardar el cliente
             Cliente cliente = new Cliente(nombre, telefono, direccion, numeroCasa, entreCalles, colorCasa);
-            Cliente clienteGuardado = servicioCliente.guardarCliente(cliente);
-
-            // 2. Si tenemos una venta pendiente del carrito, registramos el pedido a domicilio
-            if (ventaActual != null && ventaActual.getProductos() != null && !ventaActual.getProductos().isEmpty()) {
-                // Registramos el pedido a domicilio usando el servicio de ventas
-                servicioVenta.registrarPedidoDomicilio(
-                    clienteGuardado, 
-                    ventaActual.getProductos(), 
-                    ventaActual.getPago() > 0 ? ventaActual.getPago() : ventaActual.getTotal(), 0
-                );
-                System.out.println("¡Pedido a domicilio registrado con éxito en la base de datos!");
-            } else {
-                System.out.println("Cliente guardado, pero no había una venta asociada en el carrito.");
-            }
-
+            return servicioCliente.guardarCliente(cliente);
         } catch (Exception e) {
-            System.err.println("Error al procesar el pedido a domicilio: " + e.getMessage());
-            e.printStackTrace();
+            System.err.println("Error al guardar cliente: " + e.getMessage());
+            return null;
         }
     }
 
-    public boolean validarDatosCliente(String nombre, String telefono, String direccion, String numeroCasa,
-            String entreCalles, String colorCasa) {
-        
-        throw new UnsupportedOperationException("Unimplemented method 'validarDatosCliente'");
+    /**
+     * Guarda el cliente y genera formalmente el pedido a domicilio vinculado a la venta del carrito.
+     */
+    public void guardarClienteYGenerarPedido(String nombre, String telefono, String direccion, String numeroCasa, String entreCalles, String colorCasa) {
+        try {
+            // 1. Guardar o recuperar cliente
+            Cliente cliente = new Cliente(nombre, telefono, direccion, numeroCasa, entreCalles, colorCasa);
+            Cliente clienteGuardado = servicioCliente.guardarCliente(cliente);
+
+            // 2. Si hay una venta activa, registrar el pedido a domicilio pasándole el ID del repartidor por defecto (1L)
+            if (ventaActual != null && ventaActual.getProductos() != null && !ventaActual.getProductos().isEmpty()) {
+                double montoPago = ventaActual.getPago() > 0 ? ventaActual.getPago() : ventaActual.getTotal();
+                
+                servicioVenta.registrarPedidoDomicilio(
+                    clienteGuardado, 
+                    ventaActual.getProductos(), 
+                    montoPago, 
+                    1L // ID del repartidor requerido por ServicioVenta
+                );
+                
+                System.out.println("¡Pedido a domicilio registrado exitosamente!");
+            } else {
+                System.out.println("Cliente guardado correctamente (sin venta asociada).");
+            }
+
+        } catch (Exception e) {
+            System.err.println("Error al generar el pedido a domicilio: " + e.getMessage());
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
     }
 
+    /**
+     * Busca un cliente por su número telefónico.
+     */
     public Cliente buscarClientePorTelefono(String telefono) {
-        
-        throw new UnsupportedOperationException("Unimplemented method 'buscarClientePorTelefono'");
+        if (telefono == null || telefono.trim().isEmpty()) {
+            return null;
+        }
+        return servicioCliente.buscarClientePorTelefono(telefono);
     }
 }
