@@ -328,19 +328,26 @@
                                                    </rowConstraints>
                                                    <children>
 
-                                                      <!-- Registrar Mercancía -->
-                                                      <Button fx:id="btnRegistrarMercancia" alignment="BASELINE_LEFT" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleRegistrarMercancia" style="-fx-background-color: transparent;" text="Registrar Mercancía" textFill="#383838">
-                                                         <graphic>
-                                                            <Label text="➕" textFill="#303030" />
-                                                         </graphic>
-                                                      </Button>
+                                                   <!-- Registrar Mercancía  -->
+                                                   <Button fx:id="btnRegistrarMercancia" alignment="BASELINE_LEFT" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleRegistrarMercancia" style="-fx-background-color: transparent;" text="Registrar Mercancía" textFill="#383838" GridPane.columnIndex="0">
+                                                      <graphic>
+                                                       <Label text="➕" textFill="#303030" />
+                                                       </graphic>
+                                                   </Button>
 
-                                                      <!-- Margen de Ganancia (NUEVO BOTÓN EN ADMIN RÁPIDA) -->
-                                                      <Button alignment="BASELINE_LEFT" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleMargenGanancia" style="-fx-background-color: transparent;" text="Margen de Ganancia" textFill="#383838" GridPane.columnIndex="1">
-                                                         <graphic>
-                                                            <Label text="📊" textFill="#303030" />
+                                                <!-- Personal  -->
+                                                  <Button fx:id="btnConsultarTrabajador" alignment="BASELINE_LEFT" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleConsultarTrabajador" style="-fx-background-color: transparent;" text="Registrar Personal" textFill="#383838" GridPane.columnIndex="1">
+                                                       <graphic>
+                                                             <Label text="➕" textFill="#303030" />
                                                          </graphic>
-                                                      </Button>
+                                                   </Button>
+
+                                                <!-- Margen de Ganancia -->
+                                                   <Button alignment="BASELINE_LEFT" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleMargenGanancia" style="-fx-background-color: transparent;" text="Margen de Ganancia" textFill="#383838" GridPane.columnIndex="2">
+                                                      <graphic>
+                                                         <Label text="📊" textFill="#303030" />
+                                                      </graphic>
+                                                   </Button>
 
                                                    </children>
                                                 </GridPane>

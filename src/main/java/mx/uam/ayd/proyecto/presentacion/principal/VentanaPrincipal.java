@@ -167,4 +167,10 @@ public class VentanaPrincipal {
             control.margenGanancia();
         }
     }
+    @FXML
+    private void handleConsultarTrabajador() {
+        if (control != null) {
+            control.consultarTrabajador();
+        }
+    }
 }

@@ -19,6 +19,7 @@ import mx.uam.ayd.proyecto.presentacion.registroVenta.ControlRegistroVenta;
 import mx.uam.ayd.proyecto.presentacion.agregarProductos.ControlAgregarProductos;
 import mx.uam.ayd.proyecto.presentacion.consultarProveedor.ControlProveedor;
 import mx.uam.ayd.proyecto.presentacion.margenGanancia.ControlMargenDeGanancia;
+import mx.uam.ayd.proyecto.presentacion.gestionPersonal.ControlTrabajador; // Import HU-1
 
 /**
  * Control principal del sistema
@@ -41,7 +42,9 @@ public class ControlPrincipal {
     private final ControlAgregarProductos controlAgregarProductos;
     private final ControlProveedor controlProveedor;
     private final ControlMargenDeGanancia controlMargenDeGanancia; // Inyección para HU-28
+    private final ControlTrabajador controlTrabajador;
     private final VentanaPrincipal ventana;
+    
 
     @Autowired
     public ControlPrincipal(
@@ -59,6 +62,7 @@ public class ControlPrincipal {
             ControlAgregarProductos controlAgregarProductos,
             ControlProveedor controlProveedor,
             ControlMargenDeGanancia controlMargenDeGanancia, // Parámetro del constructor
+            ControlTrabajador controlTrabajador,
             VentanaPrincipal ventana) {
 
         this.controlAgregarUsuario = controlAgregarUsuario;
@@ -75,7 +79,7 @@ public class ControlPrincipal {
         this.controlAgregarProductos = controlAgregarProductos;
         this.controlProveedor = controlProveedor;
         this.controlMargenDeGanancia = controlMargenDeGanancia;
-        
+        this.controlTrabajador = controlTrabajador;
         this.ventana = ventana;
     }
 
@@ -143,5 +147,9 @@ public class ControlPrincipal {
      */
     public void margenGanancia() {
         controlMargenDeGanancia.inicia();
+    }
+    
+    public void consultarTrabajador() {
+        controlTrabajador.iniciaBusqueda();
     }
 }
