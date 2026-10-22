@@ -160,13 +160,35 @@ public class VistaTrabajador {
         }
     }
 
-    private HBox crearTarjetaTrabajador(Trabajador t) {
+        @FXML
+            private void handleRegistrarTrabajador() {
+                if (control != null) {
+                    control.abrirFormulario();
+                }
+            }
+    @FXML
+    private void handleBuscar() {
+        if (control != null) {
+            control.recuperarPersonal();
+        }
+    }
+
+    @FXML
+    private void handleCerrar() {
+        if (stage != null) {
+            stage.close();
+        }
+    }
+
+   
+      private HBox crearTarjetaTrabajador(Trabajador t) {
         HBox tarjeta = new HBox(12);
         tarjeta.setAlignment(Pos.CENTER_LEFT);
         tarjeta.setStyle("-fx-background-color: #F9FAFB; -fx-border-color: #E5E7EB; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 12;");
 
-        String iniciales = obtenerIniciales(t.getNombreCompleto());
-        Label lblAvatar = new Label(iniciales);
+       // String iniciales = obtenerIniciales(t.getNombreCompleto());
+      //  Label lblAvatar = new Label(iniciales);
+        Label lblAvatar = new Label("EMP"); // 
         lblAvatar.setStyle("-fx-background-color: #6366F1; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 14; -fx-alignment: center; -fx-min-width: 40; -fx-min-height: 40; -fx-max-width: 40; -fx-max-height: 40; -fx-background-radius: 20;");
 
         VBox info = new VBox(2);
@@ -200,35 +222,5 @@ public class VistaTrabajador {
 
         tarjeta.getChildren().addAll(lblAvatar, info, btnVerDetalles);
         return tarjeta;
-    }
-
-    private String obtenerIniciales(String nombre) {
-        if (nombre == null || nombre.trim().isEmpty()) return "N/A";
-        String[] partes = nombre.trim().split("\\s+");
-        if (partes.length >= 2) {
-            return ("" + partes[0].charAt(0) + partes[1].charAt(0)).toUpperCase();
-        }
-        return ("" + partes[0].charAt(0)).toUpperCase();
-    }
-
-    @FXML
-    private void handleBuscar() {
-        if (control != null) {
-            control.recuperarPersonal();
-        }
-    }
-
-    @FXML
-    private void handleCerrar() {
-        if (stage != null) {
-            stage.close();
-        }
-    }
-
-    @FXML
-    private void handleRegistrarTrabajador() {
-        if (control != null) {
-            control.abrirFormulario();
-        }
     }
 }

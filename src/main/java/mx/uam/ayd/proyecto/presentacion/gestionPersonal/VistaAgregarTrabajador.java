@@ -27,9 +27,11 @@ public class VistaAgregarTrabajador {
     @Autowired
     private ApplicationContext context;
 
+
     private Stage stage;
     private ControlTrabajador control;
     private boolean initialized = false;
+    private Trabajador trabajadorAEditar;
 
     // Componentes FXML
     @FXML
@@ -97,6 +99,34 @@ public class VistaAgregarTrabajador {
 
         stage.showAndWait();
     }
+    /**
+     * Muestra el formulario precargando los datos para EDITAR un trabajador.
+     */
+    public void muestra(ControlTrabajador control, Trabajador trabajador) {
+        if (!Platform.isFxApplicationThread()) {
+            Platform.runLater(() -> this.muestra(control, trabajador));
+            return;
+        }
+
+        this.control = control;
+        this.trabajadorAEditar = trabajador;
+        initializeUI();
+
+        if (stage != null) stage.setTitle("Editar Trabajador - " + trabajador.getNombreCompleto());
+
+        if (trabajador != null) {
+            if (txtIdTrabajador != null) {
+                txtIdTrabajador.setText(trabajador.getNumeroTrabajador() != null ? trabajador.getNumeroTrabajador() : String.valueOf(trabajador.getIdTrabajador()));
+                txtIdTrabajador.setDisable(true);
+            }
+            if (txtNombre != null) txtNombre.setText(trabajador.getNombreCompleto());
+            if (txtTelefono != null) txtTelefono.setText(trabajador.getTelefono());
+            if (cmbRol != null) cmbRol.setValue(trabajador.getRol());
+            if (txtCorreo != null) txtCorreo.setText(trabajador.getCorreoElectronico());
+        }
+
+        stage.showAndWait();
+    }
 
     private boolean validaInformacion() {
         String nombre = txtNombre.getText() != null ? txtNombre.getText().trim() : "";
@@ -116,9 +146,9 @@ public class VistaAgregarTrabajador {
     }
 
     @FXML
+    
     private void handleConfirmar() {
         if (validaInformacion()) {
-            // Se obtiene el ID y los demás campos requeridos
             String idTrabajador = txtIdTrabajador != null ? txtIdTrabajador.getText().trim() : "";
             String nombre = txtNombre.getText().trim();
             String telefono = txtTelefono.getText() != null ? txtTelefono.getText().trim() : "";
@@ -126,13 +156,23 @@ public class VistaAgregarTrabajador {
             String correo = txtCorreo.getText() != null ? txtCorreo.getText().trim() : "";
 
             if (control != null) {
-                // Pasa los 5 parámetros al controlador tal como lo indica el diagrama
-                control.realizarRegistro(idTrabajador, nombre, telefono, rol, correo);
+                if (trabajadorAEditar == null) {
+                    control.realizarRegistro(idTrabajador, nombre, telefono, rol, correo);
+                } else {
+                    trabajadorAEditar.setNombreCompleto(nombre);
+                    trabajadorAEditar.setTelefono(telefono);
+                    trabajadorAEditar.setRol(rol);
+                    trabajadorAEditar.setCorreoElectronico(correo);
+                    
+                    control.realizarActualizacion(trabajadorAEditar);
+                }
            
                 control.recuperarPersonal();
+                cerrar();
             }
         }
     }
+    
 
     public void mensajeExito(Trabajador trabajador) {
         if (!Platform.isFxApplicationThread()) {
