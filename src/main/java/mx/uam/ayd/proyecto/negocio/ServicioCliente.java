@@ -1,12 +1,13 @@
 package mx.uam.ayd.proyecto.negocio;
 
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service; // <--- Importante
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import mx.uam.ayd.proyecto.datos.ClienteRepository;
 import mx.uam.ayd.proyecto.negocio.modelo.Cliente;
 
-@Service // <--- Esta anotación es la que le dice a Spring que cree el bean
+@Service
 public class ServicioCliente {
 
     @Autowired
@@ -51,6 +52,10 @@ public class ServicioCliente {
     }
 
     public Cliente buscarClientePorTelefono(String telefono) {
-        return clienteRepository.findByTelefono(telefono).orElse(null);
+        List<Cliente> clientes = clienteRepository.findByTelefono(telefono);
+        if (clientes != null && !clientes.isEmpty()) {
+            return clientes.get(0); // Devuelve el primer cliente encontrado para evitar conflictos
+        }
+        return null;
     }
 }
