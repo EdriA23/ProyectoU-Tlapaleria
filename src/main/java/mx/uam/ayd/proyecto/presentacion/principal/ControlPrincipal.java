@@ -35,11 +35,13 @@ public class ControlPrincipal {
     private final ControlRegistrarMercancia controlRegistrarMercancia;
     private final ControlActualizarPrecio controlActualizarPrecio;
     private final ControlDevolucionProducto controlDevolucion;
+    private final ControlConsultarInventario controlConsultarInventario; // <--- Recuperado como atributo original
     private final ControlHistorialMovimientos controlHistorialMovimientos;
     private final ControlRevisarExistencia controlRevisarExistencia;
     private final ControlAgregarProductos controlAgregarProductos;
     private final ControlProveedor controlProveedor;
     private final ControlMargenDeGanancia controlMargenDeGanancia; 
+    private final ControlConsultaPedidos controlConsultaPedidos; // Para HU-17
     private final VentanaPrincipal ventana;
 
     @Autowired
@@ -51,14 +53,14 @@ public class ControlPrincipal {
             ControlRegistrarMercancia controlRegistrarMercancia,
             ControlActualizarPrecio controlActualizarPrecio,
             ControlDevolucionProducto controlDevolucion,
-            ControlConsultarInventario controlConsultarInventario,
+            ControlConsultarInventario controlConsultarInventario, // <--- Incluido en el constructor original
             ControlHistorialMovimientos controlHistorialMovimientos,
             ControlRevisarExistencia controlRevisarExistencia,
             ControlRegistroVenta controlRegistroVenta,
             ControlAgregarProductos controlAgregarProductos,
             ControlProveedor controlProveedor,
             ControlMargenDeGanancia controlMargenDeGanancia,
-            ControlConsultaPedidos controlConsultaPedidos, // Parámetro del constructor para HU-17
+            ControlConsultaPedidos controlConsultaPedidos, 
             VentanaPrincipal ventana) {
 
         this.controlAgregarUsuario = controlAgregarUsuario;
@@ -68,11 +70,13 @@ public class ControlPrincipal {
         this.controlRegistrarMercancia = controlRegistrarMercancia;
         this.controlActualizarPrecio = controlActualizarPrecio;
         this.controlDevolucion = controlDevolucion;
+        this.controlConsultarInventario = controlConsultarInventario; // <--- Asignado
         this.controlHistorialMovimientos = controlHistorialMovimientos;
         this.controlRevisarExistencia = controlRevisarExistencia;
         this.controlAgregarProductos = controlAgregarProductos;
         this.controlProveedor = controlProveedor;
         this.controlMargenDeGanancia = controlMargenDeGanancia;
+        this.controlConsultaPedidos = controlConsultaPedidos; 
         this.ventana = ventana;
     }
 
@@ -116,7 +120,9 @@ public class ControlPrincipal {
     }
 
     public void consultarInventario() {
-        ControlConsultarInventario.inicia();
+        if (controlConsultarInventario != null) {
+            ControlConsultarInventario.inicia(); // <--- Llamada limpia al objeto inyectado
+        }
     }
 
     public void historialMovimientos() {
@@ -146,6 +152,8 @@ public class ControlPrincipal {
      * Inicia la HU-17: Consulta y Gestión de Pedidos a Domicilio
      */
     public void consultarPedidosDomicilio() {
-        ControlConsultarInventario.inicia();
+        if (controlConsultaPedidos != null) {
+            controlConsultaPedidos.inicia(); // <--- Abre la ventana correcta de pedidos a domicilio
+        }
     }
 }
