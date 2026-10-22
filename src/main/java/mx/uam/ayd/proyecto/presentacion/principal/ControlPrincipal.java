@@ -37,7 +37,6 @@ public class ControlPrincipal {
     private final ControlConsultarInventario controlConsultarInventario;
     private final ControlHistorialMovimientos controlHistorialMovimientos;
     private final ControlRevisarExistencia controlRevisarExistencia;
-    private final ControlRegistroVenta controlRegistroVenta;
     private final ControlAgregarProductos controlAgregarProductos;
     private final ControlProveedor controlProveedor;
     private final ControlMargenDeGanancia controlMargenDeGanancia; // Inyección para HU-28
@@ -71,7 +70,6 @@ public class ControlPrincipal {
         this.controlConsultarInventario = controlConsultarInventario;
         this.controlHistorialMovimientos = controlHistorialMovimientos;
         this.controlRevisarExistencia = controlRevisarExistencia;
-        this.controlRegistroVenta = controlRegistroVenta;
         this.controlAgregarProductos = controlAgregarProductos;
         this.controlProveedor = controlProveedor;
         this.controlMargenDeGanancia = controlMargenDeGanancia;
@@ -143,5 +141,10 @@ public class ControlPrincipal {
      */
     public void margenGanancia() {
         controlMargenDeGanancia.inicia();
+    }
+
+    public void consultarPedidosDomicilio() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'consultarPedidosDomicilio'");
     }
 }

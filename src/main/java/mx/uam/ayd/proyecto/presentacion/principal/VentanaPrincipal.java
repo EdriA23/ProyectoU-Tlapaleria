@@ -167,4 +167,14 @@ public class VentanaPrincipal {
             control.margenGanancia();
         }
     }
+
+    /**
+     * Handler para la HU-17: Consulta de Pedidos a Domicilio
+     */
+    @FXML
+    private void handleConsultarPedidosDomicilio() {
+        if (control != null) {
+            control.consultarPedidosDomicilio();
+        }
+    }
 }
