@@ -5,6 +5,7 @@ import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import mx.uam.ayd.proyecto.presentacion.ConsultaPedidos.ControlConsultaPedidos;
 import mx.uam.ayd.proyecto.presentacion.actualizarPrecioProductos.ControlActualizarPrecio;
 import mx.uam.ayd.proyecto.presentacion.agregarUsuario.ControlAgregarUsuario;
 import mx.uam.ayd.proyecto.presentacion.consultarInventario.ControlConsultarInventario;
@@ -34,12 +35,11 @@ public class ControlPrincipal {
     private final ControlRegistrarMercancia controlRegistrarMercancia;
     private final ControlActualizarPrecio controlActualizarPrecio;
     private final ControlDevolucionProducto controlDevolucion;
-    private final ControlConsultarInventario controlConsultarInventario;
     private final ControlHistorialMovimientos controlHistorialMovimientos;
     private final ControlRevisarExistencia controlRevisarExistencia;
     private final ControlAgregarProductos controlAgregarProductos;
     private final ControlProveedor controlProveedor;
-    private final ControlMargenDeGanancia controlMargenDeGanancia; // Inyección para HU-28
+    private final ControlMargenDeGanancia controlMargenDeGanancia; 
     private final VentanaPrincipal ventana;
 
     @Autowired
@@ -57,7 +57,8 @@ public class ControlPrincipal {
             ControlRegistroVenta controlRegistroVenta,
             ControlAgregarProductos controlAgregarProductos,
             ControlProveedor controlProveedor,
-            ControlMargenDeGanancia controlMargenDeGanancia, // Parámetro del constructor
+            ControlMargenDeGanancia controlMargenDeGanancia,
+            ControlConsultaPedidos controlConsultaPedidos, // Parámetro del constructor para HU-17
             VentanaPrincipal ventana) {
 
         this.controlAgregarUsuario = controlAgregarUsuario;
@@ -67,13 +68,11 @@ public class ControlPrincipal {
         this.controlRegistrarMercancia = controlRegistrarMercancia;
         this.controlActualizarPrecio = controlActualizarPrecio;
         this.controlDevolucion = controlDevolucion;
-        this.controlConsultarInventario = controlConsultarInventario;
         this.controlHistorialMovimientos = controlHistorialMovimientos;
         this.controlRevisarExistencia = controlRevisarExistencia;
         this.controlAgregarProductos = controlAgregarProductos;
         this.controlProveedor = controlProveedor;
         this.controlMargenDeGanancia = controlMargenDeGanancia;
-        
         this.ventana = ventana;
     }
 
@@ -117,7 +116,7 @@ public class ControlPrincipal {
     }
 
     public void consultarInventario() {
-        controlConsultarInventario.inicia();
+        ControlConsultarInventario.inicia();
     }
 
     public void historialMovimientos() {
@@ -143,8 +142,10 @@ public class ControlPrincipal {
         controlMargenDeGanancia.inicia();
     }
 
+    /**
+     * Inicia la HU-17: Consulta y Gestión de Pedidos a Domicilio
+     */
     public void consultarPedidosDomicilio() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'consultarPedidosDomicilio'");
+        ControlConsultarInventario.inicia();
     }
 }
