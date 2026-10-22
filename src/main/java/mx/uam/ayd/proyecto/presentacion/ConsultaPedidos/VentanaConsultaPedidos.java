@@ -40,10 +40,10 @@ public class VentanaConsultaPedidos implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        colIdPedido.setCellValueFactory(new PropertyValueFactory<>("idVenta"));
-        colRepartidor.setCellValueFactory(new PropertyValueFactory<>("repartidorAsignado"));
-        colEstado.setCellValueFactory(new PropertyValueFactory<>("estadoEntrega"));
-        colTotal.setCellValueFactory(new PropertyValueFactory<>("total"));
+        if (colIdPedido != null) colIdPedido.setCellValueFactory(new PropertyValueFactory<>("idVenta"));
+        if (colRepartidor != null) colRepartidor.setCellValueFactory(new PropertyValueFactory<>("repartidorAsignado"));
+        if (colEstado != null) colEstado.setCellValueFactory(new PropertyValueFactory<>("estadoEntrega"));
+        if (colTotal != null) colTotal.setCellValueFactory(new PropertyValueFactory<>("total"));
     }
 
     public void setControl(ControlConsultaPedidos control) {
@@ -51,12 +51,20 @@ public class VentanaConsultaPedidos implements Initializable {
     }
 
     public void cargarPedidos(List<Venta> listaPedidos) {
-        ObservableList<Venta> observableList = FXCollections.observableArrayList(listaPedidos);
-        tablaPedidos.setItems(observableList);
+        if (tablaPedidos != null) {
+            if (listaPedidos != null && !listaPedidos.isEmpty()) {
+                ObservableList<Venta> observableList = FXCollections.observableArrayList(listaPedidos);
+                tablaPedidos.setItems(observableList);
+            } else {
+                tablaPedidos.setItems(FXCollections.observableArrayList()); // Limpia la tabla si está vacía
+            }
+        }
     }
 
     @FXML
     public void handleMarcarEntregado(ActionEvent event) {
+        if (tablaPedidos == null) return;
+        
         Venta seleccionada = tablaPedidos.getSelectionModel().getSelectedItem();
 
         if (seleccionada == null) {
@@ -64,11 +72,13 @@ public class VentanaConsultaPedidos implements Initializable {
             return;
         }
 
-        control.marcarComoEntregado(seleccionada.getIdVenta());
-        mostrarAlerta("Éxito", "El pedido ha sido marcado como 'Entregado' y la venta se ha cerrado.", AlertType.INFORMATION);
-        
-        // Refrescar tabla automáticamente
-        cargarPedidos(control.obtenerPedidosActivos());
+        if (control != null) {
+            control.marcarComoEntregado(seleccionada.getIdVenta());
+            mostrarAlerta("Éxito", "El pedido ha sido marcado como 'Entregado' y la venta se ha cerrado.", AlertType.INFORMATION);
+            
+            // Refrescar tabla automáticamente
+            cargarPedidos(control.obtenerPedidosActivos());
+        }
     }
 
     private void mostrarAlerta(String titulo, String mensaje, AlertType tipo) {
