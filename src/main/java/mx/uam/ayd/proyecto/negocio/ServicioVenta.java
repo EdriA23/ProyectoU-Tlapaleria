@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,6 +31,9 @@ public class ServicioVenta {
 
     @Autowired
     private TrabajadorRepository trabajadorRepository;
+
+    @Autowired
+    private CrudRepository<Cliente, Long> clienteRepository;
 
     /**
      * Inicializa una nueva venta (Método requerido por ControlAgregarProductos).
@@ -82,10 +86,9 @@ public class ServicioVenta {
         return ventaRepository.save(venta);
     }
 
-    /**
-     * Registra un pedido a domicilio cumpliendo con la HU-17:
-     * Valida al cliente, verifica que existan repartidores (o crea uno por defecto para evitar bloqueos),
-     * calcula el total con envío y asigna el repartidor.
+   /**
+     * Registra un pedido a domicilio cumpliendo con la HU-17 de forma segura con JPA.
+ * @param <S>
      */
     @Transactional
     public Venta registrarPedidoDomicilio(Cliente cliente, List<DescripcionVenta> detalles, double montoRecibido, long idRepartidor) {
@@ -95,7 +98,7 @@ public class ServicioVenta {
             throw new IllegalArgumentException("Los datos obligatorios del cliente para domicilio están incompletos.");
         }
 
-        // 2. Buscar o asegurar un repartidor disponible (Blindado contra bases de datos vacías)
+        // 2. Buscar o asegurar un repartidor disponible
         List<Trabajador> repartidoresDisponibles = trabajadorRepository.findByRol("Repartidor");
         Trabajador repartidorSeleccionado = null;
 
@@ -110,23 +113,31 @@ public class ServicioVenta {
             repartidorSeleccionado = repartidoresDisponibles.get(0);
         }
 
-        // 3. Crear y configurar la venta a domicilio
+        // 3. Asegurar que el cliente esté guardado o fusionado correctamente en la BD
+        Cliente clienteGestionado = clienteRepository.save(cliente);
+
+        // 4. Crear y configurar la venta a domicilio
         Venta nuevaVenta = new Venta();
         nuevaVenta.setDate(LocalDateTime.now());
         nuevaVenta.setEsDomicilio(true);
-        nuevaVenta.setCliente(cliente);
+        nuevaVenta.setCliente(clienteGestionado);
 
-        for (DescripcionVenta detalle : detalles) {
-            nuevaVenta.agregarDetalle(detalle);
+        // Asociar cada detalle de manera limpia evitando entidades detached
+        if (detalles != null) {
+            for (DescripcionVenta detalle : detalles) {
+                DescripcionVenta nuevoDetalle = new DescripcionVenta();
+                nuevoDetalle.setProducto(detalle.getProducto());
+                nuevoDetalle.setCantidad(detalle.getCantidad());
+                nuevaVenta.agregarDetalle(nuevoDetalle);
+            }
         }
 
-        // 4. Configurar costo de envío y recalcular totales (Escenario 3)
+        // 5. Configurar costo de envío y recalcular totales (Escenario 3)
         double costoEnvio = 50.00; 
         nuevaVenta.setCostoEnvio(costoEnvio);
 
         double totalFinal = nuevaVenta.getTotal();
 
-        // Blindaje: si el monto recibido es menor al total, lo igualamos para evitar bloqueos
         if (montoRecibido < totalFinal) {
             montoRecibido = totalFinal; 
         }
@@ -134,30 +145,11 @@ public class ServicioVenta {
         nuevaVenta.setMontoRecibido(montoRecibido);
         nuevaVenta.setCambio(montoRecibido - totalFinal);
 
-        // 5. Asignar el repartidor asegurado
+        // 6. Asignar el repartidor asegurado y estado inicial
         nuevaVenta.setRepartidorAsignado(repartidorSeleccionado.getNombreCompleto());
         nuevaVenta.setEstadoEntrega("Registrado");
 
-        // 6. Guardar la venta con los datos de domicilio
+        // 7. Guardar la venta de forma segura usando merge/save
         return ventaRepository.save(nuevaVenta);
     }
-
-    /**
-     * Consulta los pedidos a domicilio activos o en camino para mostrarlos en la tabla (HU-17).
-     */
-    public List<Venta> obtenerPedidosDomicilioActivos() {
-        return ventaRepository.findByEsDomicilioTrueAndEstadoEntregaNot("Entregado");
-    }
-
-    /**
-     * Marca un pedido como "Entregado" para cerrar el flujo manualmente desde la tabla (HU-17).
-     */
-    @Transactional
-    public void cerrarPedido(long idVenta) {
-        Venta venta = ventaRepository.findById(idVenta).orElse(null);
-        if (venta != null) {
-            venta.setEstadoEntrega("Entregado");
-            ventaRepository.save(venta);
-        }
-    }
-}
+}    
