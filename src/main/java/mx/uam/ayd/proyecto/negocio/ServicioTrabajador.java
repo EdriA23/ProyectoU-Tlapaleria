@@ -46,4 +46,10 @@ public class ServicioTrabajador {
         // Persiste la entidad en el repositorio
         return repositoryTrabajador.save(trabajador);
     }
+    /**
+     * Obtiene los detalles de un trabajador a partir de su ID.
+     */
+    public Trabajador obtenerDetalles(Long id) {
+        return repositoryTrabajador.findById(id).orElse(null);
+    }
 }

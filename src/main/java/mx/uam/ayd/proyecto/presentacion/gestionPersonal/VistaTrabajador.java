@@ -64,7 +64,7 @@ public class VistaTrabajador {
 
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/vista-trabajador.fxml"));
             
-            // Permite a Spring inyectar el bean gerenciado evitando el conflicto de 'loader.setController(this)'
+            // Permite a Spring inyectar el bean administrado
             loader.setControllerFactory(context::getBean);
 
             BorderPane root = loader.load();
@@ -102,7 +102,7 @@ public class VistaTrabajador {
     }
 
     /**
-     * Corresponde al mensaje muestra(trabajadores) 
+     * Corresponde al mensaje muestra(trabajadores)
      */
     public void muestra(List<Trabajador> trabajadores) {
         if (!Platform.isFxApplicationThread()) {
@@ -188,8 +188,15 @@ public class VistaTrabajador {
 
         info.getChildren().addAll(filaNombre, lblId);
 
+        // Botón Ver detalles único y configurado con la llamada del Diagrama de Secuencia
         Button btnVerDetalles = new Button("Ver detalles");
-        btnVerDetalles.setStyle("-fx-background-color: transparent; -fx-text-fill: #4F46E5; -fx-font-weight: bold;");
+        btnVerDetalles.setStyle("-fx-background-color: transparent; -fx-text-fill: #4F46E5; -fx-font-weight: bold; -fx-cursor: hand;");
+
+        btnVerDetalles.setOnAction(e -> {
+            if (control != null) {
+                control.consultarDetalles(t.getIdTrabajador());
+            }
+        });
 
         tarjeta.getChildren().addAll(lblAvatar, info, btnVerDetalles);
         return tarjeta;
@@ -207,7 +214,6 @@ public class VistaTrabajador {
     @FXML
     private void handleBuscar() {
         if (control != null) {
-            // Invoca recuperarPersonal() de acuerdo al flujo definido en el diagrama
             control.recuperarPersonal();
         }
     }
