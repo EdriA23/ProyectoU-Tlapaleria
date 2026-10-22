@@ -71,7 +71,7 @@ public class VistaAgregarTrabajador {
             stage.setScene(scene);
 
             if (cmbRol != null) {
-                cmbRol.setItems(FXCollections.observableArrayList("Encargado", "Vendedor", "Almacenista", "Administrador"));
+                cmbRol.setItems(FXCollections.observableArrayList("Encargado", "Vendedor", "Almacenista", "Administrador","Repartidor"));
             }
 
             initialized = true;
