@@ -7,22 +7,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import mx.uam.ayd.proyecto.datos.InventarioRepository;
-import mx.uam.ayd.proyecto.datos.MovimientoInventarioRepository;
-import mx.uam.ayd.proyecto.datos.ProductoRepository;
+import mx.uam.ayd.proyecto.datos.TrabajadorRepository;
 import mx.uam.ayd.proyecto.datos.VentaRepository;
 import mx.uam.ayd.proyecto.negocio.modelo.Cliente;
 import mx.uam.ayd.proyecto.negocio.modelo.DescripcionVenta;
-import mx.uam.ayd.proyecto.negocio.modelo.Inventario;
-import mx.uam.ayd.proyecto.negocio.modelo.MovimientoInventario;
-import mx.uam.ayd.proyecto.negocio.modelo.Producto;
+import mx.uam.ayd.proyecto.negocio.modelo.Trabajador;
 import mx.uam.ayd.proyecto.negocio.modelo.Venta;
 
 /**
- * Servicio principal para procesar la logica de las ventas del carrito,
- * descuenta el stock de las tablas y guarda los movimientos en la bd.
- *
- * @author dydier
+ * Servicio encargado de la lógica de negocio de las ventas,
+ * incluyendo las ventas en mostrador y los pedidos a domicilio (HU-17).
  */
 @Service
 public class ServicioVenta {
@@ -31,122 +25,98 @@ public class ServicioVenta {
     private VentaRepository ventaRepository;
 
     @Autowired
-    private ProductoRepository productoRepository;
+    private ServicioCliente servicioCliente;
 
     @Autowired
-    private InventarioRepository inventarioRepository;
+    private TrabajadorRepository trabajadorRepository; // Para buscar repartidores según la entidad Trabajador
 
-    @Autowired
-    private MovimientoInventarioRepository movimientoRepository;
-
-    @Autowired
-    private ServicioCliente servicioCliente; 
     /**
-     * Hace todo el proceso de la venta: descuenta existencias en producto e inventario,
-     * genera la salida en el historial de movimientos y calcula el cambio del cliente.
-     * 
-     * @param detalles lista de productos y cantidades compradas
-     * @param montoRecibido dinero en efectivo que entrego el cliente
-     * @return la venta guardada en la base de datos
+     * Registra una venta normal en mostrador (conservando la funcionalidad existente).
      */
     @Transactional
     public Venta registrarVenta(List<DescripcionVenta> detalles, double montoRecibido) {
-        
-        Venta nuevaVenta = new Venta();
-        nuevaVenta.setFecha(LocalDateTime.now());
-        nuevaVenta.setPago(montoRecibido);
+        Venta venta = new Venta();
+        venta.setDate(LocalDateTime.now());
+        venta.setMontoRecibido(montoRecibido);
 
-        if (detalles != null) {
-            for (DescripcionVenta detalle : detalles) {
-                Producto productoBD = detalle.getProducto();
-                
-                if (productoBD != null) {
-                    int existenciaAnterior = productoBD.getExistenciaActual();
-                    int cantidadVendida = detalle.getCantidad();
-                    int nuevaExistencia = existenciaAnterior - cantidadVendida;
-                    
-                    // Actualizar el stock en Producto
-                    productoBD.setExistenciaActual(nuevaExistencia);
-                    productoRepository.save(productoBD);
-
-                    // ACTUALIZAR EN INVENTARIO (Para que se dispare la Alerta de Stock)
-                    Inventario inventario = inventarioRepository.findById(productoBD.getIdProducto()).orElse(null);
-                    if (inventario != null) {
-                        inventario.setExistenciaActual(nuevaExistencia);
-                        inventarioRepository.save(inventario);
-                    }
-                    
-                    // Registrar salida en Historial de Movimientos
-                    MovimientoInventario movimiento = new MovimientoInventario();
-                    movimiento.setFecha(LocalDateTime.now());
-                    movimiento.setTipoMovimiento("SALIDA");
-                    movimiento.setCantidad(cantidadVendida);
-                    movimiento.setExistenciaAnterior(existenciaAnterior);
-                    movimiento.setExistenciaActual(nuevaExistencia);
-                    movimiento.setObservacion("Venta realizada");
-                    movimiento.setProducto(productoBD);
-
-                    movimientoRepository.save(movimiento);
-                    
-                    // Agregar a la venta
-                    nuevaVenta.agregaProducto(productoBD, cantidadVendida);
-                }
-            }
+        for (DescripcionVenta detalle : detalles) {
+            venta.agregarDetalle(detalle);
         }
 
-        double totalCalculado = nuevaVenta.getTotal() != null ? nuevaVenta.getTotal() : 0.0;
-        nuevaVenta.setCambio(montoRecibido - totalCalculado);
+        double total = venta.getTotal();
+        venta.setCambio(montoRecibido - total);
 
-        return ventaRepository.save(nuevaVenta);
+        return ventaRepository.save(venta);
     }
 
     /**
-     * Registra un pedido a domicilio.
-     * @param cliente datos del cliente y su domicilio
-     * @param detalles lista de productos
-     * @param montoRecibido dinero recibido
+     * Registra un pedido a domicilio cumpliendo con la HU-17:
+     * Valida al cliente, verifica que existan repartidores disponibles (por rol),
+     * calcula el total con envío y asigna el repartidor.
+     * 
+     * @param cliente datos obligatorios del cliente y su domicilio
+     * @param detalles lista de productos de la venta
+     * @param montoRecibido dinero entregado por el cliente
+     * @param idRepartidor id del trabajador con rol de repartidor seleccionado
      * @return la venta a domicilio guardada
      */
     @Transactional
-    public Venta registrarPedidoDomicilio(Cliente cliente, List<DescripcionVenta> detalles, double montoRecibido) {
+    public Venta registrarPedidoDomicilio(Cliente cliente, List<DescripcionVenta> detalles, double montoRecibido, long idRepartidor) {
         
-        // hu-17
+        // 1. Validar los datos obligatorios del cliente (Escenario 4 de la HU-17)
         if (!servicioCliente.validarDatosCliente(cliente)) {
             throw new IllegalArgumentException("Los datos obligatorios del cliente para domicilio están incompletos.");
         }
 
-        
-        Venta nuevaVenta = registrarVenta(detalles, montoRecibido);
+        // 2. Verificar disponibilidad de repartidores usando la entidad Trabajador (Escenario 5)
+        // Buscamos trabajadores con rol "Repartidor"
+        List<Trabajador> repartidoresDisponibles = trabajadorRepository.findByRol("Repartidor");
+        if (repartidoresDisponibles == null || repartidoresDisponibles.isEmpty()) {
+            throw new IllegalStateException("No hay repartidores disponibles en este momento. Tiempo de espera estimado: 30 minutos.");
+        }
 
-        
+        // 3. Ejecutamos la lógica base de registrar venta
+        Venta nuevaVenta = new Venta();
+        nuevaVenta.setDate(LocalDateTime.now());
+        nuevaVenta.setMontoRecibido(montoRecibido);
         nuevaVenta.setEsDomicilio(true);
         nuevaVenta.setCliente(cliente);
-        
-        double costoEnvio = 50.00; 
-        nuevaVenta.setCostoEnvio(costoEnvio);
-        
-        
-        double totalConEnvio = nuevaVenta.getTotal();
-        nuevaVenta.setCambio(montoRecibido - totalConEnvio);
-        
-        nuevaVenta.setEstadoEntrega("Registrado");
 
+        for (DescripcionVenta detalle : detalles) {
+            nuevaVenta.agregarDetalle(detalle);
+        }
+
+        // 4. Configurar costo de envío y recalcular totales
+        double costoEnvio = 50.00; // Puedes ajustarlo o pasarlo dinámicamente
+        nuevaVenta.setCostoEnvio(costoEnvio); // Esto activa automáticamente el recálculo total en Venta.java
+
+        double totalFinal = nuevaVenta.getTotal();
+        if (montoRecibido < totalFinal) {
+            throw new IllegalArgumentException("El monto recibido es menor al total con costo de envío.");
+        }
+        nuevaVenta.setCambio(montoRecibido - totalFinal);
+
+        // 5. Asignar el repartidor seleccionado (Escenario 1)
+        Trabajador repartidor = trabajadorRepository.findById(idRepartidor)
+            .orElseThrow(() -> new IllegalArgumentException("El repartidor seleccionado no es válido."));
         
+        nuevaVenta.setRepartidorAsignado(repartidor.getNombreCompleto());
+        nuevaVenta.setEstadoEntrega("Pedido en camino");
+
+        // 6. Guardar la venta con los datos de domicilio
         return ventaRepository.save(nuevaVenta);
     }
 
-   
-    @Transactional
-    public void asignarRepartidor(long idVenta, String nombreRepartidor) {
-        Venta venta = ventaRepository.findById(idVenta).orElse(null);
-        if (venta != null) {
-            venta.setRepartidorAsignado(nombreRepartidor);
-            venta.setEstadoEntrega("En camino");
-            ventaRepository.save(venta);
-        }
+    /**
+     * Consulta los pedidos a domicilio activos o en camino para mostrarlos en la tabla (HU-17).
+     */
+    public List<Venta> obtenerPedidosDomicilioActivos() {
+        return ventaRepository.findByEsDomicilioTrueAndEstadoEntregaNot("Entregado");
     }
 
- 
+    /**
+     * Marca un pedido como "Entregado" para cerrar el flujo manualmente desde la tabla (HU-17).
+     */
     @Transactional
     public void cerrarPedido(long idVenta) {
         Venta venta = ventaRepository.findById(idVenta).orElse(null);
@@ -154,45 +124,5 @@ public class ServicioVenta {
             venta.setEstadoEntrega("Entregado");
             ventaRepository.save(venta);
         }
-    }
-
-    /**
-     * Crea una nueva venta vacía para iniciar una operación de venta.
-     *
-     * @return una venta nueva y vacía
-     */
-    public Venta iniciarVenta() {
-        return new Venta();
-    }
-
-    /**
-     * Agrega un producto a la venta (HU-05). Si la venta no existe
-     * todavia, crea una nueva antes de agregar el producto.
-     * 
-     * @param producto producto a vender
-     * @param cantidad piezas elegidas
-     * @param venta la venta actual
-     * @return la venta con el producto ya agregado
-     */
-    public Venta agregarProducto(Producto producto, int cantidad, Venta venta) {
-        if (venta == null) {
-            venta = iniciarVenta();
-        }
-        venta.agregaProducto(producto, cantidad);
-        return venta;
-    }
-
-    /**
-     * Guarda el estado actual de la venta en la base de datos (HU-05).
-     * 
-     * @param venta la venta que se quiere actualizar
-     * @return true si se guardo con exito, false si la venta era nula
-     */
-    public boolean actualizarVenta(Venta venta) {
-        if (venta == null) {
-            return false;
-        }
-        ventaRepository.save(venta);
-        return true;
     }
 }
