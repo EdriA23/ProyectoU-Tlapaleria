@@ -43,10 +43,11 @@ public class ServicioVenta {
     /**
      * Agrega un producto a una venta existente (Método requerido por ControlAgregarProductos).
      */
-    public void agregarProducto(Producto producto, int cantidad, Venta venta) {
+    public Venta agregarProducto(Producto producto, int cantidad, Venta venta) {
         if (venta != null && producto != null) {
             venta.agregaProducto(producto, cantidad);
         }
+        return venta;
     }
 
     /**
