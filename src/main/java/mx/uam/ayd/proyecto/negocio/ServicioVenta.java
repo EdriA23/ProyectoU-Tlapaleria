@@ -1,10 +1,11 @@
 package mx.uam.ayd.proyecto.negocio;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,15 +33,12 @@ public class ServicioVenta {
     @Autowired
     private TrabajadorRepository trabajadorRepository;
 
-    @Autowired
-    private CrudRepository<Cliente, Long> clienteRepository;
-
     /**
-     * Inicializa una nueva venta (Método requerido por ControlAgregarProductos).
+     * Inicializa una nueva venta vacía.
      */
     public Venta iniciarVenta() {
         Venta venta = new Venta();
-        venta.setDate(LocalDateTime.now());
+        venta.setFecha(LocalDateTime.now());
         return venta;
     }
 
@@ -58,11 +56,27 @@ public class ServicioVenta {
     }
 
     /**
-     * Actualiza o recalcula la venta en memoria (Método requerido por ControlAgregarProductos).
+     * Actualiza y recalcula la venta en memoria (Escenario 3: Recálculo automático por cambios en productos o costos).
+     */
+    @Transactional
+    public Venta actualizarVenta(Venta venta, double montoRecibido) {
+        if (venta == null) {
+            return null;
+        }
+        
+        double totalFinal = venta.getTotal(); // El método getTotal() en Venta ya calcula productos + costo de envío si aplica
+        venta.setPago(montoRecibido);
+        venta.setCambio(montoRecibido - totalFinal);
+
+        return ventaRepository.save(venta);
+    }
+
+    /**
+     * Sobrecarga para actualizar venta básica si no se pasa monto recibido de inmediato.
      */
     public Venta actualizarVenta(Venta venta) {
         if (venta != null) {
-            venta.calculaTotal();
+            ventaRepository.save(venta);
         }
         return venta;
     }
@@ -73,11 +87,13 @@ public class ServicioVenta {
     @Transactional
     public Venta registrarVenta(List<DescripcionVenta> detalles, double montoRecibido) {
         Venta venta = new Venta();
-        venta.setDate(LocalDateTime.now());
-        venta.setMontoRecibido(montoRecibido);
+        venta.setFecha(LocalDateTime.now());
+        venta.setPago(montoRecibido);
 
-        for (DescripcionVenta detalle : detalles) {
-            venta.agregarDetalle(detalle);
+        if (detalles != null) {
+            for (DescripcionVenta detalle : detalles) {
+                venta.agregaProducto(detalle.getProducto(), detalle.getCantidad());
+            }
         }
 
         double total = venta.getTotal();
@@ -87,7 +103,7 @@ public class ServicioVenta {
     }
 
     /**
-     * Registra un pedido a domicilio cumpliendo con la HU-17 de forma segura con JPA.
+     * Registra un pedido a domicilio cumpliendo con la HU-17 (Validación de cliente, repartidores y envío).
      */
     @Transactional
     public Venta registrarPedidoDomicilio(Cliente cliente, List<DescripcionVenta> detalles, double montoRecibido, long idRepartidor) {
@@ -97,77 +113,66 @@ public class ServicioVenta {
             throw new IllegalArgumentException("Los datos obligatorios del cliente para domicilio están incompletos.");
         }
 
-        // 2. Buscar o asegurar un repartidor disponible
+        // 2. Verificar disponibilidad de repartidores (Escenario 5)
         List<Trabajador> repartidoresDisponibles = trabajadorRepository.findByRol("Repartidor");
-        Trabajador repartidorSeleccionado = null;
-
         if (repartidoresDisponibles == null || repartidoresDisponibles.isEmpty()) {
-            repartidorSeleccionado = new Trabajador();
-            repartidorSeleccionado.setNombreCompleto("Repartidor General");
-            repartidorSeleccionado.setRol("Repartidor");
-            repartidorSeleccionado.setTelefono("5550000000");
-            repartidorSeleccionado.setNumeroTrabajador("REP-DEF");
-            repartidorSeleccionado = trabajadorRepository.save(repartidorSeleccionado);
-        } else {
-            repartidorSeleccionado = repartidoresDisponibles.get(0);
+            throw new IllegalStateException("No hay repartidores disponibles. Tiempo de espera estimado: 30 minutos.");
         }
 
-        // 3. Asegurar que el cliente esté guardado o fusionado correctamente en la BD
-        Cliente clienteGestionado = clienteRepository.save(cliente);
+        // 3. Crear y configurar la venta a domicilio
+        Venta venta = new Venta();
+        venta.setFecha(LocalDateTime.now());
+        venta.setEsDomicilio(true);
+        venta.setCostoEnvio(50.0); // Costo de envío estándar configurable (Escenario 3)
+        venta.setCliente(cliente);
 
-        // 4. Crear y configurar la venta a domicilio
-        Venta nuevaVenta = new Venta();
-        nuevaVenta.setDate(LocalDateTime.now());
-        nuevaVenta.setEsDomicilio(true);
-        nuevaVenta.setCliente(clienteGestionado);
-
-        // Asociar cada detalle de manera limpia evitando entidades detached
         if (detalles != null) {
             for (DescripcionVenta detalle : detalles) {
-                DescripcionVenta nuevoDetalle = new DescripcionVenta();
-                nuevoDetalle.setProducto(detalle.getProducto());
-                nuevoDetalle.setCantidad(detalle.getCantidad());
-                nuevaVenta.agregarDetalle(nuevoDetalle);
+                venta.agregaProducto(detalle.getProducto(), detalle.getCantidad());
             }
         }
 
-        // 5. Configurar costo de envío y recalcular totales (Escenario 3)
-        double costoEnvio = 50.00; 
-        nuevaVenta.setCostoEnvio(costoEnvio);
+        double totalConEnvio = venta.getTotal(); // Incluye subtotal de productos + costo de envío
+        venta.setPago(montoRecibido);
+        venta.setCambio(montoRecibido - totalConEnvio);
 
-        double totalFinal = nuevaVenta.getTotal();
+        // Asignar el repartidor seleccionado
+        Trabajador repartidorSeleccionado = trabajadorRepository.findById(idRepartidor)
+                .orElseThrow(() -> new IllegalArgumentException("Repartidor no válido"));
+        
+        venta.setRepartidorAsignado(repartidorSeleccionado.getNombreCompleto());
+        venta.setEstadoEntrega("Pedido en camino");
 
-        if (montoRecibido < totalFinal) {
-            montoRecibido = totalFinal; 
-        }
-
-        nuevaVenta.setMontoRecibido(montoRecibido);
-        nuevaVenta.setCambio(montoRecibido - totalFinal);
-
-        // 6. Asignar el repartidor asegurado y estado inicial
-        nuevaVenta.setRepartidorAsignado(repartidorSeleccionado.getNombreCompleto());
-        nuevaVenta.setEstadoEntrega("Registrado");
-
-        // 7. Guardar la venta de forma segura usando merge/save
-        return ventaRepository.save(nuevaVenta);
+        return ventaRepository.save(venta);
     }
 
     /**
-     * Consulta los pedidos a domicilio activos o en camino para mostrarlos en la tabla (HU-17).
+     * Obtiene una lista de las ventas que son pedidos a domicilio y que siguen activos/pendientes.
      */
     public List<Venta> obtenerPedidosDomicilioActivos() {
-        return ventaRepository.findByEsDomicilioTrueAndEstadoEntregaNot("Entregado");
+        List<Venta> todasLasVentas = (List<Venta>) ventaRepository.findAll();
+        List<Venta> pedidosActivos = new ArrayList<>();
+        
+        for (Venta v : todasLasVentas) {
+            if (v.isEsDomicilio() && !"Entregado".equalsIgnoreCase(v.getEstadoEntrega())) {
+                pedidosActivos.add(v);
+            }
+        }
+        return pedidosActivos;
     }
 
     /**
-     * Marca un pedido como "Entregado" para cerrar el flujo manualmente desde la tabla (HU-17).
+     * Cierra o marca como entregado un pedido a domicilio por su ID.
      */
     @Transactional
-    public void cerrarPedido(long idVenta) {
-        Venta venta = ventaRepository.findById(idVenta).orElse(null);
-        if (venta != null) {
+    public boolean cerrarPedido(long idVenta) {
+        Optional<Venta> ventaOpt = ventaRepository.findById(idVenta);
+        if (ventaOpt.isPresent()) {
+            Venta venta = ventaOpt.get();
             venta.setEstadoEntrega("Entregado");
             ventaRepository.save(venta);
+            return true;
         }
+        return false;
     }
 }

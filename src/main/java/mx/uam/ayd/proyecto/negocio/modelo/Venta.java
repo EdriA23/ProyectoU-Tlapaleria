@@ -54,7 +54,6 @@ public class Venta {
 
     private String repartidorAsignado;
 
-
     @OneToMany(
             mappedBy = "venta",
             fetch = FetchType.EAGER,
@@ -96,7 +95,7 @@ public class Venta {
 
     /**
      * Suma los precios y cantidades de cada producto 
-     * para calcular el total de la venta (HU-05), considerando opcionalmente el costo de envío.
+     * para calcular el total de la venta (HU-05), considerando el costo de envío si es domicilio.
      */
     public void calculaTotal() {
 
@@ -110,8 +109,12 @@ public class Venta {
             }
         }
 
-        // Si es a domicilio, sumamos el costo de envío al total general
-        this.total = acumulado + this.costoEnvio;
+        // Si es a domicilio, sumamos el costo de envío al total general (Escenario 3)
+        if (this.esDomicilio) {
+            this.total = acumulado + this.costoEnvio;
+        } else {
+            this.total = acumulado;
+        }
     }
 
     public void agregarDetalle(DescripcionVenta detalle) {
@@ -119,6 +122,7 @@ public class Venta {
         if (detalle != null) {
             detalle.setVenta(this);
             this.productos.add(detalle);
+            calculaTotal();
         }
     }
 
@@ -182,14 +186,13 @@ public class Venta {
         this.cambio = cambio;
     }
 
-   
-
     public boolean isEsDomicilio() {
         return esDomicilio;
     }
 
     public void setEsDomicilio(boolean esDomicilio) {
         this.esDomicilio = esDomicilio;
+        calculaTotal(); // Recalcula automáticamente al cambiar entre mostrador y domicilio (Escenario 3)
     }
 
     public Cliente getCliente() {
@@ -206,7 +209,7 @@ public class Venta {
 
     public void setCostoEnvio(double costoEnvio) {
         this.costoEnvio = costoEnvio;
-        calculaTotal(); 
+        calculaTotal(); // Recalcula automáticamente al cambiar el costo de envío (Escenario 3)
     }
 
     public String getEstadoEntrega() {
@@ -229,21 +232,17 @@ public class Venta {
         return productos;
     }
 
-    public void setProductos(
-            List<DescripcionVenta> productos) {
-
+    public void setProductos(List<DescripcionVenta> productos) {
         this.productos = productos;
 
         if (this.productos != null) {
-
-            for (DescripcionVenta detalle
-                    : this.productos) {
-
+            for (DescripcionVenta detalle : this.productos) {
                 if (detalle != null) {
                     detalle.setVenta(this);
                 }
             }
         }
+        calculaTotal();
     }
 
     @Override
@@ -255,7 +254,6 @@ public class Venta {
 
         if (obj == null
                 || getClass() != obj.getClass()) {
-
             return false;
         }
 
@@ -304,8 +302,7 @@ public class Venta {
                 "Unimplemented method 'setControl'");
     }
 
-    public int getPago() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getPago'");
+    public double getPago() {
+        return montoRecibido;
     }
 }
