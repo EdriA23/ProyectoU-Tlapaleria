@@ -70,7 +70,7 @@
                      </padding>
                   </Button>
 
-                  <!-- Margen de Ganancia -->
+                  <!-- Margen de Ganancia (ÚNICO BOTÓN) -->
                   <Button alignment="BASELINE_LEFT" graphicTextGap="15.0" maxWidth="1.7976931348623157E308" minHeight="50.0" mnemonicParsing="false" onAction="#handleMargenGanancia" style="-fx-background-color: PINK; -fx-background-radius: 8;" text="Margen Ganancia" textFill="#546E7A">
                      <font>
                         <Font name="System Bold" size="14.0" />
@@ -87,7 +87,7 @@
                      </padding>
                   </Button>
 
-                  <!-- Pedidos a Domicilio (NUEVO BOTÓN LATERAL - HU-17) -->
+                  <!-- Pedidos a Domicilio -->
                   <Button alignment="BASELINE_LEFT" graphicTextGap="15.0" maxWidth="1.7976931348623157E308" minHeight="50.0" mnemonicParsing="false" onAction="#handleConsultarPedidosDomicilio" style="-fx-background-color: PINK; -fx-background-radius: 8;" text="Pedidos Domicilio" textFill="#546E7A">
                      <font>
                         <Font name="System Bold" size="14.0" />
@@ -334,35 +334,27 @@
                                                       <Font name="System Bold" size="12.0" />
                                                    </font>
                                                 </Label>
-                                              <GridPane hgap="15.0" vgap="15.0">
-                                           <columnConstraints>
-                                           <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                                           <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                                         <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                                           </columnConstraints>
-                                           <rowConstraints>
-                                              <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
-                                           </rowConstraints>
-                                           <children>
+                                                <GridPane hgap="15.0" vgap="15.0">
+                                                   <columnConstraints>
+                                                      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
+                                                      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
+                                                   </columnConstraints>
+                                                   <rowConstraints>
+                                                      <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
+                                                   </rowConstraints>
+                                                   <children>
 
-                                             <!-- Izquierda (Columna 0) -->
-                                             <Button fx:id="btnRegistrarMercancia" alignment="BASELINE_LEFT" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleRegistrarMercancia" style="-fx-background-color: transparent;" text="Registrar Mercancía" textFill="#383838" GridPane.columnIndex="0">
-                                                <graphic>
-                                                   <Label text="➕" textFill="#303030" />
-                                                </graphic>
-                                             </Button>
-
-                                             <!-- Centro (Columna 1) -->
-                                                      <Button fx:id="btnConsultarTrabajador" alignment="BASELINE_LEFT" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleConsultarTrabajador" style="-fx-background-color: transparent;" text="Registrar Personal" textFill="#383838" GridPane.columnIndex="1">
+                                                      <!-- Registrar Mercancía -->
+                                                      <Button fx:id="btnRegistrarMercancia" alignment="BASELINE_LEFT" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleRegistrarMercancia" style="-fx-background-color: transparent;" text="Registrar Mercancía" textFill="#383838" GridPane.columnIndex="0">
                                                          <graphic>
                                                             <Label text="➕" textFill="#303030" />
                                                          </graphic>
                                                       </Button>
 
-                                                      <!-- Derecha (Columna 2) -->
-                                                      <Button alignment="BASELINE_LEFT" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleMargenGanancia" style="-fx-background-color: transparent;" text="Margen de Ganancia" textFill="#383838" GridPane.columnIndex="2">
+                                                      <!-- Registrar Personal -->
+                                                      <Button fx:id="btnConsultarTrabajador" alignment="BASELINE_LEFT" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleConsultarTrabajador" style="-fx-background-color: transparent;" text="Registrar Personal" textFill="#383838" GridPane.columnIndex="1">
                                                          <graphic>
-                                                            <Label text="📊" textFill="#303030" />
+                                                            <Label text="➕" textFill="#303030" />
                                                          </graphic>
                                                       </Button>
 

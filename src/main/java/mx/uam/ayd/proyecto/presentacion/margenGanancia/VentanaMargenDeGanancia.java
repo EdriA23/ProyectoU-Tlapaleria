@@ -51,6 +51,9 @@ public class VentanaMargenDeGanancia {
     private TableColumn<Producto, Double> colVenta;
 
     @FXML
+    private TableColumn<Producto, String> colGananciaPesos; // NUEVA COLUMNA PARA GANANCIA EN PESOS
+
+    @FXML
     private TableColumn<Producto, String> colMargen;
 
     @FXML
@@ -89,7 +92,7 @@ public class VentanaMargenDeGanancia {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/ventana-margen-ganancia.fxml"));
             loader.setControllerFactory(clazz -> this);
             
-            Scene scene = new Scene(loader.load(), 850, 550);
+            Scene scene = new Scene(loader.load(), 950, 550);
             stage.setScene(scene);
             
             // Configuración de columnas
@@ -98,7 +101,14 @@ public class VentanaMargenDeGanancia {
             colCosto.setCellValueFactory(new PropertyValueFactory<>("precioCompra"));
             colVenta.setCellValueFactory(new PropertyValueFactory<>("precio"));
 
-            // Cálculo dinámico del porcentaje de margen
+            // Cálculo dinámico de la ganancia en pesos ($)
+            colGananciaPesos.setCellValueFactory(cellData -> {
+                Producto p = cellData.getValue();
+                Double ganancia = control.calcularGananciaEnPesos(p);
+                return new SimpleStringProperty(String.format("$ %.2f", ganancia));
+            });
+
+            // Cálculo dinámico del porcentaje de margen (%)
             colMargen.setCellValueFactory(cellData -> {
                 Producto p = cellData.getValue();
                 Double margen = control.calcularMargen(p);
