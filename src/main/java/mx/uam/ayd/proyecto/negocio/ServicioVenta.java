@@ -1,7 +1,10 @@
 package mx.uam.ayd.proyecto.negocio;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -73,7 +76,6 @@ public class ServicioVenta {
      */
     public Venta actualizarVenta(Venta venta) {
         if (venta != null) {
-            // Solo recalcula o guarda según convenga
             ventaRepository.save(venta);
         }
         return venta;
@@ -142,5 +144,35 @@ public class ServicioVenta {
         venta.setEstadoEntrega("Pedido en camino");
 
         return ventaRepository.save(venta);
+    }
+
+    /**
+     * Obtiene una lista de las ventas que son pedidos a domicilio y que siguen activos/pendientes.
+     */
+    public List<Venta> obtenerPedidosDomicilioActivos() {
+        List<Venta> todasLasVentas = (List<Venta>) ventaRepository.findAll();
+        List<Venta> pedidosActivos = new ArrayList<>();
+        
+        for (Venta v : todasLasVentas) {
+            if (v.isEsDomicilio() && !"Entregado".equalsIgnoreCase(v.getEstadoEntrega())) {
+                pedidosActivos.add(v);
+            }
+        }
+        return pedidosActivos;
+    }
+
+    /**
+     * Cierra o marca como entregado un pedido a domicilio por su ID.
+     */
+    @Transactional
+    public boolean cerrarPedido(long idVenta) {
+        Optional<Venta> ventaOpt = ventaRepository.findById(idVenta);
+        if (ventaOpt.isPresent()) {
+            Venta venta = ventaOpt.get();
+            venta.setEstadoEntrega("Entregado");
+            ventaRepository.save(venta);
+            return true;
+        }
+        return false;
     }
 }
