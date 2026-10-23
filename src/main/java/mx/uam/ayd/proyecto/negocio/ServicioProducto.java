@@ -136,6 +136,26 @@ public class ServicioProducto {
         return true;
     }
 
+
+    /**
+     * Calcula la ganancia monetaria en pesos (Precio Venta - Precio Costo).
+     *
+     * @param producto producto a evaluar
+     * @return ganancia en pesos, o 0.0 si los datos son inválidos
+     */
+    public Double calculaGananciaEnPesos(Producto producto) {
+        if (producto == null) return 0.0;
+
+        Double precioVenta = producto.getPrecio();
+        Double precioCosto = producto.getPrecioCompra();
+
+        if (precioVenta == null || precioCosto == null) {
+            return 0.0;
+        }
+
+        return precioVenta - precioCosto;
+    }
+
     // MÉTODOS PARA LA HISTORIA DE USUARIO (HU-09)
 
     /**
@@ -285,3 +305,4 @@ public class ServicioProducto {
         return productoRepository.save(producto);
     }
 }
+

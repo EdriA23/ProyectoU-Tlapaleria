@@ -172,6 +172,21 @@ class ServicioProductoTest {
     }
 
     /**
+     * Prueba HU-28: Valida el cálculo correcto de la ganancia en pesos ($).
+     * Ejemplo: Venta = 180.5, Costo = 110.0 -> Ganancia = $ 70.50.
+     */
+    @Test
+    void testCalculaGananciaEnPesosExitoso() {
+        Producto producto = new Producto();
+        producto.setPrecio(180.50);     // Precio de Venta
+        producto.setPrecioCompra(110.00); // Precio de Costo
+
+        Double ganancia = servicioProducto.calculaGananciaEnPesos(producto);
+
+        assertEquals(70.50, ganancia, 0.001, "La ganancia en pesos debe ser $70.50");
+    }
+
+    /**
      * Prueba HU-28: Valida la regla de negocio RN-01 (Precio Venta > Precio Costo).
      */
     @Test

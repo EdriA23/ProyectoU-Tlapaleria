@@ -101,4 +101,17 @@ public class ControlMargenDeGanancia {
             return false;
         }
     }
+
+
+    /**
+     * Solicita el cálculo de la ganancia en pesos para un producto dado.
+     *
+     * @param producto objeto producto a calcular
+     * @return ganancia en pesos
+     */
+    public Double calcularGananciaEnPesos(Producto producto) {
+        return servicioProducto.calculaGananciaEnPesos(producto);
+    }
+
+    
 }
