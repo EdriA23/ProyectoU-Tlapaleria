@@ -20,6 +20,8 @@ public class ControlTrabajador {
     @Autowired
     private VistaAgregarTrabajador vistaAgregarTrabajador;
 
+    @Autowired
+    private VistaDetalleTrabajador vistaDetalleTrabajador;
     /**
      * Inicia el flujo del modulo cargando la lista de trabajadores
      * y mostrando la ventana principal.
@@ -44,21 +46,7 @@ public class ControlTrabajador {
         vistaTrabajador.muestra(listaTrabajadoresActualizado);
     }
 
-  /**   
-     * Alias de compatibilidad por si alguna vista aún invoca buscarTrabajador()
-     * o recuperarPersonalActualizado()
-    
-    public void buscarTrabajador() {
-        recuperarPersonal();
-    }
 
-    public void recuperarPersonalActualizado() {
-        recuperarPersonal();
-    }*/
-
-    /**
-     * Inicia el flujo del formulario generando el id del trabajador y mostrando el formulario 
-     */
     public void abrirFormulario() {
         String idTrabajador = servicioTrabajador.generarIdTrabajador();
         vistaAgregarTrabajador.muestraFormulario(this, idTrabajador);
@@ -79,4 +67,50 @@ public class ControlTrabajador {
             vistaAgregarTrabajador.muestraError("Error al registrar: " + e.getMessage());
         }
     }
+
+   public void consultarDetalles(Long id) {
+        try {
+            Trabajador trabajador = servicioTrabajador.obtenerDetalles(id);
+            if (trabajador != null) {
+                vistaDetalleTrabajador.setControl(this); // <-- LÍNEA CLAVE
+                vistaDetalleTrabajador.muestraDetalle(trabajador);
+            } else {
+                vistaTrabajador.muestraMensajeError("No se encontró el trabajador solicitado.");
+            }
+        } catch (Exception e) {
+            vistaTrabajador.muestraMensajeError("Error al consultar detalles: " + e.getMessage());
+        }
+    }
+     public void abrirEdicionTrabajador(Trabajador trabajador) {
+        if (trabajador != null) {
+            vistaAgregarTrabajador.muestra(this, trabajador);
+        }
+    }
+
+    public void realizarActualizacion(Trabajador trabajador) {
+        try {
+            servicioTrabajador.guardar(trabajador);
+            vistaAgregarTrabajador.mensajeExito(trabajador);
+        } catch (Exception e) {
+            vistaAgregarTrabajador.muestraError("Error al actualizar datos: " + e.getMessage());
+        }
+    }
+    /**
+     * Elimina el trabajador y actualiza la lista general en la vista principal.
+     */
+    public void eliminarTrabajador(Long id) {
+        try {
+            boolean exito = servicioTrabajador.eliminarTrabajador(id);
+            if (exito) {
+                // Recupera la lista actualizada y refresca VistaTrabajador
+                recuperarPersonal();
+            } else {
+                vistaTrabajador.muestraMensajeError("No se pudo eliminar el trabajador.");
+            }
+        } catch (Exception e) {
+            vistaTrabajador.muestraMensajeError("Error al eliminar trabajador: " + e.getMessage());
+        }
+    }
+
+
 }

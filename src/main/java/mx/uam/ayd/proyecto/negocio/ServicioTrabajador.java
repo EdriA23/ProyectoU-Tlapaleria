@@ -46,4 +46,27 @@ public class ServicioTrabajador {
         // Persiste la entidad en el repositorio
         return repositoryTrabajador.save(trabajador);
     }
+    /**
+     * Obtiene los detalles de un trabajador a partir de su ID.
+     */
+    public Trabajador obtenerDetalles(Long id) {
+        return repositoryTrabajador.findById(id).orElse(null);
+    }
+       /**
+ * Guarda o actualiza un trabajador existente.
+ */
+public Trabajador guardar(Trabajador trabajador) {
+    return repositoryTrabajador.save(trabajador);
+}
+    /**
+     * Elimina a un trabajador por su ID.
+     */
+    public boolean eliminarTrabajador(Long id) {
+        if (repositoryTrabajador.existsById(id)) {
+            repositoryTrabajador.deleteById(id);
+            return true;
+        }
+        return false;
+    }
+  
 }
