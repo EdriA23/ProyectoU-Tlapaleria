@@ -131,6 +131,11 @@ public class ControlRegistroVenta {
             servicioVenta.registrarVenta(ventaActual.getProductos(), efectivoRecibido);
             
             ventanaCobro.muestraDialogoConMensaje("La venta ha sido exitosa.");
+            
+            // --- CORRECCIÓN PARA PERMITIR MÚLTIPLES VENTAS ---
+            // Reiniciamos la venta actual a null para limpiar el estado y permitir nuevas transacciones de corrido
+            this.ventaActual = null;
+            
             termina();
             
         } catch (Exception ex) {
