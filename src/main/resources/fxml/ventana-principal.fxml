@@ -332,7 +332,7 @@
                                                       </Button>
 
                                                       <!-- Registrar Personal -->
-                                                      <Button fx:id="btnConsultarTrabajador" alignment="BASELINE_LEFT" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleConsultarTrabajador" style="-fx-background-color: transparent;" text="Registrar Personal" textFill="#383838" GridPane.columnIndex="1">
+                                                      <Button fx:id="btnConsultarTrabajador" alignment="BASELINE_LEFT" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleConsultarTrabajador" style="-fx-background-color: transparent;" text="Gestion de Personal" textFill="#383838" GridPane.columnIndex="1">
                                                          <graphic>
                                                             <Label text="➕" textFill="#303030" />
                                                          </graphic>
