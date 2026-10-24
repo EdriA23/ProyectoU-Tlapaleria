@@ -21,6 +21,7 @@ import mx.uam.ayd.proyecto.presentacion.agregarProductos.ControlAgregarProductos
 import mx.uam.ayd.proyecto.presentacion.consultarProveedor.ControlProveedor;
 import mx.uam.ayd.proyecto.presentacion.margenGanancia.ControlMargenDeGanancia;
 import mx.uam.ayd.proyecto.presentacion.gestionPersonal.ControlTrabajador; // Import HU-1
+import mx.uam.ayd.proyecto.presentacion.registrarCliente.ControlRegistrarCliente; // Import HU-12
 
 /**
  * Control principal del sistema
@@ -36,19 +37,21 @@ public class ControlPrincipal {
     private final ControlRegistrarMercancia controlRegistrarMercancia;
     private final ControlActualizarPrecio controlActualizarPrecio;
     private final ControlDevolucionProducto controlDevolucion;
-    private final ControlConsultarInventario controlConsultarInventario; // <--- Recuperado como atributo original
+    private final ControlConsultarInventario controlConsultarInventario;
     private final ControlHistorialMovimientos controlHistorialMovimientos;
     private final ControlRevisarExistencia controlRevisarExistencia;
     private final ControlAgregarProductos controlAgregarProductos;
     private final ControlProveedor controlProveedor;
 
-    private final ControlMargenDeGanancia controlMargenDeGanancia; 
+    private final ControlMargenDeGanancia controlMargenDeGanancia;
     private final ControlConsultaPedidos controlConsultaPedidos; // Para HU-17
 
     private final ControlTrabajador controlTrabajador;
 
+    private final ControlRegistrarCliente controlRegistrarCliente; // Para HU-12
+
     private final VentanaPrincipal ventana;
-    
+
 
     @Autowired
     public ControlPrincipal(
@@ -59,7 +62,7 @@ public class ControlPrincipal {
             ControlRegistrarMercancia controlRegistrarMercancia,
             ControlActualizarPrecio controlActualizarPrecio,
             ControlDevolucionProducto controlDevolucion,
-            ControlConsultarInventario controlConsultarInventario, // <--- Incluido en el constructor original
+            ControlConsultarInventario controlConsultarInventario,
             ControlHistorialMovimientos controlHistorialMovimientos,
             ControlRevisarExistencia controlRevisarExistencia,
             ControlRegistroVenta controlRegistroVenta,
@@ -67,10 +70,11 @@ public class ControlPrincipal {
             ControlProveedor controlProveedor,
 
             ControlMargenDeGanancia controlMargenDeGanancia,
-            ControlConsultaPedidos controlConsultaPedidos, 
+            ControlConsultaPedidos controlConsultaPedidos,
 
-            ControlMargenDeGanancia controlMargenDeGanancia1, // Parámetro del constructor
             ControlTrabajador controlTrabajador,
+
+            ControlRegistrarCliente controlRegistrarCliente, // Parámetro HU-12
 
             VentanaPrincipal ventana) {
 
@@ -81,15 +85,17 @@ public class ControlPrincipal {
         this.controlRegistrarMercancia = controlRegistrarMercancia;
         this.controlActualizarPrecio = controlActualizarPrecio;
         this.controlDevolucion = controlDevolucion;
-        this.controlConsultarInventario = controlConsultarInventario; // <--- Asignado
+        this.controlConsultarInventario = controlConsultarInventario;
         this.controlHistorialMovimientos = controlHistorialMovimientos;
         this.controlRevisarExistencia = controlRevisarExistencia;
         this.controlAgregarProductos = controlAgregarProductos;
         this.controlProveedor = controlProveedor;
-        this.controlMargenDeGanancia = controlMargenDeGanancia1;
+        this.controlMargenDeGanancia = controlMargenDeGanancia;
 
         this.controlConsultaPedidos = controlConsultaPedidos;
         this.controlTrabajador = controlTrabajador;
+
+        this.controlRegistrarCliente = controlRegistrarCliente;
 
         this.ventana = ventana;
     }
@@ -135,7 +141,7 @@ public class ControlPrincipal {
 
     public void consultarInventario() {
         if (controlConsultarInventario != null) {
-            ControlConsultarInventario.inicia(); // <--- Llamada limpia al objeto inyectado
+            controlConsultarInventario.inicia();
         }
     }
 
@@ -162,18 +168,23 @@ public class ControlPrincipal {
         controlMargenDeGanancia.inicia();
     }
 
-
     /**
      * Inicia la HU-17: Consulta y Gestión de Pedidos a Domicilio
      */
     public void consultarPedidosDomicilio() {
         if (controlConsultaPedidos != null) {
-            controlConsultaPedidos.inicia(); // <--- Abre la ventana correcta de pedidos a domicilio
+            controlConsultaPedidos.inicia();
         }
     }
 
     public void consultarTrabajador() {
         controlTrabajador.iniciaBusqueda();
+    }
 
+    /**
+     * Inicia la HU-12: Registrar clientes
+     */
+    public void registrarCliente() {
+        controlRegistrarCliente.inicia();
     }
 }

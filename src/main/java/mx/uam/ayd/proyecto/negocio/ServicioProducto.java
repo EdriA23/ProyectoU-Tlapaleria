@@ -232,7 +232,6 @@ public class ServicioProducto {
 
     // =========================================================================
     // MÉTODOS PARA LA HISTORIA DE USUARIO (HU-28: MARGEN DE GANANCIA)
-    // =========================================================================
 
     /**
      * Recupera los productos para la vista de margen de ganancia.
