@@ -1,10 +1,11 @@
+
 package mx.uam.ayd.proyecto.presentacion.principal;
 
 import jakarta.annotation.PostConstruct;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import mx.uam.ayd.proyecto.presentacion.ConsultaPedidos.ControlConsultaPedidos;
 import mx.uam.ayd.proyecto.presentacion.actualizarPrecioProductos.ControlActualizarPrecio;
 import mx.uam.ayd.proyecto.presentacion.agregarUsuario.ControlAgregarUsuario;
 import mx.uam.ayd.proyecto.presentacion.consultarInventario.ControlConsultarInventario;
@@ -19,15 +20,12 @@ import mx.uam.ayd.proyecto.presentacion.registroVenta.ControlRegistroVenta;
 import mx.uam.ayd.proyecto.presentacion.agregarProductos.ControlAgregarProductos;
 import mx.uam.ayd.proyecto.presentacion.consultarProveedor.ControlProveedor;
 import mx.uam.ayd.proyecto.presentacion.corteCaja.ControlCorteCaja;
+import mx.uam.ayd.proyecto.presentacion.margenGanancia.ControlMargenDeGanancia;
+import mx.uam.ayd.proyecto.presentacion.gestionPersonal.ControlTrabajador;
 
-
-/**
- * @author humbertocervantes
- */
 @Component
 public class ControlPrincipal {
 
-    // Atributos de controles existentes
     private final ControlAgregarUsuario controlAgregarUsuario;
     private final ControlListarUsuarios controlListarUsuarios;
     private final ControlListarGrupos controlListarGrupos;
@@ -40,10 +38,14 @@ public class ControlPrincipal {
     private final ControlRevisarExistencia controlRevisarExistencia;
     private final ControlRegistroVenta controlRegistroVenta;
     private final ControlAgregarProductos controlAgregarProductos;
-    private final ControlProveedor controlProveedor; // Inyección para tu HU
-    private final VentanaPrincipal ventana;
+    private final ControlProveedor controlProveedor;
+
     private final ControlCorteCaja controlCorteCaja;
-    
+    private final ControlMargenDeGanancia controlMargenDeGanancia;
+    private final ControlConsultaPedidos controlConsultaPedidos;
+    private final ControlTrabajador controlTrabajador;
+
+    private final VentanaPrincipal ventana;
 
     @Autowired
     public ControlPrincipal(
@@ -59,10 +61,12 @@ public class ControlPrincipal {
             ControlRevisarExistencia controlRevisarExistencia,
             ControlRegistroVenta controlRegistroVenta,
             ControlAgregarProductos controlAgregarProductos,
-            ControlProveedor controlProveedor, // Parámetro en constructor
-            VentanaPrincipal ventana ,
-
-            ControlCorteCaja controlCorteCaja ) {
+            ControlProveedor controlProveedor,
+            ControlCorteCaja controlCorteCaja,
+            ControlMargenDeGanancia controlMargenDeGanancia,
+            ControlConsultaPedidos controlConsultaPedidos,
+            ControlTrabajador controlTrabajador,
+            VentanaPrincipal ventana) {
 
         this.controlAgregarUsuario = controlAgregarUsuario;
         this.controlListarUsuarios = controlListarUsuarios;
@@ -77,8 +81,12 @@ public class ControlPrincipal {
         this.controlRegistroVenta = controlRegistroVenta;
         this.controlAgregarProductos = controlAgregarProductos;
         this.controlProveedor = controlProveedor;
+
         this.controlCorteCaja = controlCorteCaja;
-        
+        this.controlMargenDeGanancia = controlMargenDeGanancia;
+        this.controlConsultaPedidos = controlConsultaPedidos;
+        this.controlTrabajador = controlTrabajador;
+
         this.ventana = ventana;
     }
 
@@ -90,8 +98,6 @@ public class ControlPrincipal {
     public void inicia() {
         ventana.muestra();
     }
-
-    // --- MÉTODOS DE ACCIÓN ---
 
     public void agregarUsuario() {
         controlAgregarUsuario.inicia();
@@ -122,7 +128,9 @@ public class ControlPrincipal {
     }
 
     public void consultarInventario() {
-        controlConsultarInventario.inicia();
+        if (controlConsultarInventario != null) {
+            controlConsultarInventario.inicia();
+        }
     }
 
     public void historialMovimientos() {
@@ -137,16 +145,34 @@ public class ControlPrincipal {
         controlAgregarProductos.inicia();
     }
 
-    /**
-     * Inicia la HU-06: Directorio de Proveedores
-     */
     public void consultarProveedor() {
         controlProveedor.buscaProveedores();
     }
-        /**
+
+    /**
      * Inicia la HU-15: Corte de caja.
      */
     public void realizarCorteCaja() {
         controlCorteCaja.iniciar();
+    }
+
+    /**
+     * Inicia la HU-28: Margen de Ganancia.
+     */
+    public void margenGanancia() {
+        controlMargenDeGanancia.inicia();
+    }
+
+    /**
+     * Inicia la HU-17: Consulta y Gestión de Pedidos a Domicilio.
+     */
+    public void consultarPedidosDomicilio() {
+        if (controlConsultaPedidos != null) {
+            controlConsultaPedidos.inicia();
+        }
+    }
+
+    public void consultarTrabajador() {
+        controlTrabajador.iniciaBusqueda();
     }
 }

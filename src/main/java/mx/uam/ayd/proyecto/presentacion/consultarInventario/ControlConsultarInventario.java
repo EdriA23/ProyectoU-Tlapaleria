@@ -15,8 +15,8 @@ import mx.uam.ayd.proyecto.negocio.modelo.Producto;
 @Component
 public class ControlConsultarInventario {
 
-    private final ServicioProducto servicioProducto;
-    private final VentanaConsultarInventario ventana;
+    private static ServicioProducto servicioProducto = null;
+    private static VentanaConsultarInventario ventana = new VentanaConsultarInventario();
 
     /**
      * Crea el controlador de la consulta de inventario.
@@ -29,8 +29,8 @@ public class ControlConsultarInventario {
             ServicioProducto servicioProducto,
             VentanaConsultarInventario ventana) {
 
-        this.servicioProducto = servicioProducto;
-        this.ventana = ventana;
+        ControlConsultarInventario.servicioProducto = servicioProducto;
+        ControlConsultarInventario.ventana = ventana;
     }
 
     /**
@@ -44,14 +44,12 @@ public class ControlConsultarInventario {
     /**
      * Recupera todos los productos y los muestra en la ventana.
      */
-    public void inicia() {
+    public static void inicia() {
 
         try {
             Iterable<Producto> productos =
                     servicioProducto.recuperaProductos();
-
             ventana.muestra(productos);
-
         } catch (Exception ex) {
             ventana.muestraDialogoConMensaje(
                     "Error al recuperar los productos: "
