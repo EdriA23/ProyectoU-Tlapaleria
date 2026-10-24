@@ -136,9 +136,14 @@ public class ServicioVenta {
         venta.setPago(montoRecibido);
         venta.setCambio(montoRecibido - totalConEnvio);
 
-        // Asignar el repartidor seleccionado
-        Trabajador repartidorSeleccionado = trabajadorRepository.findById(idRepartidor)
-                .orElseThrow(() -> new IllegalArgumentException("Repartidor no válido"));
+        // Asignar el repartidor seleccionado (si pasas un ID genérico y hay repartidores, asignamos el primero disponible o por ID)
+        Trabajador repartidorSeleccionado;
+        if (idRepartidor <= 0 && !repartidoresDisponibles.isEmpty()) {
+            repartidorSeleccionado = repartidoresDisponibles.get(0);
+        } else {
+            repartidorSeleccionado = trabajadorRepository.findById(idRepartidor)
+                    .orElse(repartidoresDisponibles.get(0)); // Respaldo por si el ID directo no cuadra pero sí hay repartidores
+        }
         
         venta.setRepartidorAsignado(repartidorSeleccionado.getNombreCompleto());
         venta.setEstadoEntrega("Pedido en camino");
