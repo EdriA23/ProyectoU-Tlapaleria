@@ -10,6 +10,8 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import mx.uam.ayd.proyecto.presentacion.historialMovimientos.ControlHistorialMovimientos;
 
@@ -31,18 +33,27 @@ public class Venta {
      * Se conserva como atributo normal para no afectar
      * servicios, controladores o pruebas existentes.
      */
-    private int idVendedor;
+    private long idTrabajador;
 
     private double montoRecibido;
 
     private double cambio;
 
     /*
-     * Una venta puede contener varios detalles.
-     *
-     * mappedBy = "venta" hace referencia al atributo venta
-     * existente en DescripcionVenta.
+     * es mi hu-17
      */
+    private boolean esDomicilio = false;
+
+    @ManyToOne
+    @JoinColumn(name = "idCliente")
+    private Cliente cliente;
+
+    private double costoEnvio = 0.0;
+
+    private String estadoEntrega;
+
+    private String repartidorAsignado;
+
     @OneToMany(
             mappedBy = "venta",
             fetch = FetchType.EAGER,
@@ -53,7 +64,7 @@ public class Venta {
     public Venta() {
     }
 
-  /**
+    /**
      * Agrega un producto a la venta y actualiza el total.
      * Permite cumplir con la HU-05 validando que el producto exista 
      * y la cantidad sea mayor a 0.
@@ -84,7 +95,7 @@ public class Venta {
 
     /**
      * Suma los precios y cantidades de cada producto 
-     * para calcular el total de la venta (HU-05).
+     * para calcular el total de la venta (HU-05), considerando el costo de envío si es domicilio.
      */
     public void calculaTotal() {
 
@@ -98,7 +109,12 @@ public class Venta {
             }
         }
 
-        this.total = acumulado;
+        // Si es a domicilio, sumamos el costo de envío al total general (Escenario 3)
+        if (this.esDomicilio) {
+            this.total = acumulado + this.costoEnvio;
+        } else {
+            this.total = acumulado;
+        }
     }
 
     public void agregarDetalle(DescripcionVenta detalle) {
@@ -106,6 +122,7 @@ public class Venta {
         if (detalle != null) {
             detalle.setVenta(this);
             this.productos.add(detalle);
+            calculaTotal();
         }
     }
 
@@ -145,12 +162,12 @@ public class Venta {
         this.date = date;
     }
 
-    public int getIdVendedor() {
-        return idVendedor;
+    public long getIdTrabajador() {
+        return idTrabajador;
     }
 
-    public void setIdVendedor(int idVendedor) {
-        this.idVendedor = idVendedor;
+    public void setIdTrabajador(long idTrabajador) {
+        this.idTrabajador = idTrabajador;
     }
 
     public double getMontoRecibido() {
@@ -169,25 +186,63 @@ public class Venta {
         this.cambio = cambio;
     }
 
+    public boolean isEsDomicilio() {
+        return esDomicilio;
+    }
+
+    public void setEsDomicilio(boolean esDomicilio) {
+        this.esDomicilio = esDomicilio;
+        calculaTotal(); // Recalcula automáticamente al cambiar entre mostrador y domicilio (Escenario 3)
+    }
+
+    public Cliente getCliente() {
+        return cliente;
+    }
+
+    public void setCliente(Cliente cliente) {
+        this.cliente = cliente;
+    }
+
+    public double getCostoEnvio() {
+        return costoEnvio;
+    }
+
+    public void setCostoEnvio(double costoEnvio) {
+        this.costoEnvio = costoEnvio;
+        calculaTotal(); // Recalcula automáticamente al cambiar el costo de envío (Escenario 3)
+    }
+
+    public String getEstadoEntrega() {
+        return estadoEntrega;
+    }
+
+    public void setEstadoEntrega(String estadoEntrega) {
+        this.estadoEntrega = estadoEntrega;
+    }
+
+    public String getRepartidorAsignado() {
+        return repartidorAsignado;
+    }
+
+    public void setRepartidorAsignado(String repartidorAsignado) {
+        this.repartidorAsignado = repartidorAsignado;
+    }
+
     public List<DescripcionVenta> getProductos() {
         return productos;
     }
 
-    public void setProductos(
-            List<DescripcionVenta> productos) {
-
+    public void setProductos(List<DescripcionVenta> productos) {
         this.productos = productos;
 
         if (this.productos != null) {
-
-            for (DescripcionVenta detalle
-                    : this.productos) {
-
+            for (DescripcionVenta detalle : this.productos) {
                 if (detalle != null) {
                     detalle.setVenta(this);
                 }
             }
         }
+        calculaTotal();
     }
 
     @Override
@@ -199,7 +254,6 @@ public class Venta {
 
         if (obj == null
                 || getClass() != obj.getClass()) {
-
             return false;
         }
 
@@ -221,7 +275,9 @@ public class Venta {
                 + ", pago=" + montoRecibido
                 + ", cambio=" + cambio
                 + ", date=" + date
-                + ", idVendedor=" + idVendedor
+                + ", idTrabajador=" + idTrabajador
+                + ", esDomicilio=" + esDomicilio
+                + ", estadoEntrega=" + estadoEntrega
                 + '}';
     }
 
@@ -244,5 +300,9 @@ public class Venta {
 
         throw new UnsupportedOperationException(
                 "Unimplemented method 'setControl'");
+    }
+
+    public double getPago() {
+        return montoRecibido;
     }
 }

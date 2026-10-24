@@ -1,4 +1,5 @@
 package mx.uam.ayd.proyecto.presentacion.registroVenta;
+
 import java.io.IOException;
 import java.net.URL;
 
@@ -76,7 +77,7 @@ public class VentanaCarrito {
         try {
             FXMLLoader loader = new FXMLLoader(fxmlUrl);
             
-            //Usar setControllerFactory para que utilice la misma instancia de Spring
+            // Usar setControllerFactory para que utilice la misma instancia de Spring
             loader.setControllerFactory(clazz -> this);
 
             Parent root = loader.load();
@@ -171,6 +172,16 @@ public class VentanaCarrito {
     private void onConfirmarVenta() {
         if (control != null) {
             control.procesarConfirmacionVenta();
+        }
+    }
+
+    /**
+     * Acción del botón para abrir el formulario de pedido a domicilio (HU-17)
+     */
+    @FXML
+    private void onPedidoADomicilio() {
+        if (control != null) {
+            control.iniciarPedidoADomicilio();
         }
     }
 

@@ -1,3 +1,4 @@
+
 package mx.uam.ayd.proyecto.presentacion.principal;
 
 import java.io.IOException;
@@ -12,7 +13,7 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 /**
- * Ventana principal usando JavaFX con FXML
+ * Ventana principal usando JavaFX con FXML.
  */
 @Component
 public class VentanaPrincipal {
@@ -21,16 +22,9 @@ public class VentanaPrincipal {
     private ControlPrincipal control;
     private boolean initialized = false;
 
-    /**
-     * Constructor sin inicialización de UI
-     */
     public VentanaPrincipal() {
-        // No inicializar componentes de JavaFX en el constructor
     }
 
-    /**
-     * Inicializa componentes UI en el hilo de aplicación de JavaFX
-     */
     private void initializeUI() {
         if (initialized) {
             return;
@@ -45,7 +39,8 @@ public class VentanaPrincipal {
             stage = new Stage();
             stage.setTitle("Mi Aplicación");
 
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/ventana-principal.fxml"));
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/fxml/ventana-principal.fxml"));
             loader.setControllerFactory(clazz -> this);
 
             Parent root = loader.load();
@@ -58,14 +53,12 @@ public class VentanaPrincipal {
         }
     }
 
-   public void setControlPrincipal(ControlPrincipal control) {
-    this.control = control;
-    System.out.println("DEBUG: ControlPrincipal conectado a VentanaPrincipal");
-}
+    public void setControlPrincipal(ControlPrincipal control) {
+        this.control = control;
+        System.out.println(
+                "DEBUG: ControlPrincipal conectado a VentanaPrincipal");
+    }
 
-    /**
-     * Muestra la ventana principal
-     */
     public void muestra() {
         if (!Platform.isFxApplicationThread()) {
             Platform.runLater(this::muestra);
@@ -162,33 +155,56 @@ public class VentanaPrincipal {
         }
     }
 
-    /**
-     * Acción del botón de "Gestionar Proveedores".
-     * Delega la responsabilidad a ControlPrincipal para respetar la arquitectura.
-     */
     @FXML
     public void handleConsultarProveedor() {
         if (control != null) {
             control.consultarProveedor();
         }
     }
-    
+
     /**
      * Acción del botón de Corte de caja (HU-15).
      * Delega la operación a ControlPrincipal.
      */
     @FXML
-  
-private void handleCorteCaja() {
-    System.out.println("1. Se pulso el boton Corte de caja");
+    private void handleCorteCaja() {
+        System.out.println("1. Se pulso el boton Corte de caja");
 
-    if (control != null) {
-        System.out.println("2. ControlPrincipal esta conectado");
-        control.realizarCorteCaja();
-    } else {
-        System.err.println("ERROR: ControlPrincipal es null");
+        if (control != null) {
+            System.out.println("2. ControlPrincipal esta conectado");
+            control.realizarCorteCaja();
+        } else {
+            System.err.println("ERROR: ControlPrincipal es null");
+        }
     }
-}
 
+    /**
+     * Handler para la HU-28: Margen de Ganancia.
+     */
+    @FXML
+    private void handleMargenGanancia() {
+        if (control != null) {
+            control.margenGanancia();
+        }
+    }
 
+    /**
+     * Handler para la HU-17: Consulta de Pedidos a Domicilio.
+     */
+    @FXML
+    private void handleConsultarPedidosDomicilio() {
+        if (control != null) {
+            control.consultarPedidosDomicilio();
+        }
+    }
+
+    /**
+     * Handler para consultar trabajadores.
+     */
+    @FXML
+    private void handleConsultarTrabajador() {
+        if (control != null) {
+            control.consultarTrabajador();
+        }
+    }
 }

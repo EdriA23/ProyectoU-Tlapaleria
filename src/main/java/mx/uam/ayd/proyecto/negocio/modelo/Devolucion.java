@@ -45,11 +45,11 @@ public class Devolucion {
     private String numeroEmpleado;
 
     /**
-     * Muchas devoluciones pueden ser registradas por el mismo vendedor.
+     * Muchas devoluciones pueden ser registradas por el mismo Trabajador.
      */
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_vendedor")
-    private Vendedor vendedor;
+    @JoinColumn(name = "id_trabajador")
+    private Trabajador trabajador;
 
     /**
      * Muchas devoluciones pueden asociarse a un mismo proveedor.
@@ -99,8 +99,8 @@ public class Devolucion {
         return numeroEmpleado;
     }
 
-    public Vendedor getVendedor() {
-        return vendedor;
+    public Trabajador getTrabajador() {
+        return trabajador;
     }
 
     public Proveedor getProveedor() {
@@ -143,8 +143,8 @@ public class Devolucion {
         this.numeroEmpleado = numeroEmpleado;
     }
 
-    public void setVendedor(Vendedor vendedor) {
-        this.vendedor = vendedor;
+    public void setTrabajador(Trabajador trabajador) {
+        this.trabajador = trabajador;
     }
 
     public void setProveedor(Proveedor proveedor) {
