@@ -147,4 +147,14 @@ public class VentanaCliente implements Initializable {
         alert.setContentText(mensaje);
         alert.showAndWait();
     }
+
+    public void muestraDialogoConMensaje(String string) {
+        
+        throw new UnsupportedOperationException("Unimplemented method 'muestraDialogoConMensaje'");
+    }
+
+    public void cierraVentana() {
+        
+        throw new UnsupportedOperationException("Unimplemented method 'cierraVentana'");
+    }
 }
