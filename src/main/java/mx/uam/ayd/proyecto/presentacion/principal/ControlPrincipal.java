@@ -1,7 +1,7 @@
+
 package mx.uam.ayd.proyecto.presentacion.principal;
 
 import jakarta.annotation.PostConstruct;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -19,16 +19,13 @@ import mx.uam.ayd.proyecto.presentacion.alertaStock.ControlRevisarExistencia;
 import mx.uam.ayd.proyecto.presentacion.registroVenta.ControlRegistroVenta;
 import mx.uam.ayd.proyecto.presentacion.agregarProductos.ControlAgregarProductos;
 import mx.uam.ayd.proyecto.presentacion.consultarProveedor.ControlProveedor;
+import mx.uam.ayd.proyecto.presentacion.corteCaja.ControlCorteCaja;
 import mx.uam.ayd.proyecto.presentacion.margenGanancia.ControlMargenDeGanancia;
-import mx.uam.ayd.proyecto.presentacion.gestionPersonal.ControlTrabajador; // Import HU-1
+import mx.uam.ayd.proyecto.presentacion.gestionPersonal.ControlTrabajador;
 
-/**
- * Control principal del sistema
- */
 @Component
 public class ControlPrincipal {
 
-    // Atributos de controles existentes
     private final ControlAgregarUsuario controlAgregarUsuario;
     private final ControlListarUsuarios controlListarUsuarios;
     private final ControlListarGrupos controlListarGrupos;
@@ -36,19 +33,19 @@ public class ControlPrincipal {
     private final ControlRegistrarMercancia controlRegistrarMercancia;
     private final ControlActualizarPrecio controlActualizarPrecio;
     private final ControlDevolucionProducto controlDevolucion;
-    private final ControlConsultarInventario controlConsultarInventario; // <--- Recuperado como atributo original
+    private final ControlConsultarInventario controlConsultarInventario;
     private final ControlHistorialMovimientos controlHistorialMovimientos;
     private final ControlRevisarExistencia controlRevisarExistencia;
+    private final ControlRegistroVenta controlRegistroVenta;
     private final ControlAgregarProductos controlAgregarProductos;
     private final ControlProveedor controlProveedor;
 
-    private final ControlMargenDeGanancia controlMargenDeGanancia; 
-    private final ControlConsultaPedidos controlConsultaPedidos; // Para HU-17
-
+    private final ControlCorteCaja controlCorteCaja;
+    private final ControlMargenDeGanancia controlMargenDeGanancia;
+    private final ControlConsultaPedidos controlConsultaPedidos;
     private final ControlTrabajador controlTrabajador;
 
     private final VentanaPrincipal ventana;
-    
 
     @Autowired
     public ControlPrincipal(
@@ -59,19 +56,16 @@ public class ControlPrincipal {
             ControlRegistrarMercancia controlRegistrarMercancia,
             ControlActualizarPrecio controlActualizarPrecio,
             ControlDevolucionProducto controlDevolucion,
-            ControlConsultarInventario controlConsultarInventario, // <--- Incluido en el constructor original
+            ControlConsultarInventario controlConsultarInventario,
             ControlHistorialMovimientos controlHistorialMovimientos,
             ControlRevisarExistencia controlRevisarExistencia,
             ControlRegistroVenta controlRegistroVenta,
             ControlAgregarProductos controlAgregarProductos,
             ControlProveedor controlProveedor,
-
+            ControlCorteCaja controlCorteCaja,
             ControlMargenDeGanancia controlMargenDeGanancia,
-            ControlConsultaPedidos controlConsultaPedidos, 
-
-            ControlMargenDeGanancia controlMargenDeGanancia1, // Parámetro del constructor
+            ControlConsultaPedidos controlConsultaPedidos,
             ControlTrabajador controlTrabajador,
-
             VentanaPrincipal ventana) {
 
         this.controlAgregarUsuario = controlAgregarUsuario;
@@ -81,13 +75,15 @@ public class ControlPrincipal {
         this.controlRegistrarMercancia = controlRegistrarMercancia;
         this.controlActualizarPrecio = controlActualizarPrecio;
         this.controlDevolucion = controlDevolucion;
-        this.controlConsultarInventario = controlConsultarInventario; // <--- Asignado
+        this.controlConsultarInventario = controlConsultarInventario;
         this.controlHistorialMovimientos = controlHistorialMovimientos;
         this.controlRevisarExistencia = controlRevisarExistencia;
+        this.controlRegistroVenta = controlRegistroVenta;
         this.controlAgregarProductos = controlAgregarProductos;
         this.controlProveedor = controlProveedor;
-        this.controlMargenDeGanancia = controlMargenDeGanancia1;
 
+        this.controlCorteCaja = controlCorteCaja;
+        this.controlMargenDeGanancia = controlMargenDeGanancia;
         this.controlConsultaPedidos = controlConsultaPedidos;
         this.controlTrabajador = controlTrabajador;
 
@@ -102,8 +98,6 @@ public class ControlPrincipal {
     public void inicia() {
         ventana.muestra();
     }
-
-    // --- MÉTODOS DE ACCIÓN ---
 
     public void agregarUsuario() {
         controlAgregarUsuario.inicia();
@@ -135,7 +129,7 @@ public class ControlPrincipal {
 
     public void consultarInventario() {
         if (controlConsultarInventario != null) {
-            ControlConsultarInventario.inicia(); // <--- Llamada limpia al objeto inyectado
+            controlConsultarInventario.inicia();
         }
     }
 
@@ -156,24 +150,29 @@ public class ControlPrincipal {
     }
 
     /**
-     * Inicia la HU-28: Margen de Ganancia
+     * Inicia la HU-15: Corte de caja.
+     */
+    public void realizarCorteCaja() {
+        controlCorteCaja.iniciar();
+    }
+
+    /**
+     * Inicia la HU-28: Margen de Ganancia.
      */
     public void margenGanancia() {
         controlMargenDeGanancia.inicia();
     }
 
-
     /**
-     * Inicia la HU-17: Consulta y Gestión de Pedidos a Domicilio
+     * Inicia la HU-17: Consulta y Gestión de Pedidos a Domicilio.
      */
     public void consultarPedidosDomicilio() {
         if (controlConsultaPedidos != null) {
-            controlConsultaPedidos.inicia(); // <--- Abre la ventana correcta de pedidos a domicilio
+            controlConsultaPedidos.inicia();
         }
     }
 
     public void consultarTrabajador() {
         controlTrabajador.iniciaBusqueda();
-
     }
 }

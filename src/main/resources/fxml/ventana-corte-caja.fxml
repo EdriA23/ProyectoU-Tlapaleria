@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="590.0" prefWidth="750.0"
+            xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="mx.uam.ayd.proyecto.presentacion.corteCaja.ControlCorteCaja">
+    <children>
+        <Label layoutX="25.0" layoutY="20.0"
+               text="Corte de caja" textFill="#2c3e50">
+            <font>
+                <Font name="System Bold" size="24.0"/>
+            </font>
+        </Label>
+
+        <Label layoutX="25.0" layoutY="65.0"
+               text="Resumen de ventas del día"/>
+
+        <TableView fx:id="tablaVentas"
+                   layoutX="25.0" layoutY="100.0"
+                   prefHeight="250.0" prefWidth="700.0">
+            <columns>
+                <TableColumn fx:id="colFecha"
+                             prefWidth="190.0"
+                             text="Fecha y hora"/>
+                <TableColumn fx:id="colVenta"
+                             prefWidth="100.0"
+                             text="Venta"/>
+                <TableColumn fx:id="colVendedor"
+                             prefWidth="110.0"
+                             text="Vendedor"/>
+                <TableColumn fx:id="colTotal"
+                             prefWidth="260.0"
+                             text="Total"/>
+            </columns>
+        </TableView>
+
+        <Label layoutX="25.0" layoutY="375.0"
+               text="Nombre del empleado:"/>
+        <TextField fx:id="txtNombreEmpleado"
+                   layoutX="205.0" layoutY="370.0"
+                   prefWidth="500.0"
+                   promptText="Escribe tu nombre"/>
+
+        <Label layoutX="400.0" layoutY="420.0"
+               text="Total de ventas:"/>
+        <Label fx:id="lblTotalVentas"
+               layoutX="550.0" layoutY="420.0"
+               text="MXN 0.00">
+            <font>
+                <Font name="System Bold" size="16.0"/>
+            </font>
+        </Label>
+
+        <Label layoutX="400.0" layoutY="455.0"
+               text="Efectivo esperado:"/>
+        <Label fx:id="lblEfectivoEsperado"
+               layoutX="550.0" layoutY="455.0"
+               text="MXN 0.00">
+            <font>
+                <Font name="System Bold" size="16.0"/>
+            </font>
+        </Label>
+
+        <Button layoutX="410.0" layoutY="515.0"
+                prefHeight="40.0" prefWidth="145.0"
+                text="Cancelar"
+                onAction="#onCancelar"/>
+
+        <Button layoutX="570.0" layoutY="515.0"
+                prefHeight="40.0" prefWidth="155.0"
+                text="Confirmar corte"
+                onAction="#onConfirmar"/>
+    </children>
+</AnchorPane>
