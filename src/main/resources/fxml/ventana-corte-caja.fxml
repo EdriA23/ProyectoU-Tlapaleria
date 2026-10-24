@@ -20,7 +20,8 @@
 -->
 <AnchorPane prefHeight="550.0" prefWidth="750.0"
             xmlns="http://javafx.com/javafx/26"
-            xmlns:fx="http://javafx.com/fxml/1">
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="mx.uam.ayd.proyecto.presentacion.corteCaja.ControlCorteCaja">
 
     <children>
 

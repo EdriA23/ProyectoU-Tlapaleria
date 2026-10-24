@@ -171,4 +171,16 @@ public class VentanaPrincipal {
             control.consultarProveedor();
         }
     }
+    
+    /**
+     * Acción del botón de Corte de caja (HU-15).
+     * Delega la operación a ControlPrincipal.
+     */
+    @FXML
+    private void handleCorteCaja() {
+        if (control != null) {
+            control.realizarCorteCaja();
+        }
+    }
+
 }

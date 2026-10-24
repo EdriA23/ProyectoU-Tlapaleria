@@ -18,6 +18,8 @@ import mx.uam.ayd.proyecto.presentacion.alertaStock.ControlRevisarExistencia;
 import mx.uam.ayd.proyecto.presentacion.registroVenta.ControlRegistroVenta;
 import mx.uam.ayd.proyecto.presentacion.agregarProductos.ControlAgregarProductos;
 import mx.uam.ayd.proyecto.presentacion.consultarProveedor.ControlProveedor;
+import mx.uam.ayd.proyecto.presentacion.corteCaja.ControlCorteCaja;
+
 
 /**
  * @author humbertocervantes
@@ -40,6 +42,8 @@ public class ControlPrincipal {
     private final ControlAgregarProductos controlAgregarProductos;
     private final ControlProveedor controlProveedor; // Inyección para tu HU
     private final VentanaPrincipal ventana;
+    private final ControlCorteCaja controlCorteCaja;
+    
 
     @Autowired
     public ControlPrincipal(
@@ -56,7 +60,9 @@ public class ControlPrincipal {
             ControlRegistroVenta controlRegistroVenta,
             ControlAgregarProductos controlAgregarProductos,
             ControlProveedor controlProveedor, // Parámetro en constructor
-            VentanaPrincipal ventana) {
+            VentanaPrincipal ventana ,
+
+            ControlCorteCaja controlCorteCaja ) {
 
         this.controlAgregarUsuario = controlAgregarUsuario;
         this.controlListarUsuarios = controlListarUsuarios;
@@ -71,6 +77,7 @@ public class ControlPrincipal {
         this.controlRegistroVenta = controlRegistroVenta;
         this.controlAgregarProductos = controlAgregarProductos;
         this.controlProveedor = controlProveedor;
+        this.controlCorteCaja = controlCorteCaja;
         
         this.ventana = ventana;
     }
@@ -135,5 +142,11 @@ public class ControlPrincipal {
      */
     public void consultarProveedor() {
         controlProveedor.buscaProveedores();
+    }
+        /**
+     * Inicia la HU-15: Corte de caja.
+     */
+    public void realizarCorteCaja() {
+        controlCorteCaja.iniciar();
     }
 }
