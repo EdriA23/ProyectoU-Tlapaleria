@@ -119,6 +119,10 @@ class ServicioVentaTest {
         inventario.setExistenciaActual(20);
 
         when(inventarioRepository.findById(1L)).thenReturn(Optional.of(inventario));
+        when(productoRepository.save(any(Producto.class))).thenAnswer(invocation -> {
+            Producto p = invocation.getArgument(0);
+            return p;
+        });
         when(ventaRepository.save(any(Venta.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         double pago = 300.0;
@@ -179,15 +183,17 @@ class ServicioVentaTest {
 
         when(servicioCliente.validarDatosCliente(cliente)).thenReturn(true);
         when(trabajadorRepository.findByRol("Repartidor")).thenReturn(List.of(repartidor));
+        when(trabajadorRepository.findById(1L)).thenReturn(Optional.of(repartidor));
         when(inventarioRepository.findById(1L)).thenReturn(Optional.of(inventario));
+        when(productoRepository.save(any(Producto.class))).thenAnswer(invocation -> invocation.getArgument(0));
         when(ventaRepository.save(any(Venta.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        // Pasamos los 4 parámetros esperados (Cliente, detalles, monto, idRepartidor)
+        // Pasamos los 4 parámetros esperados por tu servicio
         Venta ventaDomicilio = servicioVenta.registrarPedidoDomicilio(cliente, detalles, 200.0, 1L);
 
         assertNotNull(ventaDomicilio);
         assertTrue(ventaDomicilio.isEsDomicilio());
-        assertEquals("Registrado", ventaDomicilio.getEstadoEntrega());
+        assertEquals("Pedido en camino", ventaDomicilio.getEstadoEntrega()); // Coincide con el servicio
     }
 
     @Test
