@@ -51,10 +51,9 @@ public class VentanaPrincipal {
         }
     }
 
-   public void setControlPrincipal(ControlPrincipal control) {
-    this.control = control;
-    System.out.println("DEBUG: ControlPrincipal conectado a VentanaPrincipal");
-}
+    public void setControlPrincipal(ControlPrincipal control) {
+        this.control = control;
+    }
 
     public void muestra() {
         if (!Platform.isFxApplicationThread()) {
@@ -158,25 +157,6 @@ public class VentanaPrincipal {
             control.consultarProveedor();
         }
     }
-    
-    /**
-     * Acción del botón de Corte de caja (HU-15).
-     * Delega la operación a ControlPrincipal.
-     */
-    @FXML
-  
-private void handleCorteCaja() {
-    System.out.println("1. Se pulso el boton Corte de caja");
-
-    if (control != null) {
-        System.out.println("2. ControlPrincipal esta conectado");
-        control.realizarCorteCaja();
-    } else {
-        System.err.println("ERROR: ControlPrincipal es null");
-    }
-}
-
-
 
     /**
      * Handler para la HU-28: Margen de Ganancia

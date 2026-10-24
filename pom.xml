@@ -18,7 +18,6 @@
 		<java.version>17</java.version>
 		<javafx.version>21.0.2</javafx.version>
 		<jacoco.minimum.coverage>0.80</jacoco.minimum.coverage>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
 	<dependencies>
@@ -136,7 +135,6 @@
         <source>17</source>
         <target>17</target>
         <release>17</release>
-        <encoding>${project.build.sourceEncoding}</encoding>
     </configuration>
 </plugin>
 			<!-- JaCoCo Plugin -->
