@@ -1,11 +1,13 @@
 package mx.uam.ayd.proyecto.negocio;
 
 import java.util.List;
+import java.util.Objects;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import mx.uam.ayd.proyecto.datos.ClienteRepository;
 import mx.uam.ayd.proyecto.negocio.modelo.Cliente;
+import mx.uam.ayd.proyecto.negocio.modelo.Tarjeta;
 
 @Service
 public class ServicioCliente {
@@ -40,7 +42,7 @@ public class ServicioCliente {
         if (!validarDatosCliente(cliente)) {
             throw new IllegalArgumentException("No se puede guardar el cliente: faltan datos obligatorios.");
         }
-        return clienteRepository.save(cliente);
+        return clienteRepository.save(Objects.requireNonNull(cliente));
     }
 
     public void registrarCliente(Cliente cliente) {
@@ -54,7 +56,17 @@ public class ServicioCliente {
     public Cliente buscarClientePorTelefono(String telefono) {
         List<Cliente> clientes = clienteRepository.findByTelefono(telefono);
         if (clientes != null && !clientes.isEmpty()) {
-            return clientes.get(0); // Devuelve el primer cliente encontrado para evitar conflictos
+            return clientes.get(0);
+        }
+        return null;
+    }
+
+    @Transactional
+    public Cliente asignarTarjetaACliente(long idCliente, Tarjeta tarjeta) {
+        Cliente cliente = buscarClientePorId(idCliente);
+        if (cliente != null && tarjeta != null) {
+            cliente.setTarjeta(tarjeta);
+            return clienteRepository.save(Objects.requireNonNull(cliente));
         }
         return null;
     }
