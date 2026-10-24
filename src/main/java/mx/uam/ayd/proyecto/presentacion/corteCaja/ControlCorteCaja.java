@@ -45,7 +45,7 @@ public class ControlCorteCaja {
     private TableColumn<Venta, Long> colVenta;
 
     @FXML
-    private TableColumn<Venta, Integer> colVendedor;
+    private TableColumn<Venta, Long> colVendedor;
 
     @FXML
     private TableColumn<Venta, Double> colTotal;
@@ -110,10 +110,10 @@ public class ControlCorteCaja {
                 new ReadOnlyObjectWrapper<>(
                         celda.getValue().getIdVenta()));
 
-        // Identificador numérico del vendedor.
+        // Identificador numérico del trabajador que registró la venta.
         colVendedor.setCellValueFactory(celda ->
                 new ReadOnlyObjectWrapper<>(
-                        celda.getValue().getIdVendedor()));
+                        celda.getValue().getIdTrabajador()));
 
         // Importe total de cada venta.
         colTotal.setCellValueFactory(celda ->
