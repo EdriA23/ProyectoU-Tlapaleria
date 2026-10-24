@@ -12,7 +12,7 @@ import mx.uam.ayd.proyecto.negocio.modelo.Producto;
 
 /**
  * Servicio encargado de la lógica de negocio de los productos.
- * Maneja consultas de stock, entradas de mercancía y la actualización de precios (HU-09).
+ * Maneja consultas de stock, entradas de mercancía, actualización de precios y márgenes de ganancia.
  *
  * @author Javitos
  */
@@ -136,6 +136,25 @@ public class ServicioProducto {
         return true;
     }
 
+    /**
+     * Calcula la ganancia monetaria en pesos (Precio Venta - Precio Costo).
+     *
+     * @param producto producto a evaluar
+     * @return ganancia en pesos, o 0.0 si los datos son inválidos
+     */
+    public Double calculaGananciaEnPesos(Producto producto) {
+        if (producto == null) return 0.0;
+
+        Double precioVenta = producto.getPrecio();
+        Double precioCosto = producto.getPrecioCompra();
+
+        if (precioVenta == null || precioCosto == null) {
+            return 0.0;
+        }
+
+        return precioVenta - precioCosto;
+    }
+
     // MÉTODOS PARA LA HISTORIA DE USUARIO (HU-09)
 
     /**
@@ -153,10 +172,6 @@ public class ServicioProducto {
     /**
      * Actualiza el precio de un producto y registra el ajuste en el
      * Historial de Movimientos de Inventario (HU-09).
-     * 1. Valida que el nuevo precio sea un valor positivo mayor a cero.
-     * 2. Busca el producto en la base de datos por su ID.
-     * 3. Cambia el precio anterior por el nuevo precio y guarda los cambios.
-     * 4. Genera de forma automática un registro en la bitácora llamando al servicio de movimientos.
      * 
      * @param idProducto ID del producto cuyo precio va a cambiar
      * @param nuevoPrecio El nuevo valor monetario asignado al producto
@@ -166,13 +181,11 @@ public class ServicioProducto {
     public Producto actualizarPrecioProducto(long idProducto, double nuevoPrecio) {
         log.info("Intentando actualizar precio para el producto con ID: {} a nuevo precio: {}", idProducto, nuevoPrecio);
 
-        // Validación 1: El precio no puede ser cero o negativo
         if (nuevoPrecio <= 0) {
             log.warn("Intento de actualización con un precio inválido: {}", nuevoPrecio);
             throw new IllegalArgumentException("El precio debe ser un valor mayor a cero.");
         }
 
-        // Validación 2: Comprueba que el producto exista en la base de datos
         Producto producto = productoRepository.findByIdProducto(idProducto);
         if (producto == null) {
             log.warn("No se encontró el producto con el ID: {}", idProducto);
@@ -186,12 +199,11 @@ public class ServicioProducto {
         log.info("Precio del producto {} (ID: {}) actualizado exitosamente de ${} a ${}", 
                  productoGuardado.getNombre(), idProducto, precioAnterior, nuevoPrecio);
 
-        // Registro automático en el historial mediante el servicio de movimientos (Coincide con el diagrama)
         int existencia = productoGuardado.getExistenciaActual();
         
         servicioMovimientoInventario.registrarMovimiento(
             productoGuardado, 
-            0, // Cero piezas afectadas porque solo cambió el costo/precio
+            0, 
             existencia, 
             existencia, 
             "CAMBIO_PRECIO", 
@@ -205,7 +217,7 @@ public class ServicioProducto {
 
     /**
      * Método puente para registrar un producto dañado, delegando la responsabilidad
-     * a ServicioDevolucion tal como lo estructuraste originalmente.
+     * a ServicioDevolucion.
      * 
      * @param idProducto Identificador del producto
      * @param cantidad Cantidad dañada
@@ -220,12 +232,9 @@ public class ServicioProducto {
 
     // =========================================================================
     // MÉTODOS PARA LA HISTORIA DE USUARIO (HU-28: MARGEN DE GANANCIA)
-    // Alineados al diagrama de clases de la capa de Negocio
-    // =========================================================================
 
     /**
      * Recupera los productos para la vista de margen de ganancia.
-     * (Equivalente al diagrama: +recuperarProductosConMargen())
      */
     public Iterable<Producto> recuperarProductosConMargen() {
         log.info("Recuperando productos para la vista de Margen de Ganancia");
@@ -234,7 +243,6 @@ public class ServicioProducto {
 
     /**
      * Calcula el margen en porcentaje.
-     * (Equivalente al diagrama: +calculaMargen())
      */
     public Double calculaMargen(Producto producto) {
         if (producto == null) return 0.0;
@@ -251,27 +259,25 @@ public class ServicioProducto {
 
     /**
      * Valida la regla de negocio RN-01 (Venta > Costo).
-     * (Equivalente al diagrama: +validarPrecio())
      */
     public boolean validarPrecio(Double costo, Double venta) {
         if (venta == null || costo == null || venta <= costo) {
-            return false; // No cumple la RN-01
+            return false;
         }
         return true;
     }
 
     /**
-     * Actualiza los precios utilizando la validación extraída.
-     * (Equivalente al diagrama: +actualizarPrecios())
+     * Actualiza los precios utilizando la validación de la regla RN-01
+     * y genera automáticamente un registro en el Historial de Movimientos.
      */
     @Transactional
     public Producto actualizarPrecios(long idProducto, Double nuevoCosto, Double nuevoPrecioVenta) {
         log.info("Actualizando precios para producto ID: {}", idProducto);
 
-        // Uso del método validarPrecio() dictado por el diagrama
         if (!validarPrecio(nuevoCosto, nuevoPrecioVenta)) {
             log.warn("Violación de regla de negocio RN-01 en validación de precios.");
-            throw new IllegalArgumentException("El precio de venta debe ser estrictamente mayor al precio de costo.");
+            throw new IllegalArgumentException("El precio de venta debe ser strictly mayor al precio de costo.");
         }
 
         Producto producto = productoRepository.findByIdProducto(idProducto);
@@ -279,9 +285,28 @@ public class ServicioProducto {
             throw new IllegalArgumentException("No se encontró ningún producto con el ID: " + idProducto);
         }
 
+        double precioVentaAnterior = producto.getPrecio() != null ? producto.getPrecio() : 0.0;
+        double precioCostoAnterior = producto.getPrecioCompra() != null ? producto.getPrecioCompra() : 0.0;
+
         producto.setPrecioCompra(nuevoCosto);
         producto.setPrecio(nuevoPrecioVenta);
 
-        return productoRepository.save(producto);
+        Producto productoGuardado = productoRepository.save(producto);
+
+        // Registro del movimiento en la bitácora del historial de inventario
+        int existencia = productoGuardado.getExistenciaActual();
+        servicioMovimientoInventario.registrarMovimiento(
+            productoGuardado, 
+            0, 
+            existencia, 
+            existencia, 
+            "CAMBIO_PRECIO", 
+            String.format("Ajuste de margen: Costo ($%.2f -> $%.2f), Venta ($%.2f -> $%.2f)", 
+                precioCostoAnterior, nuevoCosto, precioVentaAnterior, nuevoPrecioVenta)
+        );
+
+        log.info("Movimiento de cambio de precio/costo registrado para el producto ID: {}", idProducto);
+
+        return productoGuardado;
     }
 }

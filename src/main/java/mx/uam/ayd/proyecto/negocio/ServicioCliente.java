@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,28 +14,87 @@ import org.springframework.transaction.annotation.Transactional;
 
 import mx.uam.ayd.proyecto.datos.ClienteRepository;
 import mx.uam.ayd.proyecto.negocio.modelo.Cliente;
+import mx.uam.ayd.proyecto.negocio.modelo.Tarjeta;
 
-/**
- * Servicio con la lógica de negocio para registrar y buscar clientes (HU-12).
- */
 @Service
 public class ServicioCliente {
 
+    // --- Mensajes de la HU-12 ---
     public static final String MSG_CAMPOS_OBLIGATORIOS = "Debe llenar los campos obligatorios: Nombre y Teléfono";
     public static final String MSG_CLIENTE_DUPLICADO = "El cliente ya se encuentra registrado en el programa de fidelidad";
 
     private static final Logger log = LoggerFactory.getLogger(ServicioCliente.class);
 
-    private final ClienteRepository clienteRepository;
-
     @Autowired
-    public ServicioCliente(ClienteRepository clienteRepository) {
-        this.clienteRepository = clienteRepository;
+    private ClienteRepository clienteRepository;
+
+    // =========================================================================
+    // Métodos existentes (pedidos a domicilio / tarjetas)
+    // =========================================================================
+
+    public boolean validarDatosCliente(Cliente cliente) {
+        if (cliente == null) {
+            return false;
+        }
+
+        String nombre = cliente.getNombre();
+        String telefono = cliente.getTelefono();
+        String direccion = cliente.getDireccion();
+        String numeroCasa = cliente.getNumeroCasa();
+        String entreCalles = cliente.getEntreCalles();
+        String colorCasa = cliente.getColorCasa();
+
+        if (nombre == null || nombre.trim().isEmpty()) return false;
+        if (telefono == null || telefono.trim().isEmpty()) return false;
+        if (direccion == null || direccion.trim().isEmpty()) return false;
+        if (numeroCasa == null || numeroCasa.trim().isEmpty()) return false;
+        if (entreCalles == null || entreCalles.trim().isEmpty()) return false;
+        if (colorCasa == null || colorCasa.trim().isEmpty()) return false;
+
+        return true;
     }
+
+    @Transactional
+    public Cliente guardarCliente(Cliente cliente) {
+        if (!validarDatosCliente(cliente)) {
+            throw new IllegalArgumentException("No se puede guardar el cliente: faltan datos obligatorios.");
+        }
+        return clienteRepository.save(Objects.requireNonNull(cliente));
+    }
+
+    public void registrarCliente(Cliente cliente) {
+        guardarCliente(cliente);
+    }
+
+    public Cliente buscarClientePorId(long idCliente) {
+        return clienteRepository.findById(idCliente).orElse(null);
+    }
+
+    public Cliente buscarClientePorTelefono(String telefono) {
+        List<Cliente> clientes = clienteRepository.findByTelefono(telefono);
+        if (clientes != null && !clientes.isEmpty()) {
+            return clientes.get(0);
+        }
+        return null;
+    }
+
+    @Transactional
+    public Cliente asignarTarjetaACliente(long idCliente, Tarjeta tarjeta) {
+        Cliente cliente = buscarClientePorId(idCliente);
+        if (cliente != null && tarjeta != null) {
+            cliente.setTarjeta(tarjeta);
+            return clienteRepository.save(Objects.requireNonNull(cliente));
+        }
+        return null;
+    }
+
+    // =========================================================================
+    // HU-12: Registrar clientes (programa de fidelidad)
+    // =========================================================================
 
     /**
      * Registra un cliente nuevo en el programa de fidelidad.
-     * 1. Valida que nombre y teléfono no estén vacíos.
+     * 1. Valida que nombre y teléfono no estén vacíos (correo y dirección son opcionales).
      * 2. RN-01: valida que el teléfono no esté registrado previamente.
      * 3. RN-02: asigna el descuento de fidelidad inicial (5%).
      * 4. Guarda el cliente; la BD le asigna un número de cliente único.
@@ -57,7 +117,8 @@ public class ServicioCliente {
             throw new IllegalArgumentException(MSG_CAMPOS_OBLIGATORIOS);
         }
 
-        if (clienteRepository.findByTelefono(telefonoLimpio) != null) {
+        List<Cliente> existentes = clienteRepository.findByTelefono(telefonoLimpio);
+        if (existentes != null && !existentes.isEmpty()) {
             log.warn("Intento de registrar un cliente con teléfono duplicado: {}", telefonoLimpio);
             throw new IllegalArgumentException(MSG_CLIENTE_DUPLICADO);
         }

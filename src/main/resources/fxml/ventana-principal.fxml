@@ -70,13 +70,30 @@
                      </padding>
                   </Button>
 
-                  <!-- Margen de Ganancia (NUEVO BOTÓN LATERAL) -->
+                  <!-- Margen de Ganancia -->
                   <Button alignment="BASELINE_LEFT" graphicTextGap="15.0" maxWidth="1.7976931348623157E308" minHeight="50.0" mnemonicParsing="false" onAction="#handleMargenGanancia" style="-fx-background-color: PINK; -fx-background-radius: 8;" text="Margen Ganancia" textFill="#546E7A">
                      <font>
                         <Font name="System Bold" size="14.0" />
                      </font>
                      <graphic>
                         <Label text="📈">
+                           <font>
+                              <Font size="18.0" />
+                           </font>
+                        </Label>
+                     </graphic>
+                     <padding>
+                        <Insets left="20.0" />
+                     </padding>
+                  </Button>
+
+                  <!-- Pedidos a Domicilio -->
+                  <Button alignment="BASELINE_LEFT" graphicTextGap="15.0" maxWidth="1.7976931348623157E308" minHeight="50.0" mnemonicParsing="false" onAction="#handleConsultarPedidosDomicilio" style="-fx-background-color: PINK; -fx-background-radius: 8;" text="Pedidos Domicilio" textFill="#546E7A">
+                     <font>
+                        <Font name="System Bold" size="14.0" />
+                     </font>
+                     <graphic>
+                        <Label text="🛵">
                            <font>
                               <Font size="18.0" />
                            </font>
@@ -201,33 +218,13 @@
                                        <children>
 
                                           <!-- 1. Cobro / POS -->
-                                          <Button maxWidth="1.7976931348623157E308" minHeight="250.0" mnemonicParsing="false" onAction="#handleRealizarVenta" style="-fx-background-color: #A55CAA; -fx-background-radius: 12;" text="🛒     Nueva venta       " GridPane.columnSpan="2">
+                                          <Button maxWidth="1.7976931348623157E308" minHeight="250.0" mnemonicParsing="false" onAction="#handleRealizarVenta" style="-fx-background-color: #A55CAA; -fx-background-radius: 12;" text="🛒     Nueva venta       " GridPane.columnSpan="3">
                                              <font>
                                                 <Font name="System Bold" size="25.0" />
                                              </font>
                                           </Button>
 
-                                          <!-- 2. Actualizar precio -->
-                                          <Button fx:id="btnActualizarPrecio" maxWidth="1.7976931348623157E308" minHeight="250.0" mnemonicParsing="false" onAction="#handleActualizarPrecio" style="-fx-background-color: #FFFFFF; -fx-background-radius: 12; -fx-border-color: #EEEEEE; -fx-border-width: 1;" textFill="#212121" GridPane.columnIndex="2">
-                                             <graphic>
-                                                <VBox alignment="CENTER" spacing="10.0" style="-fx-background-color: #C9CADE;">
-                                                   <children>
-                                                      <Label text="🏷️" textFill="#181818">
-                                                         <font>
-                                                            <Font size="48.0" />
-                                                         </font>
-                                                      </Label>
-                                                      <Label text="Actualizar Precio" textFill="#151515">
-                                                         <font>
-                                                            <Font name="System Bold" size="18.0" />
-                                                         </font>
-                                                      </Label>
-                                                   </children>
-                                                </VBox>
-                                             </graphic>
-                                          </Button>
-
-                                          <!-- 3. Devoluciones -->
+                                          <!-- 2. Devoluciones -->
                                           <Button fx:id="btnDevoluciones" maxWidth="1.7976931348623157E308" minHeight="250.0" mnemonicParsing="false" onAction="#abrirVentanaDevolucionProducto" style="-fx-background-color: #FFFFFF; -fx-background-radius: 12; -fx-border-color: #EEEEEE; -fx-border-width: 1;" textFill="#212121" GridPane.columnIndex="3">
                                              <graphic>
                                                 <VBox alignment="CENTER" spacing="10.0" style="-fx-background-color: #C9CADE;">
@@ -247,7 +244,7 @@
                                              </graphic>
                                           </Button>
 
-                                          <!-- 4. Entrada mercancía -->
+                                          <!-- 3. Entrada mercancía -->
                                           <Button fx:id="btnEntradaMercancia" maxWidth="1.7976931348623157E308" minHeight="130.0" mnemonicParsing="false" onAction="#handleRegistrarMercancia" style="-fx-background-color: #FFFFFF; -fx-background-radius: 12; -fx-border-color: #EEEEEE; -fx-border-width: 1;" textFill="#212121" GridPane.rowIndex="1">
                                              <graphic>
                                                 <VBox alignment="CENTER" spacing="10.0" style="-fx-background-color: #C9CADE;">
@@ -267,7 +264,7 @@
                                              </graphic>
                                           </Button>
 
-                                          <!-- 5. Proveedores -->
+                                          <!-- 4. Proveedores -->
                                           <Button fx:id="btnConsultarProveedor" maxWidth="1.7976931348623157E308" minHeight="130.0" mnemonicParsing="false" onAction="#handleConsultarProveedor" style="-fx-background-color: #FFFFFF; -fx-background-radius: 12; -fx-border-color: #EEEEEE; -fx-border-width: 1;" textFill="#212121" GridPane.columnIndex="1" GridPane.rowIndex="1">
                                              <graphic>
                                                 <VBox alignment="CENTER" spacing="10.0" style="-fx-background-color: #C9CADE;">
@@ -287,7 +284,7 @@
                                              </graphic>
                                           </Button>
 
-                                          <!-- 6. Consultar inventario -->
+                                          <!-- 5. Consultar inventario -->
                                           <Button fx:id="btnConsultarInventario" maxWidth="1.7976931348623157E308" minHeight="130.0" mnemonicParsing="false" onAction="#handleConsultarInventario" style="-fx-background-color: #FFFFFF; -fx-background-radius: 12; -fx-border-color: #EEEEEE; -fx-border-width: 1;" textFill="#212121" GridPane.columnIndex="2" GridPane.columnSpan="2" GridPane.rowIndex="1">
                                              <graphic>
                                                 <HBox alignment="CENTER" spacing="15.0" style="-fx-background-color: #C9CADE;">
@@ -341,28 +338,20 @@
                                                    </columnConstraints>
                                                    <rowConstraints>
                                                       <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
-                                                      <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
                                                    </rowConstraints>
                                                    <children>
 
                                                       <!-- Registrar Mercancía -->
-                                                      <Button fx:id="btnRegistrarMercancia" alignment="BASELINE_LEFT" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleRegistrarMercancia" style="-fx-background-color: transparent;" text="Registrar Mercancía" textFill="#383838">
+                                                      <Button fx:id="btnRegistrarMercancia" alignment="BASELINE_LEFT" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleRegistrarMercancia" style="-fx-background-color: transparent;" text="Registrar Mercancía" textFill="#383838" GridPane.columnIndex="0">
                                                          <graphic>
                                                             <Label text="➕" textFill="#303030" />
                                                          </graphic>
                                                       </Button>
 
-                                                      <!-- Margen de Ganancia (NUEVO BOTÓN EN ADMIN RÁPIDA) -->
-                                                      <Button alignment="BASELINE_LEFT" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleMargenGanancia" style="-fx-background-color: transparent;" text="Margen de Ganancia" textFill="#383838" GridPane.columnIndex="1">
+                                                      <!-- Registrar Personal -->
+                                                      <Button fx:id="btnConsultarTrabajador" alignment="BASELINE_LEFT" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleConsultarTrabajador" style="-fx-background-color: transparent;" text="Gestion de Personal" textFill="#383838" GridPane.columnIndex="1">
                                                          <graphic>
-                                                            <Label text="📊" textFill="#303030" />
-                                                         </graphic>
-                                                      </Button>
-
-                                                      <!-- Registrar Cliente (HU-12) -->
-                                                      <Button alignment="BASELINE_LEFT" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleRegistrarCliente" style="-fx-background-color: transparent;" text="Registrar Cliente" textFill="#383838" GridPane.rowIndex="1">
-                                                         <graphic>
-                                                            <Label text="👥" textFill="#303030" />
+                                                            <Label text="➕" textFill="#303030" />
                                                          </graphic>
                                                       </Button>
 

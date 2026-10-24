@@ -1,4 +1,3 @@
-//Agregar id cliente cuando se tenga la entidad creada
 package mx.uam.ayd.proyecto.negocio.modelo;
 
 import java.time.LocalDateTime;
@@ -11,6 +10,8 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import mx.uam.ayd.proyecto.presentacion.historialMovimientos.ControlHistorialMovimientos;
 
@@ -38,6 +39,20 @@ public class Venta {
 
     private double cambio;
 
+    private String tipoPago;
+
+    private boolean esDomicilio;
+
+    private String estadoEntrega;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_cliente_fk", nullable = true)
+    private Cliente cliente;
+
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_tarjeta_fk", nullable = true)
+    private Tarjeta tarjeta;
+
     /*
      * Una venta puede contener varios detalles.
      *
@@ -54,7 +69,7 @@ public class Venta {
     public Venta() {
     }
 
-  /**
+    /**
      * Agrega un producto a la venta y actualiza el total.
      * Permite cumplir con la HU-05 validando que el producto exista 
      * y la cantidad sea mayor a 0.
@@ -170,6 +185,46 @@ public class Venta {
         this.cambio = cambio;
     }
 
+    public String getTipoPago() {
+        return tipoPago;
+    }
+
+    public void setTipoPago(String tipoPago) {
+        this.tipoPago = tipoPago;
+    }
+
+    public boolean isEsDomicilio() {
+        return esDomicilio;
+    }
+
+    public void setEsDomicilio(boolean esDomicilio) {
+        this.esDomicilio = esDomicilio;
+    }
+
+    public String getEstadoEntrega() {
+        return estadoEntrega;
+    }
+
+    public void setEstadoEntrega(String estadoEntrega) {
+        this.estadoEntrega = estadoEntrega;
+    }
+
+    public Cliente getCliente() {
+        return cliente;
+    }
+
+    public void setCliente(Cliente cliente) {
+        this.cliente = cliente;
+    }
+
+    public Tarjeta getTarjeta() {
+        return tarjeta;
+    }
+
+    public void setTarjeta(Tarjeta tarjeta) {
+        this.tarjeta = tarjeta;
+    }
+
     public List<DescripcionVenta> getProductos() {
         return productos;
     }
@@ -221,6 +276,9 @@ public class Venta {
                 + ", total=" + total
                 + ", pago=" + montoRecibido
                 + ", cambio=" + cambio
+                + ", tipoPago=" + tipoPago
+                + ", esDomicilio=" + esDomicilio
+                + ", estadoEntrega='" + estadoEntrega + '\''
                 + ", date=" + date
                 + ", idTrabajador=" + idTrabajador
                 + '}';

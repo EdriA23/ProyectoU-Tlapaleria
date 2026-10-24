@@ -11,10 +11,12 @@ import mx.uam.ayd.proyecto.datos.InventarioRepository;
 import mx.uam.ayd.proyecto.datos.MovimientoInventarioRepository;
 import mx.uam.ayd.proyecto.datos.ProductoRepository;
 import mx.uam.ayd.proyecto.datos.VentaRepository;
+import mx.uam.ayd.proyecto.negocio.modelo.Cliente;
 import mx.uam.ayd.proyecto.negocio.modelo.DescripcionVenta;
 import mx.uam.ayd.proyecto.negocio.modelo.Inventario;
 import mx.uam.ayd.proyecto.negocio.modelo.MovimientoInventario;
 import mx.uam.ayd.proyecto.negocio.modelo.Producto;
+import mx.uam.ayd.proyecto.negocio.modelo.Tarjeta;
 import mx.uam.ayd.proyecto.negocio.modelo.Venta;
 
 /**
@@ -48,10 +50,35 @@ public class ServicioVenta {
      */
     @Transactional
     public Venta registrarVenta(List<DescripcionVenta> detalles, double montoRecibido) {
+        return registrarVenta(detalles, montoRecibido, "EFECTIVO", null, null);
+    }
+
+    /**
+     * Registra una venta permitiendo especificar el metodo de pago (EFECTIVO o TARJETA),
+     * el cliente opcional y la tarjeta opcional.
+     * 
+     * @param detalles lista de productos y cantidades compradas
+     * @param montoRecibido dinero entregado o monto cobrado
+     * @param tipoPago tipo de pago ("EFECTIVO" o "TARJETA")
+     * @param cliente cliente que realiza la compra (puede ser null)
+     * @param tarjeta tarjeta con la que se efectua el pago (puede ser null si es efectivo)
+     * @return la venta guardada en la base de datos
+     */
+    @Transactional
+    public Venta registrarVenta(List<DescripcionVenta> detalles, double montoRecibido, String tipoPago, Cliente cliente, Tarjeta tarjeta) {
         
         Venta nuevaVenta = new Venta();
         nuevaVenta.setFecha(LocalDateTime.now());
         nuevaVenta.setPago(montoRecibido);
+        nuevaVenta.setTipoPago(tipoPago != null ? tipoPago : "EFECTIVO");
+        nuevaVenta.setCliente(cliente);
+
+        if ("TARJETA".equalsIgnoreCase(tipoPago) && tarjeta != null) {
+            nuevaVenta.setTarjeta(tarjeta);
+            if (cliente != null) {
+                cliente.setTarjeta(tarjeta);
+            }
+        }
 
         if (detalles != null) {
             for (DescripcionVenta detalle : detalles) {
@@ -80,7 +107,7 @@ public class ServicioVenta {
                     movimiento.setCantidad(cantidadVendida);
                     movimiento.setExistenciaAnterior(existenciaAnterior);
                     movimiento.setExistenciaActual(nuevaExistencia);
-                    movimiento.setObservacion("Venta realizada");
+                    movimiento.setObservacion("Venta realizada (" + nuevaVenta.getTipoPago() + ")");
                     movimiento.setProducto(productoBD);
 
                     movimientoRepository.save(movimiento);
@@ -92,9 +119,46 @@ public class ServicioVenta {
         }
 
         double totalCalculado = nuevaVenta.getTotal() != null ? nuevaVenta.getTotal() : 0.0;
-        nuevaVenta.setCambio(montoRecibido - totalCalculado);
+        
+        if ("TARJETA".equalsIgnoreCase(tipoPago)) {
+            nuevaVenta.setCambio(0.0);
+        } else {
+            nuevaVenta.setCambio(montoRecibido - totalCalculado);
+        }
 
         return ventaRepository.save(nuevaVenta);
+    }
+
+    /**
+     * Registra un pedido a domicilio asociando el cliente y la lista de productos.
+     */
+    @Transactional
+    public Venta registrarPedidoDomicilio(Cliente cliente, List<DescripcionVenta> detalles, double montoRecibido, long idRepartidor) {
+        Venta ventaDomicilio = registrarVenta(detalles, montoRecibido, "EFECTIVO", cliente, null);
+        ventaDomicilio.setEsDomicilio(true);
+        ventaDomicilio.setEstadoEntrega("PENDIENTE");
+        return ventaRepository.save(ventaDomicilio);
+    }
+
+    /**
+     * Obtiene la lista de pedidos a domicilio que se encuentran activos/pendientes.
+     */
+    public List<Venta> obtenerPedidosDomicilioActivos() {
+        return ventaRepository.findByEsDomicilioTrueAndEstadoEntregaNot("ENTREGADO");
+    }
+
+    /**
+     * Cierra o finaliza un pedido a domicilio por su ID.
+     */
+    @Transactional
+    public boolean cerrarPedido(long idVenta) {
+        Venta venta = ventaRepository.findById(idVenta).orElse(null);
+        if (venta != null) {
+            venta.setEstadoEntrega("ENTREGADO");
+            ventaRepository.save(venta);
+            return true;
+        }
+        return false;
     }
 
     /**

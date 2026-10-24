@@ -65,9 +65,9 @@ public class VentanaPrincipal {
         stage.show();
     }
 
-    // ==========================================
+    
     // HANDLERS DE EVENTOS FXML
-    // ==========================================
+    
 
     @FXML
     private void handleAgregarUsuario() {
@@ -165,6 +165,25 @@ public class VentanaPrincipal {
     private void handleMargenGanancia() {
         if (control != null) {
             control.margenGanancia();
+        }
+    }
+
+
+    /**
+     * Handler para la HU-17: Consulta de Pedidos a Domicilio
+     */
+    @FXML
+    private void handleConsultarPedidosDomicilio() {
+        if (control != null) {
+            control.consultarPedidosDomicilio();
+        }
+    }
+
+    @FXML
+    private void handleConsultarTrabajador() {
+        if (control != null) {
+            control.consultarTrabajador();
+
         }
     }
 
