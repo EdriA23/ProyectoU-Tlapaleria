@@ -9,28 +9,36 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
 /**
- * Representa el corte de caja realizado al finalizar un turno.
- *
- * La clasificación de pagos en efectivo y tarjeta se agregará
- * posteriormente, cuando se implemente esa funcionalidad.
+ * Entidad que representa un corte de caja de la HU-15.
+ * Cada registro corresponde a una operación de corte independiente.
  */
 @Entity
 public class CorteCaja {
 
+    /** Identificador único generado por la base de datos. */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idCorte;
 
+    /** Fecha y hora en que se registra el corte. */
     private LocalDateTime fechaHora;
 
+    /** Identificador numérico del vendedor, si está disponible. */
     private int idVendedor;
 
+    /** Clave propia de esta operación de corte. */
     private String turno;
 
+    /** Nombre del empleado que realiza el corte. */
+    private String nombreEmpleado;
+
+    /** Suma de los importes de ventas incluidas en el corte. */
     private double totalVentas;
 
+    /** Importe esperado en caja. */
     private double efectivoEsperado;
 
+    /** Constructor requerido por JPA. */
     public CorteCaja() {
     }
 
@@ -66,6 +74,14 @@ public class CorteCaja {
         this.turno = turno;
     }
 
+    public String getNombreEmpleado() {
+        return nombreEmpleado;
+    }
+
+    public void setNombreEmpleado(String nombreEmpleado) {
+        this.nombreEmpleado = nombreEmpleado;
+    }
+
     public double getTotalVentas() {
         return totalVentas;
     }
@@ -82,4 +98,3 @@ public class CorteCaja {
         this.efectivoEsperado = efectivoEsperado;
     }
 }
-

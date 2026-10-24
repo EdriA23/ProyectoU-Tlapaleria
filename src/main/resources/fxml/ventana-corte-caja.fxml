@@ -1,149 +1,81 @@
-
 <?xml version="1.0" encoding="UTF-8"?>
-
-<!-- Importaciones de los componentes gráficos que utiliza la ventana -->
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<!--
-    VENTANA DE CORTE DE CAJA - HU-15
-
-    Esta vista permite al empleado consultar el resumen de ventas
-    de su turno, revisar los importes calculados y elegir entre
-    cancelar o confirmar el corte de caja.
-
-    Los datos reales se conectarán posteriormente desde el controlador.
--->
-<AnchorPane prefHeight="550.0" prefWidth="750.0"
-            xmlns="http://javafx.com/javafx/26"
+<AnchorPane prefHeight="590.0" prefWidth="750.0"
+            xmlns="http://javafx.com/javafx/21"
             xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="mx.uam.ayd.proyecto.presentacion.corteCaja.ControlCorteCaja">
-
     <children>
-
-        <!-- ====================================================== -->
-        <!-- 1. TÍTULO PRINCIPAL                                    -->
-        <!-- ====================================================== -->
-
-        <!-- Identifica la operación que se está realizando -->
         <Label layoutX="25.0" layoutY="20.0"
-               text="Corte de caja"
-               textFill="#2c3e50">
+               text="Corte de caja" textFill="#2c3e50">
             <font>
-                <!-- Define el tamaño y el estilo de la letra -->
                 <Font name="System Bold" size="24.0"/>
             </font>
         </Label>
 
-        <!-- Indica que la tabla contiene las ventas del turno -->
         <Label layoutX="25.0" layoutY="65.0"
-               text="Resumen de ventas del turno"/>
+               text="Resumen de ventas del día"/>
 
-
-        <!-- ====================================================== -->
-        <!-- 2. TABLA DE VENTAS                                     -->
-        <!-- ====================================================== -->
-
-        <!--
-            TableView muestra las ventas que se incluirán en el corte.
-            El identificador tablaVentas permitirá acceder a la tabla
-            desde el controlador Java cuando conectemos los datos.
-        -->
         <TableView fx:id="tablaVentas"
                    layoutX="25.0" layoutY="100.0"
                    prefHeight="250.0" prefWidth="700.0">
-
             <columns>
-
-                <!-- Fecha y hora en que se registró la venta -->
                 <TableColumn fx:id="colFecha"
-                             prefWidth="160.0"
+                             prefWidth="190.0"
                              text="Fecha y hora"/>
-
-                <!-- Identificador de la venta -->
                 <TableColumn fx:id="colVenta"
-                             prefWidth="130.0"
+                             prefWidth="100.0"
                              text="Venta"/>
-
-                <!-- Empleado asociado a la venta -->
                 <TableColumn fx:id="colVendedor"
-                             prefWidth="130.0"
+                             prefWidth="110.0"
                              text="Vendedor"/>
-
-                <!-- Importe total correspondiente a la venta -->
                 <TableColumn fx:id="colTotal"
                              prefWidth="260.0"
                              text="Total"/>
-
             </columns>
         </TableView>
 
+        <Label layoutX="25.0" layoutY="375.0"
+               text="Nombre del empleado:"/>
+        <TextField fx:id="txtNombreEmpleado"
+                   layoutX="205.0" layoutY="370.0"
+                   prefWidth="500.0"
+                   promptText="Escribe tu nombre"/>
 
-        <!-- ====================================================== -->
-        <!-- 3. RESUMEN ECONÓMICO                                   -->
-        <!-- ====================================================== -->
-
-        <!-- Etiqueta descriptiva del importe total vendido -->
-        <Label layoutX="400.0" layoutY="375.0"
+        <Label layoutX="400.0" layoutY="420.0"
                text="Total de ventas:"/>
-
-        <!--
-            lblTotalVentas mostrará la suma de los importes de las
-            ventas incluidas en el corte.
-        -->
         <Label fx:id="lblTotalVentas"
-               layoutX="570.0" layoutY="375.0"
-               text="$0.00">
+               layoutX="550.0" layoutY="420.0"
+               text="MXN 0.00">
             <font>
                 <Font name="System Bold" size="16.0"/>
             </font>
         </Label>
 
-        <!-- Etiqueta descriptiva del efectivo esperado en caja -->
-        <Label layoutX="400.0" layoutY="410.0"
+        <Label layoutX="400.0" layoutY="455.0"
                text="Efectivo esperado:"/>
-
-        <!--
-            lblEfectivoEsperado mostrará el importe que se espera
-            encontrar en caja según las reglas de negocio.
-            Su cálculo se implementará en el servicio.
-        -->
         <Label fx:id="lblEfectivoEsperado"
-               layoutX="570.0" layoutY="410.0"
-               text="$0.00">
+               layoutX="550.0" layoutY="455.0"
+               text="MXN 0.00">
             <font>
                 <Font name="System Bold" size="16.0"/>
             </font>
         </Label>
 
-
-        <!-- ====================================================== -->
-        <!-- 4. BOTONES DE ACCIÓN                                   -->
-        <!-- ====================================================== -->
-
-        <!--
-            Permite cancelar el proceso de corte.
-            onCancelar deberá implementarse en el controlador Java.
-            Cancelar no debe guardar ningún corte.
-        -->
-        <Button layoutX="410.0" layoutY="475.0"
+        <Button layoutX="410.0" layoutY="515.0"
                 prefHeight="40.0" prefWidth="145.0"
                 text="Cancelar"
                 onAction="#onCancelar"/>
 
-        <!--
-            Solicita confirmar y registrar el corte.
-            onConfirmar deberá validar los datos y guardar el corte
-            mediante ServicioCorteCaja.
-        -->
-        <Button layoutX="570.0" layoutY="475.0"
+        <Button layoutX="570.0" layoutY="515.0"
                 prefHeight="40.0" prefWidth="155.0"
                 text="Confirmar corte"
                 onAction="#onConfirmar"/>
-
     </children>
 </AnchorPane>

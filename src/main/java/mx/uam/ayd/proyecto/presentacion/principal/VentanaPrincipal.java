@@ -58,9 +58,10 @@ public class VentanaPrincipal {
         }
     }
 
-    public void setControlPrincipal(ControlPrincipal control) {
-        this.control = control;
-    }
+   public void setControlPrincipal(ControlPrincipal control) {
+    this.control = control;
+    System.out.println("DEBUG: ControlPrincipal conectado a VentanaPrincipal");
+}
 
     /**
      * Muestra la ventana principal
@@ -177,10 +178,17 @@ public class VentanaPrincipal {
      * Delega la operación a ControlPrincipal.
      */
     @FXML
-    private void handleCorteCaja() {
-        if (control != null) {
-            control.realizarCorteCaja();
-        }
+  
+private void handleCorteCaja() {
+    System.out.println("1. Se pulso el boton Corte de caja");
+
+    if (control != null) {
+        System.out.println("2. ControlPrincipal esta conectado");
+        control.realizarCorteCaja();
+    } else {
+        System.err.println("ERROR: ControlPrincipal es null");
     }
+}
+
 
 }
