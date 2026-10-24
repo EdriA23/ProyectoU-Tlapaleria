@@ -111,6 +111,17 @@ public class ControlTrabajador {
             vistaTrabajador.muestraMensajeError("Error al eliminar trabajador: " + e.getMessage());
         }
     }
+    /**
+ * Realiza la búsqueda de trabajadores 
+ */
+public void buscarTrabajadores(String criterio) {
+    try {
+        List<Trabajador> resultados = servicioTrabajador.buscarTrabajadores(criterio);
+        vistaTrabajador.muestra(resultados);
+    } catch (Exception e) {
+        vistaTrabajador.muestraMensajeError("Error al buscar trabajadores: " + e.getMessage());
+    }
+}
 
 
 }

@@ -1,7 +1,7 @@
-
 package mx.uam.ayd.proyecto.presentacion.principal;
 
 import jakarta.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -22,6 +22,7 @@ import mx.uam.ayd.proyecto.presentacion.listarUsuarios.ControlListarUsuarios;
 import mx.uam.ayd.proyecto.presentacion.margenGanancia.ControlMargenDeGanancia;
 import mx.uam.ayd.proyecto.presentacion.registrarMercancia.ControlRegistrarMercancia;
 import mx.uam.ayd.proyecto.presentacion.registroVenta.ControlRegistroVenta;
+import mx.uam.ayd.proyecto.presentacion.registrarCliente.ControlRegistrarCliente; // Import HU-12
 
 /**
  * Control principal del sistema
@@ -29,6 +30,7 @@ import mx.uam.ayd.proyecto.presentacion.registroVenta.ControlRegistroVenta;
 @Component
 public class ControlPrincipal {
 
+    // Atributos de controles existentes
     private final ControlAgregarUsuario controlAgregarUsuario;
     private final ControlListarUsuarios controlListarUsuarios;
     private final ControlListarGrupos controlListarGrupos;
@@ -39,14 +41,18 @@ public class ControlPrincipal {
     private final ControlConsultarInventario controlConsultarInventario;
     private final ControlHistorialMovimientos controlHistorialMovimientos;
     private final ControlRevisarExistencia controlRevisarExistencia;
-    private final ControlRegistroVenta controlRegistroVenta;
     private final ControlAgregarProductos controlAgregarProductos;
     private final ControlProveedor controlProveedor;
     private final ControlCorteCaja controlCorteCaja;
     private final ControlMargenDeGanancia controlMargenDeGanancia;
-    private final ControlConsultaPedidos controlConsultaPedidos;
+    private final ControlConsultaPedidos controlConsultaPedidos; // Para HU-17
+
     private final ControlTrabajador controlTrabajador;
+
+    private final ControlRegistrarCliente controlRegistrarCliente; // Para HU-12
+
     private final VentanaPrincipal ventana;
+
 
     @Autowired
     public ControlPrincipal(
@@ -64,9 +70,14 @@ public class ControlPrincipal {
             ControlAgregarProductos controlAgregarProductos,
             ControlProveedor controlProveedor,
             ControlCorteCaja controlCorteCaja,
+
             ControlMargenDeGanancia controlMargenDeGanancia,
             ControlConsultaPedidos controlConsultaPedidos,
+
             ControlTrabajador controlTrabajador,
+
+            ControlRegistrarCliente controlRegistrarCliente, // Parámetro HU-12
+
             VentanaPrincipal ventana) {
 
         this.controlAgregarUsuario = controlAgregarUsuario;
@@ -79,14 +90,15 @@ public class ControlPrincipal {
         this.controlConsultarInventario = controlConsultarInventario;
         this.controlHistorialMovimientos = controlHistorialMovimientos;
         this.controlRevisarExistencia = controlRevisarExistencia;
-        this.controlRegistroVenta = controlRegistroVenta;
         this.controlAgregarProductos = controlAgregarProductos;
         this.controlProveedor = controlProveedor;
-
         this.controlCorteCaja = controlCorteCaja;
         this.controlMargenDeGanancia = controlMargenDeGanancia;
+
         this.controlConsultaPedidos = controlConsultaPedidos;
         this.controlTrabajador = controlTrabajador;
+
+        this.controlRegistrarCliente = controlRegistrarCliente;
 
         this.ventana = ventana;
     }
@@ -99,6 +111,8 @@ public class ControlPrincipal {
     public void inicia() {
         ventana.muestra();
     }
+
+    // --- MÉTODOS DE ACCIÓN ---
 
     public void agregarUsuario() {
         controlAgregarUsuario.inicia();
@@ -151,21 +165,21 @@ public class ControlPrincipal {
     }
 
     /**
-     * Inicia la HU-15: Corte de caja.
+     * Inicia la HU-15: Corte de Caja
      */
     public void realizarCorteCaja() {
         controlCorteCaja.iniciar();
     }
 
     /**
-     * Inicia la HU-28: Margen de Ganancia.
+     * Inicia la HU-28: Margen de Ganancia
      */
     public void margenGanancia() {
         controlMargenDeGanancia.inicia();
     }
 
     /**
-     * Inicia la HU-17: Consulta y Gestión de Pedidos a Domicilio.
+     * Inicia la HU-17: Consulta y Gestión de Pedidos a Domicilio
      */
     public void consultarPedidosDomicilio() {
         if (controlConsultaPedidos != null) {
@@ -175,5 +189,12 @@ public class ControlPrincipal {
 
     public void consultarTrabajador() {
         controlTrabajador.iniciaBusqueda();
+    }
+
+    /**
+     * Inicia la HU-12: Registrar clientes
+     */
+    public void registrarCliente() {
+        controlRegistrarCliente.inicia();
     }
 }

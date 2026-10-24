@@ -53,30 +53,36 @@ public class VistaTrabajador {
     public VistaTrabajador() {
     }
 
-    private void initializeUI() {
-        if (initialized) {
-            return;
-        }
-
-        try {
-            stage = new Stage();
-            stage.setTitle("Gestión de Personal - Trabajadores");
-
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/vista-trabajador.fxml"));
-            
-            // Permite a Spring inyectar el bean administrado
-            loader.setControllerFactory(context::getBean);
-
-            BorderPane root = loader.load();
-            Scene scene = new Scene(root, 750, 600);
-            stage.setScene(scene);
-
-            initialized = true;
-        } catch (IOException e) {
-            System.err.println("Error al cargar la interfaz FXML de VistaTrabajador:");
-            e.printStackTrace();
-        }
+   private void initializeUI() {
+    if (initialized) {
+        return;
     }
+
+    try {
+        stage = new Stage();
+        stage.setTitle("Gestión de Personal - Trabajadores");
+
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/vista-trabajador.fxml"));
+        
+        // Inyecta 'this' cuando JavaFX solicite la VistaTrabajador, evitando perder referencias FXML
+        loader.setControllerFactory(clazz -> {
+            if (clazz == VistaTrabajador.class) {
+                return this;
+            }
+            return context.getBean(clazz);
+        });
+
+        BorderPane root = loader.load();
+
+        Scene scene = new Scene(root, 750, 600);
+        stage.setScene(scene);
+
+        initialized = true;
+    } catch (IOException e) {
+        System.err.println("Error al cargar la interfaz FXML de VistaTrabajador:");
+        e.printStackTrace();
+    }
+}
 
     public void setControl(ControlTrabajador control) {
         this.control = control;
@@ -102,7 +108,7 @@ public class VistaTrabajador {
     }
 
     /**
-     * Corresponde al mensaje muestra(trabajadores)
+     *  muestra
      */
     public void muestra(List<Trabajador> trabajadores) {
         if (!Platform.isFxApplicationThread()) {
@@ -126,7 +132,7 @@ public class VistaTrabajador {
     }
 
     /**
-     * Alias exacto según la llamada 'mostrar(listaTrabajadoresActualizado)' del Diagrama de Secuencia.
+     * Alias exacto según la llamada 
      */
     public void mostrar(List<Trabajador> trabajadores) {
         muestra(trabajadores);
@@ -168,9 +174,9 @@ public class VistaTrabajador {
             }
     @FXML
     private void handleBuscar() {
-        if (control != null) {
-            control.recuperarPersonal();
-        }
+       if (control != null && txtBuscar != null) {
+        control.buscarTrabajadores(txtBuscar.getText());
+    }
     }
 
     @FXML

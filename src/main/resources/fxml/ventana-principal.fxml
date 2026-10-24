@@ -103,32 +103,40 @@
                         <Insets left="20.0" />
                      </padding>
                   </Button>
-                  
-                     <!-- HU-15: Acceso al corte de caja -->
-                     <Button alignment="BASELINE_LEFT"
-                           graphicTextGap="15.0"
-                           maxWidth="1.7976931348623157E308"
-                           minHeight="50.0"
-                           mnemonicParsing="false"
-                           onAction="#handleCorteCaja"
-                           style="-fx-background-color: PINK; -fx-background-radius: 8;"
-                           text="Corte de caja"
-                           textFill="#546E7A">
-                        <font>
-                           <Font size="14.0" />
-                        </font>
-                        <graphic>
-                           <Label text="💰" textFill="#546E7A">
-                                 <font>
-                                    <Font size="18.0" />
-                                 </font>
-                           </Label>
-                        </graphic>
-                        <padding>
-                           <Insets left="20.0" />
-                        </padding>
-                     </Button>
 
+                  <!-- Corte de Caja (HU-15) -->
+                  <Button alignment="BASELINE_LEFT" graphicTextGap="15.0" maxWidth="1.7976931348623157E308" minHeight="50.0" mnemonicParsing="false" onAction="#handleCorteCaja" style="-fx-background-color: PINK; -fx-background-radius: 8;" text="Corte de Caja" textFill="#546E7A">
+                     <font>
+                        <Font name="System Bold" size="14.0" />
+                     </font>
+                     <graphic>
+                        <Label text="💰">
+                           <font>
+                              <Font size="18.0" />
+                           </font>
+                        </Label>
+                     </graphic>
+                     <padding>
+                        <Insets left="20.0" />
+                     </padding>
+                  </Button>
+
+                  <!-- Clientes (HU-12: Registrar clientes) -->
+                  <Button alignment="BASELINE_LEFT" graphicTextGap="15.0" maxWidth="1.7976931348623157E308" minHeight="50.0" mnemonicParsing="false" onAction="#handleRegistrarCliente" style="-fx-background-color: PINK; -fx-background-radius: 8;" text="Clientes" textFill="#546E7A">
+                     <font>
+                        <Font name="System Bold" size="14.0" />
+                     </font>
+                     <graphic>
+                        <Label text="👥">
+                           <font>
+                              <Font size="18.0" />
+                           </font>
+                        </Label>
+                     </graphic>
+                     <padding>
+                        <Insets left="20.0" />
+                     </padding>
+                  </Button>
 
                   <!-- Espaciador -->
                   <VBox VBox.vgrow="ALWAYS" />
@@ -358,7 +366,7 @@
                                                       </Button>
 
                                                       <!-- Registrar Personal -->
-                                                      <Button fx:id="btnConsultarTrabajador" alignment="BASELINE_LEFT" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleConsultarTrabajador" style="-fx-background-color: transparent;" text="Registrar Personal" textFill="#383838" GridPane.columnIndex="1">
+                                                      <Button fx:id="btnConsultarTrabajador" alignment="BASELINE_LEFT" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleConsultarTrabajador" style="-fx-background-color: transparent;" text="Gestion de Personal" textFill="#383838" GridPane.columnIndex="1">
                                                          <graphic>
                                                             <Label text="➕" textFill="#303030" />
                                                          </graphic>
