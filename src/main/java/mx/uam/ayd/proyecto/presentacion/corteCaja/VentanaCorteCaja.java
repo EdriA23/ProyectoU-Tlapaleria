@@ -57,10 +57,8 @@ public class VentanaCorteCaja {
                 "/fxml/ventana-corte-caja.fxml");
 
         if (fxmlUrl == null) {
-            System.err.println(
-                    "No se encontró el FXML "
-                    + "/fxml/ventana-corte-caja.fxml");
-            return;
+            throw new IllegalStateException(
+                    "No se encontró el FXML /fxml/ventana-corte-caja.fxml");
         }
 
         try {
@@ -83,9 +81,8 @@ public class VentanaCorteCaja {
             initialized = true;
 
         } catch (IOException e) {
-            System.err.println(
-                    "Error al cargar la ventana de corte de caja.");
-            e.printStackTrace();
+            throw new IllegalStateException(
+                    "No se pudo cargar la ventana de corte de caja.", e);
         }
     }
 

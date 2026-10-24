@@ -97,4 +97,5 @@ public class CorteCaja {
     public void setEfectivoEsperado(double efectivoEsperado) {
         this.efectivoEsperado = efectivoEsperado;
     }
+
 }

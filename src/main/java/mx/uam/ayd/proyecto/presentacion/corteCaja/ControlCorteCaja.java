@@ -37,6 +37,9 @@ public class ControlCorteCaja {
     @FXML
     private TableView<Venta> tablaVentas;
 
+    @FXML
+    private TableView<CorteCaja> tablaHistorial;
+
     /** Columnas que muestran los datos de cada venta. */
     @FXML
     private TableColumn<Venta, LocalDateTime> colFecha;
@@ -49,6 +52,21 @@ public class ControlCorteCaja {
 
     @FXML
     private TableColumn<Venta, Double> colTotal;
+
+    @FXML
+    private TableColumn<CorteCaja, LocalDateTime> colHistorialFecha;
+
+    @FXML
+    private TableColumn<CorteCaja, String> colHistorialEmpleado;
+
+    @FXML
+    private TableColumn<CorteCaja, String> colHistorialTurno;
+
+    @FXML
+    private TableColumn<CorteCaja, Double> colHistorialTotal;
+
+    @FXML
+    private TableColumn<CorteCaja, Double> colHistorialEfectivo;
 
     /** Etiquetas con los importes calculados. */
     @FXML
@@ -133,6 +151,32 @@ public class ControlCorteCaja {
                         : String.format("MXN %.2f", importe));
             }
         });
+
+        colHistorialFecha.setCellValueFactory(celda ->
+                new ReadOnlyObjectWrapper<>(
+                        celda.getValue().getFechaHora()));
+        colHistorialFecha.setCellFactory(columna -> new TableCell<>() {
+            @Override
+            protected void updateItem(
+                    LocalDateTime fecha, boolean vacio) {
+                super.updateItem(fecha, vacio);
+                setText(vacio || fecha == null
+                        ? null
+                        : formatoFecha.format(fecha));
+            }
+        });
+        colHistorialEmpleado.setCellValueFactory(celda ->
+                new ReadOnlyObjectWrapper<>(
+                        celda.getValue().getNombreEmpleado()));
+        colHistorialTurno.setCellValueFactory(celda ->
+                new ReadOnlyObjectWrapper<>(
+                        celda.getValue().getTurno()));
+        colHistorialTotal.setCellValueFactory(celda ->
+                new ReadOnlyObjectWrapper<>(
+                        celda.getValue().getTotalVentas()));
+        colHistorialEfectivo.setCellValueFactory(celda ->
+                new ReadOnlyObjectWrapper<>(
+                        celda.getValue().getEfectivoEsperado()));
     }
 
     /**
@@ -143,6 +187,7 @@ public class ControlCorteCaja {
 
         // Espera a que JavaFX termine de cargar los controles.
         Platform.runLater(this::cargarVentasDelDia);
+        Platform.runLater(this::cargarHistorial);
     }
 
     /**
@@ -156,23 +201,7 @@ public class ControlCorteCaja {
 
             tablaVentas.getItems().setAll(ventas);
 
-            // Suma el total de las ventas consultadas.
-            double total = ventas.stream()
-                    .mapToDouble(venta ->
-                            venta.getTotal() == null
-                                    ? 0.0
-                                    : venta.getTotal())
-                    .sum();
-
-            lblTotalVentas.setText(
-                    String.format("MXN %.2f", total));
-
-            /*
-             * Importe provisional: el modelo actual no identifica
-             * explícitamente el método de pago de cada venta.
-             */
-            lblEfectivoEsperado.setText(
-                    String.format("MXN %.2f", total));
+            actualizarTotales(ventas);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -181,6 +210,32 @@ public class ControlCorteCaja {
                     AlertType.ERROR,
                     "No se pudieron consultar las ventas",
                     "Revisa la terminal para conocer el error.");
+        }
+    }
+
+    private void cargarHistorial() {
+        try {
+            List<CorteCaja> cortes = servicioCorteCaja.consultarCortes();
+            cortes.sort((primero, segundo) -> {
+                LocalDateTime fechaPrimero = primero.getFechaHora();
+                LocalDateTime fechaSegundo = segundo.getFechaHora();
+                if (fechaPrimero == null) {
+                    return fechaSegundo == null ? 0 : 1;
+                }
+                if (fechaSegundo == null) {
+                    return -1;
+                }
+                return fechaSegundo.compareTo(fechaPrimero);
+            });
+            tablaHistorial.getItems().setAll(cortes);
+        } catch (Exception e) {
+            e.printStackTrace();
+            mostrarAlerta(
+                    AlertType.ERROR,
+                    "No se pudo consultar el historial",
+                    e.getMessage() == null
+                            ? "Ocurrió un error al consultar los cortes guardados."
+                            : e.getMessage());
         }
     }
 
@@ -211,13 +266,7 @@ public class ControlCorteCaja {
             return;
         }
 
-        // Calcula la suma de las ventas visibles en el corte.
-        double total = tablaVentas.getItems().stream()
-                .mapToDouble(venta ->
-                        venta.getTotal() == null
-                                ? 0.0
-                                : venta.getTotal())
-                .sum();
+        double total = sumarVentas(tablaVentas.getItems());
 
         // Construye la entidad que se guardará.
         CorteCaja corte = new CorteCaja();
@@ -226,22 +275,20 @@ public class ControlCorteCaja {
         corte.setTurno(
                 "CORTE-" + System.currentTimeMillis());
         corte.setTotalVentas(total);
-
-        /*
-         * Provisional: se requiere distinguir los métodos de pago
-         * para calcular el efectivo físico esperado con precisión.
-         */
         corte.setEfectivoEsperado(total);
 
         try {
             // Guarda el corte a través del servicio de negocio.
             servicioCorteCaja.registrarCorte(corte);
+            cargarHistorial();
 
             mostrarAlerta(
                     AlertType.INFORMATION,
                     "Corte guardado",
                     "Se guardó el corte de " + nombre
                     + ".\nTotal de ventas: "
+                    + String.format("MXN %.2f", total)
+                    + "\nEfectivo esperado: "
                     + String.format("MXN %.2f", total));
 
             ventanaCorteCaja.setVisible(false);
@@ -256,6 +303,20 @@ public class ControlCorteCaja {
                             ? "Ocurrió un error inesperado."
                             : e.getMessage());
         }
+    }
+
+    private void actualizarTotales(List<Venta> ventas) {
+        double total = sumarVentas(ventas);
+        lblTotalVentas.setText(String.format("MXN %.2f", total));
+        lblEfectivoEsperado.setText(String.format("MXN %.2f", total));
+    }
+
+    private double sumarVentas(List<Venta> ventas) {
+        return ventas.stream()
+                .mapToDouble(venta -> venta.getTotal() == null
+                        ? 0.0
+                        : venta.getTotal())
+                .sum();
     }
 
     /**
@@ -283,6 +344,11 @@ public class ControlCorteCaja {
     @FXML
     private void onConfirmar() {
         confirmar();
+    }
+
+    @FXML
+    private void onActualizarHistorial() {
+        cargarHistorial();
     }
 
     /**

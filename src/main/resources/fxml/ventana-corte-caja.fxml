@@ -1,81 +1,106 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.text.Font?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
 
-<AnchorPane prefHeight="590.0" prefWidth="750.0"
-            xmlns="http://javafx.com/javafx/21"
-            xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="mx.uam.ayd.proyecto.presentacion.corteCaja.ControlCorteCaja">
-    <children>
-        <Label layoutX="25.0" layoutY="20.0"
-               text="Corte de caja" textFill="#2c3e50">
-            <font>
-                <Font name="System Bold" size="24.0"/>
-            </font>
-        </Label>
+<VBox xmlns="http://javafx.com/javafx/21"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="mx.uam.ayd.proyecto.presentacion.corteCaja.ControlCorteCaja"
+      spacing="14"
+      prefWidth="760"
+      prefHeight="560"
+      style="-fx-background-color: #F4F6F9;">
+    <padding>
+        <Insets top="24" right="28" bottom="24" left="28"/>
+    </padding>
 
-        <Label layoutX="25.0" layoutY="65.0"
-               text="Resumen de ventas del día"/>
-
-        <TableView fx:id="tablaVentas"
-                   layoutX="25.0" layoutY="100.0"
-                   prefHeight="250.0" prefWidth="700.0">
-            <columns>
-                <TableColumn fx:id="colFecha"
-                             prefWidth="190.0"
-                             text="Fecha y hora"/>
-                <TableColumn fx:id="colVenta"
-                             prefWidth="100.0"
-                             text="Venta"/>
-                <TableColumn fx:id="colVendedor"
-                             prefWidth="110.0"
-                             text="Vendedor"/>
-                <TableColumn fx:id="colTotal"
-                             prefWidth="260.0"
-                             text="Total"/>
-            </columns>
-        </TableView>
-
-        <Label layoutX="25.0" layoutY="375.0"
-               text="Nombre del empleado:"/>
-        <TextField fx:id="txtNombreEmpleado"
-                   layoutX="205.0" layoutY="370.0"
-                   prefWidth="500.0"
-                   promptText="Escribe tu nombre"/>
-
-        <Label layoutX="400.0" layoutY="420.0"
-               text="Total de ventas:"/>
-        <Label fx:id="lblTotalVentas"
-               layoutX="550.0" layoutY="420.0"
-               text="MXN 0.00">
-            <font>
-                <Font name="System Bold" size="16.0"/>
-            </font>
-        </Label>
-
-        <Label layoutX="400.0" layoutY="455.0"
-               text="Efectivo esperado:"/>
-        <Label fx:id="lblEfectivoEsperado"
-               layoutX="550.0" layoutY="455.0"
-               text="MXN 0.00">
-            <font>
-                <Font name="System Bold" size="16.0"/>
-            </font>
-        </Label>
-
-        <Button layoutX="410.0" layoutY="515.0"
-                prefHeight="40.0" prefWidth="145.0"
-                text="Cancelar"
-                onAction="#onCancelar"/>
-
-        <Button layoutX="570.0" layoutY="515.0"
-                prefHeight="40.0" prefWidth="155.0"
-                text="Confirmar corte"
-                onAction="#onConfirmar"/>
-    </children>
-</AnchorPane>
+    <TabPane VBox.vgrow="ALWAYS">
+        <tabs>
+            <Tab text="Nuevo corte" closable="false">
+                <content>
+                    <VBox spacing="14">
+                        <padding>
+                            <Insets top="14" right="4" bottom="4" left="4"/>
+                        </padding>
+                        <VBox spacing="5">
+                            <Label text="Corte de caja"
+                                   style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #243447;"/>
+                            <Label text="Revisa las ventas del día y registra el corte realizado."
+                                   style="-fx-font-size: 13px; -fx-text-fill: #65758B;"/>
+                        </VBox>
+                        <Separator/>
+                        <TableView fx:id="tablaVentas" prefHeight="260" VBox.vgrow="ALWAYS">
+                            <columns>
+                                <TableColumn fx:id="colFecha" text="Fecha y hora" prefWidth="220"/>
+                                <TableColumn fx:id="colVenta" text="Venta" prefWidth="100"/>
+                                <TableColumn fx:id="colVendedor" text="Trabajador" prefWidth="130"/>
+                                <TableColumn fx:id="colTotal" text="Total" prefWidth="150"/>
+                            </columns>
+                        </TableView>
+                        <HBox spacing="24">
+                            <VBox spacing="4">
+                                <Label text="Total de ventas"
+                                       style="-fx-font-weight: bold; -fx-text-fill: #526477;"/>
+                                <Label fx:id="lblTotalVentas" text="MXN 0.00"
+                                       style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
+                            </VBox>
+                            <VBox spacing="4">
+                                <Label text="Efectivo esperado"
+                                       style="-fx-font-weight: bold; -fx-text-fill: #526477;"/>
+                                <Label fx:id="lblEfectivoEsperado" text="MXN 0.00"
+                                       style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
+                            </VBox>
+                        </HBox>
+                        <VBox spacing="5">
+                            <Label text="Nombre del empleado"/>
+                            <TextField fx:id="txtNombreEmpleado"
+                                       promptText="Escribe el nombre de quien realiza el corte"/>
+                        </VBox>
+                        <HBox spacing="10" alignment="CENTER_RIGHT">
+                            <Button text="Cancelar" onAction="#onCancelar"/>
+                            <Button text="Confirmar corte"
+                                    onAction="#onConfirmar"
+                                    style="-fx-background-color: #2471A3; -fx-text-fill: white; -fx-font-weight: bold;"/>
+                        </HBox>
+                    </VBox>
+                </content>
+            </Tab>
+            <Tab text="Historial de cortes" closable="false">
+                <content>
+                    <VBox spacing="12">
+                        <padding>
+                            <Insets top="14" right="4" bottom="4" left="4"/>
+                        </padding>
+                        <HBox alignment="CENTER_LEFT" spacing="12">
+                            <VBox spacing="5" HBox.hgrow="ALWAYS">
+                                <Label text="Historial de cortes"
+                                       style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #243447;"/>
+                                <Label text="Cortes guardados en la base de datos."
+                                       style="-fx-font-size: 13px; -fx-text-fill: #65758B;"/>
+                            </VBox>
+                            <Button text="Actualizar" onAction="#onActualizarHistorial"/>
+                        </HBox>
+                        <TableView fx:id="tablaHistorial" VBox.vgrow="ALWAYS">
+                            <columns>
+                                <TableColumn fx:id="colHistorialFecha" text="Fecha y hora" prefWidth="170"/>
+                                <TableColumn fx:id="colHistorialEmpleado" text="Empleado" prefWidth="150"/>
+                                <TableColumn fx:id="colHistorialTurno" text="Corte" prefWidth="130"/>
+                                <TableColumn fx:id="colHistorialTotal" text="Total ventas" prefWidth="130"/>
+                                <TableColumn fx:id="colHistorialEfectivo" text="Efectivo esperado" prefWidth="150"/>
+                            </columns>
+                        </TableView>
+                    </VBox>
+                </content>
+            </Tab>
+        </tabs>
+    </TabPane>
+</VBox>
