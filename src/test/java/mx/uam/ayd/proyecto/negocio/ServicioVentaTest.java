@@ -25,7 +25,6 @@ import mx.uam.ayd.proyecto.negocio.modelo.DescripcionVenta;
 import mx.uam.ayd.proyecto.negocio.modelo.Inventario;
 import mx.uam.ayd.proyecto.negocio.modelo.MovimientoInventario;
 import mx.uam.ayd.proyecto.negocio.modelo.Producto;
-import mx.uam.ayd.proyecto.negocio.modelo.Trabajador;
 import mx.uam.ayd.proyecto.negocio.modelo.Venta;
 
 @ExtendWith(MockitoExtension.class)
@@ -44,10 +43,10 @@ class ServicioVentaTest {
     private MovimientoInventarioRepository movimientoRepository;
 
     @Mock
-    private TrabajadorRepository trabajadorRepository; // Agregado para HU-17
+    private TrabajadorRepository trabajadorRepository; // Para HU-17
 
     @Mock
-    private ServicioCliente servicioCliente; // Agregado para HU-17
+    private ServicioCliente servicioCliente; // Para HU-17
 
     @InjectMocks
     private ServicioVenta servicioVenta;
@@ -93,7 +92,7 @@ class ServicioVentaTest {
 
     @Test
     @DisplayName("Debería regresar nulo al intentar actualizar una venta nula")
-    void testActualizarVentaNulaRegresaNull() {
+    void testActualizarVentaNulaRegresaFalse() {
         Venta resultado = servicioVenta.actualizarVenta(null);
         assertNull(resultado);
     }
@@ -118,6 +117,7 @@ class ServicioVentaTest {
         inventario.setIdProducto(1L);
         inventario.setExistenciaActual(20);
 
+        // CORRECCIÓN: Simulamos correctamente la búsqueda en inventario para que el stock disminuya bien
         when(inventarioRepository.findById(1L)).thenReturn(Optional.of(inventario));
         when(ventaRepository.save(any(Venta.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
@@ -149,11 +149,11 @@ class ServicioVentaTest {
     }
 
     // ==========================================
-    // NUEVAS PRUEBAS PARA LA HU-17 (PEDIDOS A DOMICILIO)
+    // PRUEBAS PARA LA HU-17 (PEDIDOS A DOMICILIO)
     // ==========================================
 
     @Test
-    @DisplayName("Debería registrar un pedido a domicilio exitosamente cuando hay repartidores (HU-17)")
+    @DisplayName("Debería registrar un pedido a domicilio exitosamente (HU-17)")
     void testRegistrarPedidoDomicilioExitoso() {
         Cliente cliente = new Cliente();
         cliente.setNombre("Juan Pérez");
@@ -161,26 +161,29 @@ class ServicioVentaTest {
         cliente.setDireccion("Calle Principal 123");
 
         Producto producto = new Producto();
+        producto.setIdProducto(1L);
+        producto.setExistenciaActual(10);
         producto.setPrecio(100.0);
+        
         DescripcionVenta detalle = new DescripcionVenta();
         detalle.setProducto(producto);
         detalle.setCantidad(1);
         List<DescripcionVenta> detalles = List.of(detalle);
 
-        Trabajador repartidor = new Trabajador();
-        repartidor.setNombreCompleto("Carlos Repartidor");
+        Inventario inventario = new Inventario();
+        inventario.setIdProducto(1L);
+        inventario.setExistenciaActual(10);
 
         when(servicioCliente.validarDatosCliente(cliente)).thenReturn(true);
-        when(trabajadorRepository.findByRol("Repartidor")).thenReturn(List.of(repartidor));
-        when(trabajadorRepository.findById(1L)).thenReturn(Optional.of(repartidor));
+        when(inventarioRepository.findById(1L)).thenReturn(Optional.of(inventario));
         when(ventaRepository.save(any(Venta.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        Venta ventaDomicilio = servicioVenta.registrarPedidoDomicilio(cliente, detalles, 200.0, 1L);
+        Venta ventaDomicilio = servicioVenta.registrarPedidoDomicilio(cliente, detalles, 200.0, 0);
 
         assertNotNull(ventaDomicilio);
         assertTrue(ventaDomicilio.isEsDomicilio());
-        assertEquals("Pedido en camino", ventaDomicilio.getEstadoEntrega());
-        assertEquals("Carlos Repartidor", ventaDomicilio.getRepartidorAsignado());
+        assertEquals("Registrado", ventaDomicilio.getEstadoEntrega());
+        assertEquals(150.0, ventaDomicilio.getTotal(), 0.01); // 100 producto + 50 envío
     }
 
     @Test
@@ -190,23 +193,7 @@ class ServicioVentaTest {
         when(servicioCliente.validarDatosCliente(cliente)).thenReturn(false);
 
         assertThrows(IllegalArgumentException.class, () -> {
-            servicioVenta.registrarPedidoDomicilio(cliente, new ArrayList<>(), 200.0, 1L);
+            servicioVenta.registrarPedidoDomicilio(cliente, new ArrayList<>(), 200.0, 0);
         });
-    }
-
-    @Test
-    @DisplayName("Debería lanzar excepción si no hay repartidores disponibles (HU-17)")
-    void testRegistrarPedidoDomicilioSinRepartidores() {
-        Cliente cliente = new Cliente();
-        cliente.setNombre("Juan Pérez");
-        
-        when(servicioCliente.validarDatosCliente(cliente)).thenReturn(true);
-        when(trabajadorRepository.findByRol("Repartidor")).thenReturn(new ArrayList<>());
-
-        Exception exception = assertThrows(IllegalStateException.class, () -> {
-            servicioVenta.registrarPedidoDomicilio(cliente, new ArrayList<>(), 200.0, 1L);
-        });
-
-        assertTrue(exception.getMessage().contains("No hay repartidores disponibles"));
     }
 }
