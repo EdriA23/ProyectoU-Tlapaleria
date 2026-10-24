@@ -15,11 +15,6 @@ public interface TrabajadorRepository extends CrudRepository<Trabajador, Long> {
     List<Trabajador> findAll();
 
     /**
-     * Busca trabajadores por su nombre completo ignorando mayúsculas y minúsculas 
-     */
-    List<Trabajador> findByNombreCompletoContainingIgnoreCase(String nombreCompleto);
-
-    /**
      * Permite filtrar trabajadores según su rol o puesto en la tienda.
      */
     List<Trabajador> findByRol(String rol);
