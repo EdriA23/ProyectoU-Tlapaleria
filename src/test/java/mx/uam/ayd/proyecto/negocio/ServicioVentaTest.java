@@ -19,10 +19,12 @@ import mx.uam.ayd.proyecto.datos.InventarioRepository;
 import mx.uam.ayd.proyecto.datos.MovimientoInventarioRepository;
 import mx.uam.ayd.proyecto.datos.ProductoRepository;
 import mx.uam.ayd.proyecto.datos.VentaRepository;
+import mx.uam.ayd.proyecto.negocio.modelo.Cliente;
 import mx.uam.ayd.proyecto.negocio.modelo.DescripcionVenta;
 import mx.uam.ayd.proyecto.negocio.modelo.Inventario;
 import mx.uam.ayd.proyecto.negocio.modelo.MovimientoInventario;
 import mx.uam.ayd.proyecto.negocio.modelo.Producto;
+import mx.uam.ayd.proyecto.negocio.modelo.Tarjeta;
 import mx.uam.ayd.proyecto.negocio.modelo.Venta;
 
 @ExtendWith(MockitoExtension.class)
@@ -92,20 +94,22 @@ class ServicioVentaTest {
         Venta venta = new Venta();
 
         // When
-        Venta resultado = servicioVenta.actualizarVenta(venta);
+        boolean resultado = servicioVenta.actualizarVenta(venta);
 
         // Then
-        assertNotNull(resultado);
+        assertTrue(resultado);
+        verify(ventaRepository).save(venta);
     }
 
     @Test
-    @DisplayName("Debería regresar nulo al intentar actualizar una venta nula")
-    void testActualizarVentaNulaRegresaNull() {
+    @DisplayName("Debería regresar false al intentar actualizar una venta nula")
+    void testActualizarVentaNulaRegresaFalse() {
         // When
-        Venta resultado = servicioVenta.actualizarVenta(null);
+        boolean resultado = servicioVenta.actualizarVenta(null);
 
         // Then
-        assertNull(resultado);
+        assertFalse(resultado);
+        verify(ventaRepository, never()).save(any());
     }
 
     @Test
@@ -162,5 +166,26 @@ class ServicioVentaTest {
         verify(productoRepository, never()).save(any());
         verify(inventarioRepository, never()).save(any());
         verify(movimientoRepository, never()).save(any());
+    }
+
+    @Test
+    @DisplayName("Debería registrar una venta con pago con tarjeta correctamente")
+    void testRegistrarVentaConTarjeta() {
+        // Given
+        Tarjeta tarjeta = new Tarjeta("DEBITO", "1234567812345678", "123", "12/28");
+        Cliente cliente = new Cliente("Juan Perez", "5512345678", "Calle 1", "10", "A y B", "Azul");
+
+        when(ventaRepository.save(any(Venta.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        // When
+        Venta ventaResultante = servicioVenta.registrarVenta(null, 200.0, "TARJETA", cliente, tarjeta);
+
+        // Then
+        assertNotNull(ventaResultante);
+        assertEquals("TARJETA", ventaResultante.getTipoPago());
+        assertEquals(tarjeta, ventaResultante.getTarjeta());
+        assertEquals(cliente, ventaResultante.getCliente());
+        assertEquals(0.0, ventaResultante.getCambio()); // El cambio en pago con tarjeta debe ser 0.0
+        assertEquals(tarjeta, cliente.getTarjeta());
     }
 }

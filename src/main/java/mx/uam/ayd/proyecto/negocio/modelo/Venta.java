@@ -39,21 +39,26 @@ public class Venta {
 
     private double cambio;
 
-    /*
-     * es mi hu-17
-     */
-    private boolean esDomicilio = false;
+    private String tipoPago;
 
-    @ManyToOne
-    @JoinColumn(name = "idCliente")
-    private Cliente cliente;
-
-    private double costoEnvio = 0.0;
+    private boolean esDomicilio;
 
     private String estadoEntrega;
 
-    private String repartidorAsignado;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_cliente_fk", nullable = true)
+    private Cliente cliente;
 
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_tarjeta_fk", nullable = true)
+    private Tarjeta tarjeta;
+
+    /*
+     * Una venta puede contener varios detalles.
+     *
+     * mappedBy = "venta" hace referencia al atributo venta
+     * existente en DescripcionVenta.
+     */
     @OneToMany(
             mappedBy = "venta",
             fetch = FetchType.EAGER,
@@ -95,7 +100,7 @@ public class Venta {
 
     /**
      * Suma los precios y cantidades de cada producto 
-     * para calcular el total de la venta (HU-05), considerando el costo de envío si es domicilio.
+     * para calcular el total de la venta (HU-05).
      */
     public void calculaTotal() {
 
@@ -109,12 +114,7 @@ public class Venta {
             }
         }
 
-        // Si es a domicilio, sumamos el costo de envío al total general (Escenario 3)
-        if (this.esDomicilio) {
-            this.total = acumulado + this.costoEnvio;
-        } else {
-            this.total = acumulado;
-        }
+        this.total = acumulado;
     }
 
     public void agregarDetalle(DescripcionVenta detalle) {
@@ -122,7 +122,6 @@ public class Venta {
         if (detalle != null) {
             detalle.setVenta(this);
             this.productos.add(detalle);
-            calculaTotal();
         }
     }
 
@@ -186,30 +185,20 @@ public class Venta {
         this.cambio = cambio;
     }
 
+    public String getTipoPago() {
+        return tipoPago;
+    }
+
+    public void setTipoPago(String tipoPago) {
+        this.tipoPago = tipoPago;
+    }
+
     public boolean isEsDomicilio() {
         return esDomicilio;
     }
 
     public void setEsDomicilio(boolean esDomicilio) {
         this.esDomicilio = esDomicilio;
-        calculaTotal(); // Recalcula automáticamente al cambiar entre mostrador y domicilio (Escenario 3)
-    }
-
-    public Cliente getCliente() {
-        return cliente;
-    }
-
-    public void setCliente(Cliente cliente) {
-        this.cliente = cliente;
-    }
-
-    public double getCostoEnvio() {
-        return costoEnvio;
-    }
-
-    public void setCostoEnvio(double costoEnvio) {
-        this.costoEnvio = costoEnvio;
-        calculaTotal(); // Recalcula automáticamente al cambiar el costo de envío (Escenario 3)
     }
 
     public String getEstadoEntrega() {
@@ -220,29 +209,41 @@ public class Venta {
         this.estadoEntrega = estadoEntrega;
     }
 
-    public String getRepartidorAsignado() {
-        return repartidorAsignado;
+    public Cliente getCliente() {
+        return cliente;
     }
 
-    public void setRepartidorAsignado(String repartidorAsignado) {
-        this.repartidorAsignado = repartidorAsignado;
+    public void setCliente(Cliente cliente) {
+        this.cliente = cliente;
+    }
+
+    public Tarjeta getTarjeta() {
+        return tarjeta;
+    }
+
+    public void setTarjeta(Tarjeta tarjeta) {
+        this.tarjeta = tarjeta;
     }
 
     public List<DescripcionVenta> getProductos() {
         return productos;
     }
 
-    public void setProductos(List<DescripcionVenta> productos) {
+    public void setProductos(
+            List<DescripcionVenta> productos) {
+
         this.productos = productos;
 
         if (this.productos != null) {
-            for (DescripcionVenta detalle : this.productos) {
+
+            for (DescripcionVenta detalle
+                    : this.productos) {
+
                 if (detalle != null) {
                     detalle.setVenta(this);
                 }
             }
         }
-        calculaTotal();
     }
 
     @Override
@@ -254,6 +255,7 @@ public class Venta {
 
         if (obj == null
                 || getClass() != obj.getClass()) {
+
             return false;
         }
 
@@ -274,10 +276,11 @@ public class Venta {
                 + ", total=" + total
                 + ", pago=" + montoRecibido
                 + ", cambio=" + cambio
+                + ", tipoPago=" + tipoPago
+                + ", esDomicilio=" + esDomicilio
+                + ", estadoEntrega='" + estadoEntrega + '\''
                 + ", date=" + date
                 + ", idTrabajador=" + idTrabajador
-                + ", esDomicilio=" + esDomicilio
-                + ", estadoEntrega=" + estadoEntrega
                 + '}';
     }
 
@@ -300,9 +303,5 @@ public class Venta {
 
         throw new UnsupportedOperationException(
                 "Unimplemented method 'setControl'");
-    }
-
-    public double getPago() {
-        return montoRecibido;
     }
 }
