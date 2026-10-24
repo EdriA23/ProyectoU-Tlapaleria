@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import jakarta.annotation.PostConstruct;
 import mx.uam.ayd.proyecto.negocio.ServicioCliente;
 import mx.uam.ayd.proyecto.negocio.modelo.Cliente;
+import mx.uam.ayd.proyecto.presentacion.buscarCliente.ControlBuscarCliente;
 
 /**
  * Controlador de la HU-12 (Registrar clientes).
@@ -20,11 +21,15 @@ public class ControlRegistrarCliente {
 
     private final ServicioCliente servicioCliente;
     private final VentanaRegistrarCliente ventana;
+    private final ControlBuscarCliente controlBuscarCliente;
 
     @Autowired
-    public ControlRegistrarCliente(ServicioCliente servicioCliente, VentanaRegistrarCliente ventana) {
+    public ControlRegistrarCliente(ServicioCliente servicioCliente,
+                                   VentanaRegistrarCliente ventana,
+                                   ControlBuscarCliente controlBuscarCliente) {
         this.servicioCliente = servicioCliente;
         this.ventana = ventana;
+        this.controlBuscarCliente = controlBuscarCliente;
     }
 
     /**
@@ -67,6 +72,13 @@ public class ControlRegistrarCliente {
             ventana.muestraError("Ocurrió un error inesperado al registrar el cliente.");
             return false;
         }
+    }
+
+    /**
+     * Abre la ventana para buscar y filtrar los clientes registrados.
+     */
+    public void buscarClientes() {
+        controlBuscarCliente.inicia();
     }
 
     /**

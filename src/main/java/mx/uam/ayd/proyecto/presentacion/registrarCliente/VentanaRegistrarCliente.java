@@ -193,6 +193,13 @@ public class VentanaRegistrarCliente {
     }
 
     @FXML
+    private void handleBuscarClientes() {
+        if (control != null) {
+            control.buscarClientes();
+        }
+    }
+
+    @FXML
     private void handleCancelar() {
         if (control != null) {
             control.termina();

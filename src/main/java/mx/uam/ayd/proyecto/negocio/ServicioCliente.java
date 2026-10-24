@@ -1,7 +1,9 @@
 package mx.uam.ayd.proyecto.negocio;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,17 +77,44 @@ public class ServicioCliente {
     }
 
     /**
-     * Búsqueda rápida de clientes por nombre o teléfono (para usarse en la pantalla de ventas).
+     * Recupera todos los clientes registrados.
+     *
+     * @return lista de clientes (vacía si no hay ninguno)
+     */
+    public List<Cliente> recuperaClientes() {
+        List<Cliente> clientes = new ArrayList<>();
+        clienteRepository.findAll().forEach(clientes::add);
+        return clientes;
+    }
+
+    /**
+     * Búsqueda de clientes por nombre, teléfono o número de cliente.
+     * La búsqueda por nombre y teléfono es parcial y no distingue mayúsculas.
+     * Si el texto es numérico, también se busca un cliente con ese número (id).
      *
      * @param criterio texto a buscar
-     * @return lista de coincidencias (vacía si el criterio es nulo o vacío)
+     * @return lista de coincidencias sin repetidos (vacía si el criterio es nulo o vacío)
      */
     public List<Cliente> buscaClientes(String criterio) {
         String texto = limpia(criterio);
         if (texto.isEmpty()) {
             return new ArrayList<>();
         }
-        return clienteRepository.findByNombreContainingIgnoreCaseOrTelefonoContaining(texto, texto);
+
+        Map<Long, Cliente> resultado = new LinkedHashMap<>();
+
+        for (Cliente c : clienteRepository.findByNombreContainingIgnoreCaseOrTelefonoContaining(texto, texto)) {
+            resultado.put(c.getIdCliente(), c);
+        }
+
+        try {
+            long idCliente = Long.parseLong(texto);
+            clienteRepository.findById(idCliente).ifPresent(c -> resultado.put(c.getIdCliente(), c));
+        } catch (NumberFormatException e) {
+            // El texto no es un número de cliente: solo aplica la búsqueda por nombre o teléfono
+        }
+
+        return new ArrayList<>(resultado.values());
     }
 
     private String limpia(String valor) {
