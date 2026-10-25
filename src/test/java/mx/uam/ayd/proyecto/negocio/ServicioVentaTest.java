@@ -179,7 +179,6 @@ class ServicioVentaTest {
 
         when(servicioCliente.validarDatosCliente(cliente)).thenReturn(true);
         when(trabajadorRepository.findByRol("Repartidor")).thenReturn(List.of(repartidor));
-        when(inventarioRepository.findById(1L)).thenReturn(Optional.of(inventario));
         when(ventaRepository.save(any(Venta.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         Venta ventaDomicilio = servicioVenta.registrarPedidoDomicilio(cliente, detalles, 200.0, 1L);

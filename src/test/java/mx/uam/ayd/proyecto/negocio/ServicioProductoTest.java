@@ -2,12 +2,13 @@ package mx.uam.ayd.proyecto.negocio;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
-import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,9 +16,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import mx.uam.ayd.proyecto.datos.MovimientoInventarioRepository;
 import mx.uam.ayd.proyecto.datos.ProductoRepository;
-import mx.uam.ayd.proyecto.negocio.modelo.MovimientoInventario;
 import mx.uam.ayd.proyecto.negocio.modelo.Producto;
 
 /**
@@ -32,9 +31,9 @@ class ServicioProductoTest {
     @Mock
     private ProductoRepository productoRepository;
 
-    // Simulamos el repositorio de movimientos para registrar en el historial el cambio de precio
+    // Simulamos el servicio de movimientos para registrar en el historial el cambio de precio
     @Mock
-    private MovimientoInventarioRepository movimientoRepository;
+    private ServicioMovimientoInventario servicioMovimientoInventario;
 
     // Inyectamos los mocks en el servicio de productos que vamos a probar
     @InjectMocks
@@ -63,7 +62,6 @@ class ServicioProductoTest {
         // Configuramos el comportamiento de los mocks
         when(productoRepository.findByIdProducto(idProducto)).thenReturn(productoExistente);
         when(productoRepository.save(any(Producto.class))).thenReturn(productoExistente);
-        when(movimientoRepository.save(any(MovimientoInventario.class))).thenReturn(new MovimientoInventario());
 
         // Ejecutamos el método a probar
         Producto resultado = servicioProducto.actualizarPrecioProducto(idProducto, nuevoPrecio);
@@ -72,7 +70,9 @@ class ServicioProductoTest {
         assertNotNull(resultado, "El producto actualizado no debe ser nulo");
         assertEquals(nuevoPrecio, resultado.getPrecio(), "El precio del producto debió actualizarse al nuevo valor");
         verify(productoRepository, times(1)).save(any(Producto.class));
-        verify(movimientoRepository, times(1)).save(any(MovimientoInventario.class));
+        verify(servicioMovimientoInventario, times(1)).registrarMovimiento(
+            any(Producto.class), anyInt(), anyInt(), anyInt(), anyString(), anyString()
+        );
     }
 
     /**
@@ -97,10 +97,6 @@ class ServicioProductoTest {
     @Test
     void testActualizarPrecioValoresInvalidos() {
         long idProducto = 1L;
-        Producto productoExistente = new Producto();
-        productoExistente.setIdProducto(idProducto);
-        
-        when(productoRepository.findByIdProducto(idProducto)).thenReturn(productoExistente);
 
         // Caso A: Intentar actualizar con precio cero debe lanzar excepción
         assertThrows(IllegalArgumentException.class, () -> {
@@ -148,7 +144,7 @@ class ServicioProductoTest {
     @Test
     void testCalculaMargenExitoso() {
         Producto producto = new Producto();
-        producto.setPrecio(100.0);       // Precio de Venta
+        producto.setPrecio(100.0);      // Precio de Venta
         producto.setPrecioCompra(60.0);   // Precio de Costo
 
         Double margen = servicioProducto.calculaMargen(producto);
@@ -224,6 +220,9 @@ class ServicioProductoTest {
         assertEquals(nuevoCosto, resultado.getPrecioCompra(), "El precio de compra/costo debe haberse actualizado");
         assertEquals(nuevoPrecioVenta, resultado.getPrecio(), "El precio de venta debe haberse actualizado");
         verify(productoRepository, times(1)).save(any(Producto.class));
+        verify(servicioMovimientoInventario, times(1)).registrarMovimiento(
+            any(Producto.class), anyInt(), anyInt(), anyInt(), anyString(), anyString()
+        );
     }
 
     /**
