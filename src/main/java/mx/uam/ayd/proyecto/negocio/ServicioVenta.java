@@ -11,8 +11,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import mx.uam.ayd.proyecto.datos.TrabajadorRepository;
 import mx.uam.ayd.proyecto.datos.VentaRepository;
+import mx.uam.ayd.proyecto.datos.MovimientoInventarioRepository;
+import mx.uam.ayd.proyecto.datos.InventarioRepository;
+import mx.uam.ayd.proyecto.datos.ProductoRepository;
 import mx.uam.ayd.proyecto.negocio.modelo.Cliente;
 import mx.uam.ayd.proyecto.negocio.modelo.DescripcionVenta;
+import mx.uam.ayd.proyecto.negocio.modelo.Inventario;
+import mx.uam.ayd.proyecto.negocio.modelo.MovimientoInventario;
 import mx.uam.ayd.proyecto.negocio.modelo.Producto;
 import mx.uam.ayd.proyecto.negocio.modelo.Trabajador;
 import mx.uam.ayd.proyecto.negocio.modelo.Venta;
@@ -32,6 +37,15 @@ public class ServicioVenta {
 
     @Autowired
     private TrabajadorRepository trabajadorRepository;
+
+    @Autowired
+    private MovimientoInventarioRepository movimientoRepository;
+
+    @Autowired
+    private InventarioRepository inventarioRepository;
+
+    @Autowired
+    private ProductoRepository productoRepository;
 
     /**
      * Inicializa una nueva venta vacía.
@@ -81,27 +95,56 @@ public class ServicioVenta {
         return venta;
     }
 
-    /**
-     * Registra una venta normal en mostrador.
-     */
-    @Transactional
+   @Transactional
     public Venta registrarVenta(List<DescripcionVenta> detalles, double montoRecibido) {
-        Venta venta = new Venta();
-        venta.setFecha(LocalDateTime.now());
-        venta.setPago(montoRecibido);
+        
+        Venta nuevaVenta = new Venta();
+        nuevaVenta.setFecha(LocalDateTime.now());
+        nuevaVenta.setPago(montoRecibido);
 
         if (detalles != null) {
             for (DescripcionVenta detalle : detalles) {
-                venta.agregaProducto(detalle.getProducto(), detalle.getCantidad());
+                Producto productoBD = detalle.getProducto();
+                
+                if (productoBD != null) {
+                    int existenciaAnterior = productoBD.getExistenciaActual();
+                    int cantidadVendida = detalle.getCantidad();
+                    int nuevaExistencia = existenciaAnterior - cantidadVendida;
+                    
+                    // 1. ACTUALIZAR DIRECTAMENTE LA EXISTENCIA EN EL PRODUCTO
+                    productoBD.setExistenciaActual(nuevaExistencia);
+                    productoRepository.save(productoBD);
+
+                    // 2. ACTUALIZAR EN INVENTARIO (Para que se dispare la Alerta de Stock)
+                    Inventario inventario = inventarioRepository.findById(productoBD.getIdProducto()).orElse(null);
+                    if (inventario != null) {
+                        inventario.setExistenciaActual(nuevaExistencia);
+                        inventarioRepository.save(inventario);
+                    }
+                    
+                    // 3. Registrar salida en Historial de Movimientos
+                    MovimientoInventario movimiento = new MovimientoInventario();
+                    movimiento.setFecha(LocalDateTime.now());
+                    movimiento.setTipoMovimiento("SALIDA");
+                    movimiento.setCantidad(cantidadVendida);
+                    movimiento.setExistenciaAnterior(existenciaAnterior);
+                    movimiento.setExistenciaActual(nuevaExistencia);
+                    movimiento.setObservacion("Venta realizada");
+                    movimiento.setProducto(productoBD);
+
+                    movimientoRepository.save(movimiento);
+                    
+                    // 4. Agregar a la venta
+                    nuevaVenta.agregaProducto(productoBD, cantidadVendida);
+                }
             }
         }
 
-        double total = venta.getTotal();
-        venta.setCambio(montoRecibido - total);
+        double totalCalculado = nuevaVenta.getTotal() != null ? nuevaVenta.getTotal() : 0.0;
+        nuevaVenta.setCambio(montoRecibido - totalCalculado);
 
-        return ventaRepository.save(venta);
+        return ventaRepository.save(nuevaVenta);
     }
-
     /**
      * Registra un pedido a domicilio cumpliendo con la HU-17 (Validación de cliente, repartidores y envío).
      */
