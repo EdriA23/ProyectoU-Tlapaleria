@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import mx.uam.ayd.proyecto.datos.InventarioRepository;
 import mx.uam.ayd.proyecto.datos.MovimientoInventarioRepository;
 import mx.uam.ayd.proyecto.datos.ProductoRepository;
+import mx.uam.ayd.proyecto.datos.TrabajadorRepository;
 import mx.uam.ayd.proyecto.datos.VentaRepository;
 import mx.uam.ayd.proyecto.negocio.modelo.Cliente;
 import mx.uam.ayd.proyecto.negocio.modelo.DescripcionVenta;
@@ -17,6 +18,7 @@ import mx.uam.ayd.proyecto.negocio.modelo.Inventario;
 import mx.uam.ayd.proyecto.negocio.modelo.MovimientoInventario;
 import mx.uam.ayd.proyecto.negocio.modelo.Producto;
 import mx.uam.ayd.proyecto.negocio.modelo.Tarjeta;
+import mx.uam.ayd.proyecto.negocio.modelo.Trabajador;
 import mx.uam.ayd.proyecto.negocio.modelo.Venta;
 
 /**
@@ -40,6 +42,60 @@ public class ServicioVenta {
     @Autowired
     private MovimientoInventarioRepository movimientoRepository;
 
+    @Autowired
+    private TrabajadorRepository trabajadorRepository;
+
+    @Autowired
+    private ServicioCliente servicioCliente;
+
+    /**
+     * Inicializa una nueva venta vacía.
+     */
+    public Venta iniciarVenta() {
+        Venta venta = new Venta();
+        venta.setFecha(LocalDateTime.now());
+        return venta;
+    }
+
+    /**
+     * Agrega un producto a una venta existente y devuelve la venta actualizada.
+     */
+    public Venta agregarProducto(Producto producto, int cantidad, Venta venta) {
+        if (venta == null) {
+            venta = iniciarVenta();
+        }
+        if (producto != null) {
+            venta.agregaProducto(producto, cantidad);
+        }
+        return venta;
+    }
+
+    /**
+     * Actualiza y recalcula la venta en memoria (Escenario 3: Recálculo automático por cambios en productos o costos).
+     */
+    @Transactional
+    public Venta actualizarVenta(Venta venta, double montoRecibido) {
+        if (venta == null) {
+            return null;
+        }
+        
+        double totalFinal = venta.getTotal(); // El método getTotal() en Venta ya calcula productos + costo de envío si aplica
+        venta.setPago(montoRecibido);
+        venta.setCambio(montoRecibido - totalFinal);
+
+        return ventaRepository.save(venta);
+    }
+
+    /**
+     * Sobrecarga para actualizar venta básica si no se pasa monto recibido de inmediato.
+     */
+    public Venta actualizarVenta(Venta venta) {
+        if (venta != null) {
+            ventaRepository.save(venta);
+        }
+        return venta;
+    }
+
     /**
      * Hace todo el proceso de la venta: descuenta existencias en producto e inventario,
      * genera la salida en el historial de movimientos y calcula el cambio del cliente.
@@ -52,7 +108,6 @@ public class ServicioVenta {
     public Venta registrarVenta(List<DescripcionVenta> detalles, double montoRecibido) {
         return registrarVenta(detalles, montoRecibido, "EFECTIVO", null, null);
     }
-
     /**
      * Registra una venta permitiendo especificar el metodo de pago (EFECTIVO o TARJETA),
      * el cliente opcional y la tarjeta opcional.
@@ -134,10 +189,49 @@ public class ServicioVenta {
      */
     @Transactional
     public Venta registrarPedidoDomicilio(Cliente cliente, List<DescripcionVenta> detalles, double montoRecibido, long idRepartidor) {
-        Venta ventaDomicilio = registrarVenta(detalles, montoRecibido, "EFECTIVO", cliente, null);
-        ventaDomicilio.setEsDomicilio(true);
-        ventaDomicilio.setEstadoEntrega("PENDIENTE");
-        return ventaRepository.save(ventaDomicilio);
+
+        
+        // 1. Validar los datos obligatorios del cliente (Escenario 4 de la HU-17)
+        if (!servicioCliente.validarDatosCliente(cliente)) {
+            throw new IllegalArgumentException("Los datos obligatorios del cliente para domicilio están incompletos.");
+        }
+
+        // 2. Verificar disponibilidad de repartidores (Escenario 5)
+        List<Trabajador> repartidoresDisponibles = trabajadorRepository.findByRol("Repartidor");
+        if (repartidoresDisponibles == null || repartidoresDisponibles.isEmpty()) {
+            throw new IllegalStateException("No hay repartidores disponibles. Tiempo de espera estimado: 30 minutos.");
+        }
+
+        // 3. Crear y configurar la venta a domicilio
+        Venta venta = new Venta();
+        venta.setFecha(LocalDateTime.now());
+        venta.setEsDomicilio(true);
+        double costoEnvio = 50.0; // Costo de envío estándar configurable (Escenario 3)
+        venta.setCliente(cliente);
+
+        if (detalles != null) {
+            for (DescripcionVenta detalle : detalles) {
+                venta.agregaProducto(detalle.getProducto(), detalle.getCantidad());
+            }
+        }
+
+        double totalConEnvio = venta.getTotal() + costoEnvio;
+        venta.setPago(montoRecibido);
+        venta.setCambio(montoRecibido - totalConEnvio);
+
+        // Asignar el repartidor seleccionado (si pasas un ID genérico y hay repartidores, asignamos el primero disponible o por ID)
+        Trabajador repartidorSeleccionado;
+        if (idRepartidor <= 0 && !repartidoresDisponibles.isEmpty()) {
+            repartidorSeleccionado = repartidoresDisponibles.get(0);
+        } else {
+            repartidorSeleccionado = trabajadorRepository.findById(idRepartidor)
+                    .orElse(repartidoresDisponibles.get(0)); // Respaldo por si el ID directo no cuadra pero sí hay repartidores
+        }
+        
+        venta.setEstadoEntrega("Pedido en camino");
+
+        return ventaRepository.save(venta);
+
     }
 
     /**
@@ -161,43 +255,4 @@ public class ServicioVenta {
         return false;
     }
 
-    /**
-     * Inicia una nueva venta en blanco para comenzar el flujo de la HU-05.
-     * 
-     * @return una nueva instancia de Venta vacia
-     */
-    public Venta iniciarVenta() {
-        return new Venta();
-    }
-
-    /**
-     * Agrega un producto a la venta (HU-05). Si la venta no existe
-     * todavia, crea una nueva antes de agregar el producto.
-     * 
-     * @param producto producto a vender
-     * @param cantidad piezas elegidas
-     * @param venta la venta actual
-     * @return la venta con el producto ya agregado
-     */
-    public Venta agregarProducto(Producto producto, int cantidad, Venta venta) {
-        if (venta == null) {
-            venta = iniciarVenta();
-        }
-        venta.agregaProducto(producto, cantidad);
-        return venta;
-    }
-
-    /**
-     * Guarda el estado actual de la venta en la base de datos (HU-05).
-     * 
-     * @param venta la venta que se quiere actualizar
-     * @return true si se guardo con exito, false si la venta era nula
-     */
-    public boolean actualizarVenta(Venta venta) {
-        if (venta == null) {
-            return false;
-        }
-        ventaRepository.save(venta);
-        return true;
-    }
 }

@@ -29,6 +29,9 @@ public class ControlCliente {
     private ApplicationContext applicationContext;
 
     private Venta ventaActual; // Venta que viene del carrito
+    
+    // Referencia a la ventana actual para mostrar alertas o cerrarla
+    private VentanaCliente ventanaCliente;
 
     public void inicia() {
         abrirVentana();
@@ -50,8 +53,8 @@ public class ControlCliente {
             loader.setControllerFactory(applicationContext::getBean);
             Parent root = loader.load();
 
-            VentanaCliente ventana = loader.getController();
-            ventana.setControl(this);
+            ventanaCliente = loader.getController();
+            ventanaCliente.setControl(this);
 
             Stage stage = new Stage();
             stage.setScene(new Scene(root));
@@ -94,9 +97,8 @@ public class ControlCliente {
             Cliente cliente = new Cliente(nombre, telefono, direccion, numeroCasa, entreCalles, colorCasa);
             Cliente clienteGuardado = servicioCliente.guardarCliente(cliente);
 
-            // 2. Si hay una venta activa, registrar el pedido a domicilio sin depender de getPago()
+            // 2. Si hay una venta activa, registrar el pedido a domicilio
             if (ventaActual != null && ventaActual.getProductos() != null && !ventaActual.getProductos().isEmpty()) {
-                // Usamos el total de la venta directamente para evitar el error de getPago()
                 double montoPago = ventaActual.getTotal() != null ? ventaActual.getTotal() : 0.0;
                 
                 servicioVenta.registrarPedidoDomicilio(
@@ -107,14 +109,27 @@ public class ControlCliente {
                 );
                 
                 System.out.println("¡Pedido a domicilio registrado exitosamente!");
+                
+                // Mostrar mensaje de éxito y cerrar ventana de cliente si existe
+                if (ventanaCliente != null) {
+                    ventanaCliente.muestraDialogoConMensaje("Pedido a domicilio registrado con éxito.");
+                    ventanaCliente.cierraVentana(); // Ocultar o cerrar la ventana
+                }
             } else {
                 System.out.println("Cliente guardado correctamente (sin venta asociada).");
+                if (ventanaCliente != null) {
+                    ventanaCliente.muestraDialogoConMensaje("Cliente guardado correctamente.");
+                }
             }
 
         } catch (Exception e) {
-            System.err.println("Error al generar el pedido a domicilio: " + e.getMessage());
-            e.printStackTrace();
-            throw new RuntimeException(e);
+            // 3. CAPTURA Y MUESTRA LA ALERTA CLARA AL USUARIO (Ej. No hay repartidores disponibles)
+            String mensajeError = (e.getMessage() != null) ? e.getMessage() : "Error al generar el pedido a domicilio.";
+            System.err.println("Error: " + mensajeError);
+            
+            if (ventanaCliente != null) {
+                ventanaCliente.muestraDialogoConMensaje("Aviso: " + mensajeError);
+            }
         }
     }
 

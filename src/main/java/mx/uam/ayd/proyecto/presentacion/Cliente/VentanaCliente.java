@@ -111,12 +111,6 @@ public class VentanaCliente implements Initializable {
             // Llama al método que guarda el cliente y registra formalmente el pedido a domicilio vinculado a la venta
             control.guardarClienteYGenerarPedido(nombre, telefono, direccion, numeroCasa, entreCalles, colorCasa);
 
-            mostrarAlerta("Éxito", "Cliente guardado y pedido a domicilio registrado correctamente.", AlertType.INFORMATION);
-
-            // Cierra la ventana actual de gestión de cliente tras el éxito
-            Stage stage = (Stage) btnGuardarCliente.getScene().getWindow();
-            stage.close();
-
         } catch (Exception e) {
             mostrarAlerta("Error", "Ocurrió un problema al registrar el pedido: " + e.getMessage(), AlertType.ERROR);
             e.printStackTrace();
@@ -146,5 +140,22 @@ public class VentanaCliente implements Initializable {
         alert.setHeaderText(null);
         alert.setContentText(mensaje);
         alert.showAndWait();
+    }
+
+    /**
+     * Muestra un diálogo emergente con el mensaje recibido (utilizado por el controlador).
+     */
+    public void muestraDialogoConMensaje(String mensaje) {
+        mostrarAlerta("Aviso", mensaje, AlertType.INFORMATION);
+    }
+
+    /**
+     * Cierra la ventana actual de clientes de forma segura.
+     */
+    public void cierraVentana() {
+        if (btnGuardarCliente != null && btnGuardarCliente.getScene() != null) {
+            Stage stage = (Stage) btnGuardarCliente.getScene().getWindow();
+            stage.close();
+        }
     }
 }

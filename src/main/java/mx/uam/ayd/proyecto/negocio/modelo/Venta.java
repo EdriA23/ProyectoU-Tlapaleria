@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -13,7 +14,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import mx.uam.ayd.proyecto.presentacion.historialMovimientos.ControlHistorialMovimientos;
 
 /**
  * @author Kevin Dydier López Flores
@@ -44,6 +44,9 @@ public class Venta {
     private boolean esDomicilio;
 
     private String estadoEntrega;
+
+    @Column(nullable = false)
+    private double costoEnvio = 0.0; // <- Soluciona el error de base de datos en H2
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_cliente_fk", nullable = true)
@@ -209,6 +212,14 @@ public class Venta {
         this.estadoEntrega = estadoEntrega;
     }
 
+    public double getCostoEnvio() {
+        return costoEnvio;
+    }
+
+    public void setCostoEnvio(double costoEnvio) {
+        this.costoEnvio = costoEnvio;
+    }
+
     public Cliente getCliente() {
         return cliente;
     }
@@ -279,29 +290,9 @@ public class Venta {
                 + ", tipoPago=" + tipoPago
                 + ", esDomicilio=" + esDomicilio
                 + ", estadoEntrega='" + estadoEntrega + '\''
+                + ", costoEnvio=" + costoEnvio
                 + ", date=" + date
                 + ", idTrabajador=" + idTrabajador
                 + '}';
-    }
-
-    public static void muestraMovimientos(
-            List<MovimientoInventario> movimientos) {
-
-        throw new UnsupportedOperationException(
-                "Unimplemented method 'muestraMovimientos'");
-    }
-
-    public static void muestra() {
-
-        throw new UnsupportedOperationException(
-                "Unimplemented method 'muestra'");
-    }
-
-    public static void setControl(
-            ControlHistorialMovimientos
-                    controlHistorialMovimientos) {
-
-        throw new UnsupportedOperationException(
-                "Unimplemented method 'setControl'");
     }
 }
