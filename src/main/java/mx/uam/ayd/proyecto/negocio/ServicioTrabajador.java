@@ -19,7 +19,7 @@ public class ServicioTrabajador {
 
     /**
      * Recupera todos los trabajadores registrados.
-     * Invoca recuperarTodos() para coincidir con el Diagrama de Secuencia.
+     * 
      * 
      * @return Lista con todos los trabajadores
      */
@@ -37,7 +37,7 @@ public class ServicioTrabajador {
 
     /**
      * Crea la instancia de Trabajador y la guarda en la base de datos.
-     * Coincide con la secuencia: new(...) -> save(...) / guardarTrabajador(...)
+     * 
      */
     public Trabajador creaTrabajador(String idTrabajador, String nombre, String telefono, String rol, String correo) {
         // Instancia la entidad usando la firma refactorizada con idTrabajador
@@ -68,5 +68,26 @@ public Trabajador guardar(Trabajador trabajador) {
         }
         return false;
     }
+/**
+ * Busca trabajadores cuyo nombre contenga el texto ingresado.
+ * 
+ */
+public List<Trabajador> buscarTrabajadores(String criterio) {
+    if (criterio == null || criterio.trim().isEmpty()) {
+        return recuperarTrabajador();
+    }
+
+    String filtro = criterio.trim().toLowerCase();
+    List<Trabajador> todos = repositoryTrabajador.findAll();
+    List<Trabajador> resultados = new java.util.ArrayList<>();
+
+    for (Trabajador t : todos) {
+        if (t.getNombreCompleto() != null && t.getNombreCompleto().toLowerCase().contains(filtro)) {
+            resultados.add(t);
+        }
+    }
+
+    return resultados;
+}
   
 }

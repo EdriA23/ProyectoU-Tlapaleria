@@ -65,9 +65,9 @@ public class VentanaPrincipal {
         stage.show();
     }
 
-    // ==========================================
+    
     // HANDLERS DE EVENTOS FXML
-    // ==========================================
+    
 
     @FXML
     private void handleAgregarUsuario() {
@@ -184,6 +184,16 @@ public class VentanaPrincipal {
         if (control != null) {
             control.consultarTrabajador();
 
+        }
+    }
+
+    /**
+     * Handler para la HU-12: Registrar clientes
+     */
+    @FXML
+    private void handleRegistrarCliente() {
+        if (control != null) {
+            control.registrarCliente();
         }
     }
 }

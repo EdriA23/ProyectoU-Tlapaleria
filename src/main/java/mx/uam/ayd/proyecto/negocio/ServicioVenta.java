@@ -1,30 +1,31 @@
 package mx.uam.ayd.proyecto.negocio;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import mx.uam.ayd.proyecto.datos.InventarioRepository;
+import mx.uam.ayd.proyecto.datos.MovimientoInventarioRepository;
+import mx.uam.ayd.proyecto.datos.ProductoRepository;
 import mx.uam.ayd.proyecto.datos.TrabajadorRepository;
 import mx.uam.ayd.proyecto.datos.VentaRepository;
-import mx.uam.ayd.proyecto.datos.MovimientoInventarioRepository;
-import mx.uam.ayd.proyecto.datos.InventarioRepository;
-import mx.uam.ayd.proyecto.datos.ProductoRepository;
 import mx.uam.ayd.proyecto.negocio.modelo.Cliente;
 import mx.uam.ayd.proyecto.negocio.modelo.DescripcionVenta;
 import mx.uam.ayd.proyecto.negocio.modelo.Inventario;
 import mx.uam.ayd.proyecto.negocio.modelo.MovimientoInventario;
 import mx.uam.ayd.proyecto.negocio.modelo.Producto;
+import mx.uam.ayd.proyecto.negocio.modelo.Tarjeta;
 import mx.uam.ayd.proyecto.negocio.modelo.Trabajador;
 import mx.uam.ayd.proyecto.negocio.modelo.Venta;
 
 /**
- * Servicio encargado de la lógica de negocio de las ventas,
- * incluyendo el carrito, ventas en mostrador y los pedidos a domicilio (HU-17).
+ * Servicio principal para procesar la logica de las ventas del carrito,
+ * descuenta el stock de las tablas y guarda los movimientos en la bd.
+ *
+ * @author dydier
  */
 @Service
 public class ServicioVenta {
@@ -33,19 +34,19 @@ public class ServicioVenta {
     private VentaRepository ventaRepository;
 
     @Autowired
-    private ServicioCliente servicioCliente;
-
-    @Autowired
-    private TrabajadorRepository trabajadorRepository;
-
-    @Autowired
-    private MovimientoInventarioRepository movimientoRepository;
+    private ProductoRepository productoRepository;
 
     @Autowired
     private InventarioRepository inventarioRepository;
 
     @Autowired
-    private ProductoRepository productoRepository;
+    private MovimientoInventarioRepository movimientoRepository;
+
+    @Autowired
+    private TrabajadorRepository trabajadorRepository;
+
+    @Autowired
+    private ServicioCliente servicioCliente;
 
     /**
      * Inicializa una nueva venta vacía.
@@ -95,12 +96,44 @@ public class ServicioVenta {
         return venta;
     }
 
-   @Transactional
+    /**
+     * Hace todo el proceso de la venta: descuenta existencias en producto e inventario,
+     * genera la salida en el historial de movimientos y calcula el cambio del cliente.
+     * 
+     * @param detalles lista de productos y cantidades compradas
+     * @param montoRecibido dinero en efectivo que entrego el cliente
+     * @return la venta guardada en la base de datos
+     */
+    @Transactional
     public Venta registrarVenta(List<DescripcionVenta> detalles, double montoRecibido) {
+        return registrarVenta(detalles, montoRecibido, "EFECTIVO", null, null);
+    }
+    /**
+     * Registra una venta permitiendo especificar el metodo de pago (EFECTIVO o TARJETA),
+     * el cliente opcional y la tarjeta opcional.
+     * 
+     * @param detalles lista de productos y cantidades compradas
+     * @param montoRecibido dinero entregado o monto cobrado
+     * @param tipoPago tipo de pago ("EFECTIVO" o "TARJETA")
+     * @param cliente cliente que realiza la compra (puede ser null)
+     * @param tarjeta tarjeta con la que se efectua el pago (puede ser null si es efectivo)
+     * @return la venta guardada en la base de datos
+     */
+    @Transactional
+    public Venta registrarVenta(List<DescripcionVenta> detalles, double montoRecibido, String tipoPago, Cliente cliente, Tarjeta tarjeta) {
         
         Venta nuevaVenta = new Venta();
         nuevaVenta.setFecha(LocalDateTime.now());
         nuevaVenta.setPago(montoRecibido);
+        nuevaVenta.setTipoPago(tipoPago != null ? tipoPago : "EFECTIVO");
+        nuevaVenta.setCliente(cliente);
+
+        if ("TARJETA".equalsIgnoreCase(tipoPago) && tarjeta != null) {
+            nuevaVenta.setTarjeta(tarjeta);
+            if (cliente != null) {
+                cliente.setTarjeta(tarjeta);
+            }
+        }
 
         if (detalles != null) {
             for (DescripcionVenta detalle : detalles) {
@@ -111,45 +144,52 @@ public class ServicioVenta {
                     int cantidadVendida = detalle.getCantidad();
                     int nuevaExistencia = existenciaAnterior - cantidadVendida;
                     
-                    // 1. ACTUALIZAR DIRECTAMENTE LA EXISTENCIA EN EL PRODUCTO
+                    // Actualizar el stock en Producto
                     productoBD.setExistenciaActual(nuevaExistencia);
                     productoRepository.save(productoBD);
 
-                    // 2. ACTUALIZAR EN INVENTARIO (Para que se dispare la Alerta de Stock)
+                    // ACTUALIZAR EN INVENTARIO (Para que se dispare la Alerta de Stock)
                     Inventario inventario = inventarioRepository.findById(productoBD.getIdProducto()).orElse(null);
                     if (inventario != null) {
                         inventario.setExistenciaActual(nuevaExistencia);
                         inventarioRepository.save(inventario);
                     }
                     
-                    // 3. Registrar salida en Historial de Movimientos
+                    // Registrar salida en Historial de Movimientos
                     MovimientoInventario movimiento = new MovimientoInventario();
                     movimiento.setFecha(LocalDateTime.now());
                     movimiento.setTipoMovimiento("SALIDA");
                     movimiento.setCantidad(cantidadVendida);
                     movimiento.setExistenciaAnterior(existenciaAnterior);
                     movimiento.setExistenciaActual(nuevaExistencia);
-                    movimiento.setObservacion("Venta realizada");
+                    movimiento.setObservacion("Venta realizada (" + nuevaVenta.getTipoPago() + ")");
                     movimiento.setProducto(productoBD);
 
                     movimientoRepository.save(movimiento);
                     
-                    // 4. Agregar a la venta
+                    // Agregar a la venta
                     nuevaVenta.agregaProducto(productoBD, cantidadVendida);
                 }
             }
         }
 
         double totalCalculado = nuevaVenta.getTotal() != null ? nuevaVenta.getTotal() : 0.0;
-        nuevaVenta.setCambio(montoRecibido - totalCalculado);
+        
+        if ("TARJETA".equalsIgnoreCase(tipoPago)) {
+            nuevaVenta.setCambio(0.0);
+        } else {
+            nuevaVenta.setCambio(montoRecibido - totalCalculado);
+        }
 
         return ventaRepository.save(nuevaVenta);
     }
+
     /**
-     * Registra un pedido a domicilio cumpliendo con la HU-17 (Validación de cliente, repartidores y envío).
+     * Registra un pedido a domicilio asociando el cliente y la lista de productos.
      */
     @Transactional
     public Venta registrarPedidoDomicilio(Cliente cliente, List<DescripcionVenta> detalles, double montoRecibido, long idRepartidor) {
+
         
         // 1. Validar los datos obligatorios del cliente (Escenario 4 de la HU-17)
         if (!servicioCliente.validarDatosCliente(cliente)) {
@@ -166,7 +206,7 @@ public class ServicioVenta {
         Venta venta = new Venta();
         venta.setFecha(LocalDateTime.now());
         venta.setEsDomicilio(true);
-        venta.setCostoEnvio(50.0); // Costo de envío estándar configurable (Escenario 3)
+        double costoEnvio = 50.0; // Costo de envío estándar configurable (Escenario 3)
         venta.setCliente(cliente);
 
         if (detalles != null) {
@@ -175,7 +215,7 @@ public class ServicioVenta {
             }
         }
 
-        double totalConEnvio = venta.getTotal(); // Incluye subtotal de productos + costo de envío
+        double totalConEnvio = venta.getTotal() + costoEnvio;
         venta.setPago(montoRecibido);
         venta.setCambio(montoRecibido - totalConEnvio);
 
@@ -188,39 +228,31 @@ public class ServicioVenta {
                     .orElse(repartidoresDisponibles.get(0)); // Respaldo por si el ID directo no cuadra pero sí hay repartidores
         }
         
-        venta.setRepartidorAsignado(repartidorSeleccionado.getNombreCompleto());
         venta.setEstadoEntrega("Pedido en camino");
 
         return ventaRepository.save(venta);
+
     }
 
     /**
-     * Obtiene una lista de las ventas que son pedidos a domicilio y que siguen activos/pendientes.
+     * Obtiene la lista de pedidos a domicilio que se encuentran activos/pendientes.
      */
     public List<Venta> obtenerPedidosDomicilioActivos() {
-        List<Venta> todasLasVentas = (List<Venta>) ventaRepository.findAll();
-        List<Venta> pedidosActivos = new ArrayList<>();
-        
-        for (Venta v : todasLasVentas) {
-            if (v.isEsDomicilio() && !"Entregado".equalsIgnoreCase(v.getEstadoEntrega())) {
-                pedidosActivos.add(v);
-            }
-        }
-        return pedidosActivos;
+        return ventaRepository.findByEsDomicilioTrueAndEstadoEntregaNot("ENTREGADO");
     }
 
     /**
-     * Cierra o marca como entregado un pedido a domicilio por su ID.
+     * Cierra o finaliza un pedido a domicilio por su ID.
      */
     @Transactional
     public boolean cerrarPedido(long idVenta) {
-        Optional<Venta> ventaOpt = ventaRepository.findById(idVenta);
-        if (ventaOpt.isPresent()) {
-            Venta venta = ventaOpt.get();
-            venta.setEstadoEntrega("Entregado");
+        Venta venta = ventaRepository.findById(idVenta).orElse(null);
+        if (venta != null) {
+            venta.setEstadoEntrega("ENTREGADO");
             ventaRepository.save(venta);
             return true;
         }
         return false;
     }
+
 }
