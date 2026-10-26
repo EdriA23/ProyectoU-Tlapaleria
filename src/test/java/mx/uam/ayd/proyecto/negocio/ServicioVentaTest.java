@@ -25,11 +25,8 @@ import mx.uam.ayd.proyecto.negocio.modelo.DescripcionVenta;
 import mx.uam.ayd.proyecto.negocio.modelo.Inventario;
 import mx.uam.ayd.proyecto.negocio.modelo.MovimientoInventario;
 import mx.uam.ayd.proyecto.negocio.modelo.Producto;
-<<<<<<< HEAD
 import mx.uam.ayd.proyecto.negocio.modelo.Trabajador;
-=======
 import mx.uam.ayd.proyecto.negocio.modelo.Tarjeta;
->>>>>>> master
 import mx.uam.ayd.proyecto.negocio.modelo.Venta;
 
 @ExtendWith(MockitoExtension.class)
@@ -91,7 +88,7 @@ class ServicioVentaTest {
     @DisplayName("Debería actualizar una venta exitosamente")
     void testActualizarVentaExitoso() {
         Venta venta = new Venta();
-<<<<<<< HEAD
+
         Venta resultado = servicioVenta.actualizarVenta(venta);
         assertNotNull(resultado);
     }
@@ -101,26 +98,18 @@ class ServicioVentaTest {
     void testActualizarVentaNulaRegresaNull() {
         Venta resultado = servicioVenta.actualizarVenta(null);
         assertNull(resultado);
-=======
-
-        // When
-        boolean resultado = servicioVenta.actualizarVenta(venta);
-
-        // Then
-        assertTrue(resultado);
-        verify(ventaRepository).save(venta);
     }
 
     @Test
     @DisplayName("Debería regresar false al intentar actualizar una venta nula")
     void testActualizarVentaNulaRegresaFalse() {
         // When
-        boolean resultado = servicioVenta.actualizarVenta(null);
+        Venta resultado = servicioVenta.actualizarVenta(null);
 
         // Then
-        assertFalse(resultado);
+        assertNull(resultado);
         verify(ventaRepository, never()).save(any());
->>>>>>> master
+
     }
 
     @Test
@@ -173,7 +162,7 @@ class ServicioVentaTest {
         verify(movimientoRepository, never()).save(any());
     }
 
-<<<<<<< HEAD
+
     // ==========================================
     // PRUEBAS PARA LA HU-17 (PEDIDOS A DOMICILIO)
     // ==========================================
@@ -238,8 +227,8 @@ class ServicioVentaTest {
 
         assertThrows(IllegalStateException.class, () -> {
             servicioVenta.registrarPedidoDomicilio(cliente, new ArrayList<>(), 200.0, 1L);
-        });
-=======
+        })
+
     @Test
     @DisplayName("Debería registrar una venta con pago con tarjeta correctamente")
     void testRegistrarVentaConTarjeta() {
@@ -259,6 +248,6 @@ class ServicioVentaTest {
         assertEquals(cliente, ventaResultante.getCliente());
         assertEquals(0.0, ventaResultante.getCambio()); // El cambio en pago con tarjeta debe ser 0.0
         assertEquals(tarjeta, cliente.getTarjeta());
->>>>>>> master
+
     }
 }
