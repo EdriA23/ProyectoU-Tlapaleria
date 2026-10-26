@@ -104,6 +104,23 @@
                      </padding>
                   </Button>
 
+                  <!-- Corte de Caja (HU-15) -->
+                  <Button alignment="BASELINE_LEFT" graphicTextGap="15.0" maxWidth="1.7976931348623157E308" minHeight="50.0" mnemonicParsing="false" onAction="#handleCorteCaja" style="-fx-background-color: PINK; -fx-background-radius: 8;" text="Corte de Caja" textFill="#546E7A">
+                     <font>
+                        <Font name="System Bold" size="14.0" />
+                     </font>
+                     <graphic>
+                        <Label text="💰">
+                           <font>
+                              <Font size="18.0" />
+                           </font>
+                        </Label>
+                     </graphic>
+                     <padding>
+                        <Insets left="20.0" />
+                     </padding>
+                  </Button>
+
                   <!-- Clientes (HU-12: Registrar clientes) -->
                   <Button alignment="BASELINE_LEFT" graphicTextGap="15.0" maxWidth="1.7976931348623157E308" minHeight="50.0" mnemonicParsing="false" onAction="#handleRegistrarCliente" style="-fx-background-color: PINK; -fx-background-radius: 8;" text="Clientes" textFill="#546E7A">
                      <font>

@@ -8,19 +8,20 @@ import org.springframework.stereotype.Component;
 import mx.uam.ayd.proyecto.presentacion.ConsultaPedidos.ControlConsultaPedidos;
 import mx.uam.ayd.proyecto.presentacion.actualizarPrecioProductos.ControlActualizarPrecio;
 import mx.uam.ayd.proyecto.presentacion.agregarUsuario.ControlAgregarUsuario;
+import mx.uam.ayd.proyecto.presentacion.agregarProductos.ControlAgregarProductos;
+import mx.uam.ayd.proyecto.presentacion.alertaStock.ControlRevisarExistencia;
 import mx.uam.ayd.proyecto.presentacion.consultarInventario.ControlConsultarInventario;
+import mx.uam.ayd.proyecto.presentacion.consultarProveedor.ControlProveedor;
+import mx.uam.ayd.proyecto.presentacion.corteCaja.ControlCorteCaja;
 import mx.uam.ayd.proyecto.presentacion.devolucionProducto.ControlDevolucionProducto;
+import mx.uam.ayd.proyecto.presentacion.gestionPersonal.ControlTrabajador;
 import mx.uam.ayd.proyecto.presentacion.historialMovimientos.ControlHistorialMovimientos;
 import mx.uam.ayd.proyecto.presentacion.listarGrupos.ControlListarGrupos;
 import mx.uam.ayd.proyecto.presentacion.listarInventario.ControlListarInventario;
 import mx.uam.ayd.proyecto.presentacion.listarUsuarios.ControlListarUsuarios;
-import mx.uam.ayd.proyecto.presentacion.registrarMercancia.ControlRegistrarMercancia;
-import mx.uam.ayd.proyecto.presentacion.alertaStock.ControlRevisarExistencia;
-import mx.uam.ayd.proyecto.presentacion.registroVenta.ControlRegistroVenta;
-import mx.uam.ayd.proyecto.presentacion.agregarProductos.ControlAgregarProductos;
-import mx.uam.ayd.proyecto.presentacion.consultarProveedor.ControlProveedor;
 import mx.uam.ayd.proyecto.presentacion.margenGanancia.ControlMargenDeGanancia;
-import mx.uam.ayd.proyecto.presentacion.gestionPersonal.ControlTrabajador; // Import HU-1
+import mx.uam.ayd.proyecto.presentacion.registrarMercancia.ControlRegistrarMercancia;
+import mx.uam.ayd.proyecto.presentacion.registroVenta.ControlRegistroVenta;
 import mx.uam.ayd.proyecto.presentacion.registrarCliente.ControlRegistrarCliente; // Import HU-12
 
 /**
@@ -42,7 +43,7 @@ public class ControlPrincipal {
     private final ControlRevisarExistencia controlRevisarExistencia;
     private final ControlAgregarProductos controlAgregarProductos;
     private final ControlProveedor controlProveedor;
-
+    private final ControlCorteCaja controlCorteCaja;
     private final ControlMargenDeGanancia controlMargenDeGanancia;
     private final ControlConsultaPedidos controlConsultaPedidos; // Para HU-17
 
@@ -68,6 +69,7 @@ public class ControlPrincipal {
             ControlRegistroVenta controlRegistroVenta,
             ControlAgregarProductos controlAgregarProductos,
             ControlProveedor controlProveedor,
+            ControlCorteCaja controlCorteCaja,
 
             ControlMargenDeGanancia controlMargenDeGanancia,
             ControlConsultaPedidos controlConsultaPedidos,
@@ -90,6 +92,7 @@ public class ControlPrincipal {
         this.controlRevisarExistencia = controlRevisarExistencia;
         this.controlAgregarProductos = controlAgregarProductos;
         this.controlProveedor = controlProveedor;
+        this.controlCorteCaja = controlCorteCaja;
         this.controlMargenDeGanancia = controlMargenDeGanancia;
 
         this.controlConsultaPedidos = controlConsultaPedidos;
@@ -159,6 +162,13 @@ public class ControlPrincipal {
 
     public void consultarProveedor() {
         controlProveedor.buscaProveedores();
+    }
+
+    /**
+     * Inicia la HU-15: Corte de Caja
+     */
+    public void realizarCorteCaja() {
+        controlCorteCaja.iniciar();
     }
 
     /**

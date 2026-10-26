@@ -188,6 +188,18 @@ public class VentanaPrincipal {
     }
 
     /**
+     * Handler para la HU-15: Corte de Caja.
+     */
+    @FXML
+    private void handleCorteCaja() {
+        if (control != null) {
+            control.realizarCorteCaja();
+        } else {
+            System.err.println("ERROR: ControlPrincipal es null");
+        }
+    }
+
+    /**
      * Handler para la HU-12: Registrar clientes
      */
     @FXML
