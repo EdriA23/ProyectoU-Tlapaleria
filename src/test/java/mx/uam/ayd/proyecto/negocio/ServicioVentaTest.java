@@ -227,7 +227,8 @@ class ServicioVentaTest {
 
         assertThrows(IllegalStateException.class, () -> {
             servicioVenta.registrarPedidoDomicilio(cliente, new ArrayList<>(), 200.0, 1L);
-        })
+        });
+    }
 
     @Test
     @DisplayName("Debería registrar una venta con pago con tarjeta correctamente")
