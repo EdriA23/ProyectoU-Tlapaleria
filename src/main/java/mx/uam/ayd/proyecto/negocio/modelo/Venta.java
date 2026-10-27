@@ -48,6 +48,9 @@ public class Venta {
     @Column(nullable = false)
     private double costoEnvio = 0.0; // <- Soluciona el error de base de datos en H2
 
+    /*
+     * Cliente de la venta (pedidos a domicilio y cliente seleccionado en la pantalla de ventas).
+     */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_cliente_fk", nullable = true)
     private Cliente cliente;

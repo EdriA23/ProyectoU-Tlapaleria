@@ -20,7 +20,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
-
+import mx.uam.ayd.proyecto.negocio.modelo.Cliente;
 import mx.uam.ayd.proyecto.negocio.modelo.DescripcionVenta;
 import mx.uam.ayd.proyecto.negocio.modelo.Producto;
 import mx.uam.ayd.proyecto.negocio.modelo.Venta;
@@ -77,6 +77,10 @@ public class VistaAgregarProductos {
 
     @FXML
     private Label lblTotal;
+
+    // Muestra el cliente seleccionado para la venta (o "Público en general")
+    @FXML
+    private Label lblCliente;
 
     // -------------------------------------------------------------------------
     // CONSTRUCTOR E INICIALIZACIÓN DE LA INTERFAZ
@@ -171,6 +175,7 @@ public class VistaAgregarProductos {
         }
 
         control.iniciarVenta();
+        muestraCliente(null); // Cada venta nueva inicia como "Público en general"
 
         if (tablaCarrito != null) {
             tablaCarrito.getItems().clear();
@@ -196,6 +201,24 @@ public class VistaAgregarProductos {
         }
     }
 
+    /**
+     * Muestra en pantalla el cliente seleccionado para la venta.
+     *
+     * @param cliente cliente seleccionado (null = público en general)
+     */
+    public void muestraCliente(Cliente cliente) {
+        if (!Platform.isFxApplicationThread()) {
+            Platform.runLater(() -> this.muestraCliente(cliente));
+            return;
+        }
+
+        if (lblCliente != null) {
+            lblCliente.setText(cliente == null
+                    ? "Cliente: Público en general"
+                    : "Cliente: " + cliente.getNombre() + " (No. " + cliente.getIdCliente() + ", Tel. " + cliente.getTelefono() + ")");
+        }
+    }
+
     public void muestraMensajeError(String mensaje) {
         if (!Platform.isFxApplicationThread()) {
             Platform.runLater(() -> this.muestraMensajeError(mensaje));
@@ -212,6 +235,20 @@ public class VistaAgregarProductos {
     // -------------------------------------------------------------------------
     // HANDLERS FXML (EVENTOS DE BOTONES)
     // -------------------------------------------------------------------------
+
+    @FXML
+    private void handleBuscarCliente() {
+        if (control != null) {
+            control.buscarCliente();
+        }
+    }
+
+    @FXML
+    private void handleQuitarCliente() {
+        if (control != null) {
+            control.quitarCliente();
+        }
+    }
 
     @FXML
     private void handleAgregarProducto() {
@@ -282,6 +319,7 @@ public class VistaAgregarProductos {
     private void handleNuevaVenta() {
         if (control != null) {
             control.iniciarVenta();
+            muestraCliente(null); // La venta nueva vuelve a "Público en general"
             if (txtBuscarProducto != null) txtBuscarProducto.clear();
             if (tablaCarrito != null) tablaCarrito.getItems().clear();
             if (lblTotal != null) lblTotal.setText("$0.00");
@@ -292,6 +330,7 @@ public class VistaAgregarProductos {
     private void handleCerrar() {
         stage.close();
     }
+
     /**
      * Muestra u oculta la ventana según el valor booleano indicado.
      * @param visible true para mostrar, false para ocultar/cerrar.

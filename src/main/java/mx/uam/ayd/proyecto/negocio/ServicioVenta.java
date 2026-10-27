@@ -97,8 +97,9 @@ public class ServicioVenta {
     }
 
     /**
-     * Hace todo el proceso de la venta: descuenta existencias en producto e inventario,
-     * genera la salida en el historial de movimientos y calcula el cambio del cliente.
+     * Hace todo el proceso de la venta en efectivo y sin cliente: descuenta existencias
+     * en producto e inventario, genera la salida en el historial de movimientos y
+     * calcula el cambio del cliente.
      * 
      * @param detalles lista de productos y cantidades compradas
      * @param montoRecibido dinero en efectivo que entrego el cliente
@@ -108,6 +109,20 @@ public class ServicioVenta {
     public Venta registrarVenta(List<DescripcionVenta> detalles, double montoRecibido) {
         return registrarVenta(detalles, montoRecibido, "EFECTIVO", null, null);
     }
+
+    /**
+     * Registra una venta en efectivo asociándola al cliente seleccionado en la pantalla de ventas.
+     * 
+     * @param detalles lista de productos y cantidades compradas
+     * @param montoRecibido dinero en efectivo que entrego el cliente
+     * @param cliente cliente registrado que realiza la compra (puede ser null = público en general)
+     * @return la venta guardada en la base de datos
+     */
+    @Transactional
+    public Venta registrarVenta(List<DescripcionVenta> detalles, double montoRecibido, Cliente cliente) {
+        return registrarVenta(detalles, montoRecibido, "EFECTIVO", cliente, null);
+    }
+
     /**
      * Registra una venta permitiendo especificar el metodo de pago (EFECTIVO o TARJETA),
      * el cliente opcional y la tarjeta opcional.
