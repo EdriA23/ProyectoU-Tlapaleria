@@ -26,9 +26,18 @@
                   <Button mnemonicParsing="false" onAction="#handleAgregarProducto" text="Agregar a la compra" />
                </children>
             </HBox>
+
+            <!-- CLIENTE DE LA VENTA: buscar y seleccionar un cliente ya registrado -->
+            <HBox alignment="CENTER_LEFT" spacing="10.0">
+               <children>
+                  <Button mnemonicParsing="false" onAction="#handleBuscarCliente" text="🔍 Buscar cliente" />
+                  <Button mnemonicParsing="false" onAction="#handleQuitarCliente" text="Quitar cliente" />
+                  <Label fx:id="lblCliente" style="-fx-font-weight: bold;" text="Cliente: Público en general" />
+               </children>
+            </HBox>
             
             <!-- Tabla que MUESTRA TODOS LOS PRODUCTOS que hay en la tienda -->
-            <TableView fx:id="tablaCatalogo" prefHeight="200.0" prefWidth="720.0">
+            <TableView fx:id="tablaCatalogo" prefHeight="180.0" prefWidth="720.0">
               <columns>
                 <TableColumn fx:id="colCatNombre" prefWidth="300.0" text="Producto" />
                 <TableColumn fx:id="colCatPrecio" prefWidth="150.0" text="Precio Unitario" />
@@ -38,7 +47,7 @@
 
             <!-- SECCIÓN 2: DETALLE DE LA COMPRA (CARRITO) -->
             <Label text="Detalle de la Venta (Carrito):" style="-fx-font-weight: bold;" />
-            <TableView fx:id="tablaCarrito" prefHeight="200.0" prefWidth="720.0">
+            <TableView fx:id="tablaCarrito" prefHeight="180.0" prefWidth="720.0">
               <columns>
                 <TableColumn fx:id="colNombre" prefWidth="280.0" text="Producto" />
                 <TableColumn fx:id="colPrecio" prefWidth="130.0" text="Precio Unitario" />

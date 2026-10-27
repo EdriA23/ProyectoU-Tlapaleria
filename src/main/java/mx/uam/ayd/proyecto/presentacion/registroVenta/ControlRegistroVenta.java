@@ -122,13 +122,14 @@ public class ControlRegistroVenta {
     }
 
     /**
-     * Finaliza la compra pasando la Venta al servicio
+     * Finaliza la compra pasando la Venta al servicio.
+     * Si en la pantalla de ventas se seleccionó un cliente registrado, la venta queda asociada a él.
      */
     public void finalizarCompra(double efectivoRecibido) {
         if (servicioVenta == null || ventanaCobro == null || ventaActual == null) return;
 
         try {
-            servicioVenta.registrarVenta(ventaActual.getProductos(), efectivoRecibido);
+            servicioVenta.registrarVenta(ventaActual.getProductos(), efectivoRecibido, ventaActual.getCliente());
             
             ventanaCobro.muestraDialogoConMensaje("La venta ha sido exitosa.");
             
