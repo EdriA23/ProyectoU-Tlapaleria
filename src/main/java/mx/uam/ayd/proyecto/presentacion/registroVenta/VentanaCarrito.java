@@ -2,10 +2,13 @@ package mx.uam.ayd.proyecto.presentacion.registroVenta;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.List;
 
 import org.springframework.stereotype.Component;
 
 import javafx.application.Platform;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -13,12 +16,17 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.cell.CheckBoxListCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 
+import mx.uam.ayd.proyecto.negocio.modelo.Cliente;
+import mx.uam.ayd.proyecto.negocio.modelo.Tarjeta;
 import mx.uam.ayd.proyecto.negocio.modelo.DescripcionVenta;
 import mx.uam.ayd.proyecto.negocio.modelo.Venta;
 
@@ -33,14 +41,20 @@ public class VentanaCarrito {
     private Stage stage;
     private ControlRegistroVenta control;
     private boolean initialized = false;
+    private Venta ventaActual;
 
-    // Elementos FXML
+    // Elementos FXML existentes
     @FXML private TableView<DescripcionVenta> tablaCarrito;
     @FXML private TableColumn<DescripcionVenta, String> colNombre;
     @FXML private TableColumn<DescripcionVenta, Double> colPrecio;
     @FXML private TableColumn<DescripcionVenta, Integer> colCantidad;
     @FXML private TableColumn<DescripcionVenta, Double> colSubtotal;
     @FXML private Label lblTotal;
+
+    // Nuevos elementos FXML agregados
+    @FXML private Label lblClienteInfo;
+    @FXML private ListView<Tarjeta> listTarjetas;
+    @FXML private Button btnAgregarTarjeta;
 
     /**
      * Constructor vacio para instanciar la ventana
@@ -55,6 +69,29 @@ public class VentanaCarrito {
      */
     public void setControl(ControlRegistroVenta control) {
         this.control = control;
+    }
+
+    /**
+     * Se ejecuta automáticamente tras cargar el archivo FXML
+     */
+    @FXML
+    private void initialize() {
+        if (listTarjetas != null) {
+            // Configurar el ListView para mostrar CheckBoxes con Callback explícito
+            listTarjetas.setCellFactory(CheckBoxListCell.forListView(new javafx.util.Callback<Tarjeta, javafx.beans.value.ObservableValue<Boolean>>() {
+                @Override
+                public javafx.beans.value.ObservableValue<Boolean> call(Tarjeta tarjeta) {
+                    BooleanProperty selected = new SimpleBooleanProperty();
+                    selected.addListener((obs, estabaSeleccionado, estaSeleccionado) -> {
+                        if (Boolean.TRUE.equals(estaSeleccionado) && ventaActual != null) {
+                            ventaActual.setTarjeta(tarjeta);
+                            ventaActual.setTipoPago("TARJETA");
+                        }
+                    });
+                    return selected;
+                }
+            }));
+        }
     }
 
     /**
@@ -110,6 +147,7 @@ public class VentanaCarrito {
         }
 
         if (venta == null) return;
+        this.ventaActual = venta;
 
         initializeUI();
         
@@ -121,9 +159,59 @@ public class VentanaCarrito {
         if (lblTotal != null) {
             lblTotal.setText(String.format("$%.2f", venta.getTotal()));
         }
+
+        // Cargar datos del Cliente y sus Tarjetas
+        actualizarDatosClienteYTarjetas();
         
         if (stage != null) {
             stage.show();
+        }
+    }
+
+    /**
+     * Muestra la información del cliente y actualiza el listado de sus tarjetas
+     */
+    public void actualizarDatosClienteYTarjetas() {
+        if (!Platform.isFxApplicationThread()) {
+            Platform.runLater(this::actualizarDatosClienteYTarjetas);
+            return;
+        }
+
+        if (ventaActual != null && ventaActual.getCliente() != null) {
+            Cliente cliente = ventaActual.getCliente();
+            if (lblClienteInfo != null) {
+                lblClienteInfo.setText("Cliente: " + cliente.getNombre());
+            }
+
+            // Consultar tarjetas a través del Control/Servicio
+            if (control != null && listTarjetas != null) {
+                List<Tarjeta> tarjetas = control.obtenerTarjetasDelCliente(cliente);
+                listTarjetas.setItems(FXCollections.observableArrayList(tarjetas));
+            }
+        } else {
+            if (lblClienteInfo != null) {
+                lblClienteInfo.setText("Cliente: Venta al Público General (Sin cliente seleccionado)");
+            }
+            // Para Público General: mostramos la tarjeta si está asignada a ventaActual
+            if (listTarjetas != null) {
+                if (ventaActual != null && ventaActual.getTarjeta() != null) {
+                    listTarjetas.setItems(FXCollections.observableArrayList(List.of(ventaActual.getTarjeta())));
+                    listTarjetas.getSelectionModel().select(ventaActual.getTarjeta());
+                } else {
+                    listTarjetas.getItems().clear();
+                }
+            }
+        }
+    }
+
+    /**
+     * Acción para abrir la ventana de registro de nueva tarjeta
+     */
+    @FXML
+    private void onAgregarTarjeta() {
+        if (control != null) {
+            Cliente clienteActual = (ventaActual != null) ? ventaActual.getCliente() : null;
+            control.abrirVentanaAgregarTarjeta(clienteActual, this);
         }
     }
 

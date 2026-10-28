@@ -109,7 +109,6 @@ class ServicioVentaTest {
         // Then
         assertNull(resultado);
         verify(ventaRepository, never()).save(any());
-
     }
 
     @Test
@@ -248,7 +247,6 @@ class ServicioVentaTest {
         assertEquals(tarjeta, ventaResultante.getTarjeta());
         assertEquals(cliente, ventaResultante.getCliente());
         assertEquals(0.0, ventaResultante.getCambio()); // El cambio en pago con tarjeta debe ser 0.0
-        assertEquals(tarjeta, cliente.getTarjeta());
-
+        assertTrue(cliente.getTarjetas().contains(tarjeta));
     }
 }

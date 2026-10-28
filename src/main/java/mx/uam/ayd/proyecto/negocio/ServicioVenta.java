@@ -22,7 +22,7 @@ import mx.uam.ayd.proyecto.negocio.modelo.Trabajador;
 import mx.uam.ayd.proyecto.negocio.modelo.Venta;
 
 /**
- * Servicio principal para procesar la logica de las ventas del carrito,
+ * Servicio principal para procesar la lógica de las ventas del carrito,
  * descuenta el stock de las tablas y guarda los movimientos en la bd.
  *
  * @author dydier
@@ -146,7 +146,7 @@ public class ServicioVenta {
         if ("TARJETA".equalsIgnoreCase(tipoPago) && tarjeta != null) {
             nuevaVenta.setTarjeta(tarjeta);
             if (cliente != null) {
-                cliente.setTarjeta(tarjeta);
+                cliente.agregarTarjeta(tarjeta); // Corregido: se usa agregarTarjeta en lugar de setTarjeta
             }
         }
 
@@ -205,7 +205,6 @@ public class ServicioVenta {
     @Transactional
     public Venta registrarPedidoDomicilio(Cliente cliente, List<DescripcionVenta> detalles, double montoRecibido, long idRepartidor) {
 
-        
         // 1. Validar los datos obligatorios del cliente (Escenario 4 de la HU-17)
         if (!servicioCliente.validarDatosCliente(cliente)) {
             throw new IllegalArgumentException("Los datos obligatorios del cliente para domicilio están incompletos.");
@@ -246,7 +245,6 @@ public class ServicioVenta {
         venta.setEstadoEntrega("Pedido en camino");
 
         return ventaRepository.save(venta);
-
     }
 
     /**

@@ -1,21 +1,20 @@
 package mx.uam.ayd.proyecto.negocio.modelo;
 
+import java.util.ArrayList;
+import java.util.List;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 
 /**
  * Entidad de negocio Cliente.
- * Usada por pedidos a domicilio, tarjetas y por la HU-12 (registro de clientes con descuento de fidelidad).
  */
 @Entity
 public class Cliente {
 
-    /** RN-02 (HU-12): descuento de fidelidad inicial, en porcentaje. */
     public static final double DESCUENTO_FIDELIDAD_INICIAL = 5.0;
 
     @Id
@@ -28,19 +27,12 @@ public class Cliente {
     private String numeroCasa;
     private String entreCalles;
     private String colorCasa;
-
-    // --- Campos agregados por la HU-12 ---
     private String correoElectronico;
-
-    /*
-     * Se usa Double (nullable) para no romper registros existentes.
-     * Solo se asigna al registrar el cliente desde la HU-12.
-     */
     private Double descuentoFidelidad;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_tarjeta_fk", nullable = true)
-    private Tarjeta tarjeta;
+    // Relación 1 Cliente a N Tarjetas con carga EAGER para JavaFX
+    @OneToMany(mappedBy = "cliente", fetch = FetchType.EAGER)
+    private List<Tarjeta> tarjetas = new ArrayList<>();
 
     public Cliente() {}
 
@@ -53,12 +45,18 @@ public class Cliente {
         this.colorCasa = colorCasa;
     }
 
-    public Tarjeta getTarjeta() {
-        return tarjeta;
-    }
+    public List<Tarjeta> getTarjetas() { return tarjetas; }
+    public void setTarjetas(List<Tarjeta> tarjetas) { this.tarjetas = tarjetas; }
 
-    public void setTarjeta(Tarjeta tarjeta) {
-        this.tarjeta = tarjeta;
+    /**
+     * Método helper para agregar una tarjeta al cliente y sincronizar la relación bidireccional.
+     */
+    public boolean agregarTarjeta(Tarjeta tarjeta) {
+        if (tarjeta != null) {
+            tarjeta.setCliente(this);
+            return this.tarjetas.add(tarjeta);
+        }
+        return false;
     }
 
     public long getIdCliente() { return idCliente; }
@@ -90,10 +88,6 @@ public class Cliente {
 
     @Override
     public String toString() {
-        return "Cliente [idCliente=" + idCliente
-                + ", nombre=" + nombre
-                + ", telefono=" + telefono
-                + ", correoElectronico=" + correoElectronico
-                + ", descuentoFidelidad=" + descuentoFidelidad + "]";
+        return "Cliente [idCliente=" + idCliente + ", nombre=" + nombre + "]";
     }
 }

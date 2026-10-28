@@ -97,11 +97,13 @@ public class VentanaCobro {
         initializeUI();
         
         // Limpieza y preparación de etiquetas
-        txtPago.setText("");
-        lblCambio.setText("$0.00");
-        lblTotalCobro.setText(String.format("$%.2f", total));
+        if (txtPago != null) txtPago.setText("");
+        if (lblCambio != null) lblCambio.setText("$0.00");
+        if (lblTotalCobro != null) lblTotalCobro.setText(String.format("$%.2f", total));
         
-        stage.show();
+        if (stage != null) {
+            stage.show();
+        }
     }
 
     /**
@@ -115,10 +117,12 @@ public class VentanaCobro {
             Platform.runLater(() -> this.actualizaCambio(cambio, mensaje));
             return;
         }
-        if (mensaje != null) {
-            lblCambio.setText(mensaje);
-        } else {
-            lblCambio.setText(String.format("$%.2f", cambio));
+        if (lblCambio != null) {
+            if (mensaje != null) {
+                lblCambio.setText(mensaje);
+            } else {
+                lblCambio.setText(String.format("$%.2f", cambio));
+            }
         }
     }
 
@@ -140,7 +144,8 @@ public class VentanaCobro {
     }
 
     /**
-     * Muestra u oculta la pantalla de cobro
+     * Muestra u oculta la pantalla de cobro.
+     * Incluye verificación de nulo para evitar errores si la ventana no fue inicializada (ej. pagos con tarjeta).
      * 
      * @param visible true para desplegar y false para ocultar
      */
@@ -149,8 +154,14 @@ public class VentanaCobro {
             Platform.runLater(() -> this.setVisible(visible));
             return;
         }
-        if (visible) stage.show();
-        else stage.hide();
+        
+        if (stage != null) {
+            if (visible) {
+                stage.show();
+            } else {
+                stage.hide();
+            }
+        }
     }
 
     /**
@@ -159,10 +170,12 @@ public class VentanaCobro {
     @FXML
     private void onCalcularCambio() {
         try {
-            if (!txtPago.getText().isEmpty()) {
+            if (txtPago != null && !txtPago.getText().isEmpty()) {
                 double efectivo = Double.parseDouble(txtPago.getText());
-                // Delega al control para validar y calcular [3]
-                control.calcularCambio(efectivo);
+                // Delega al control para validar y calcular
+                if (control != null) {
+                    control.calcularCambio(efectivo);
+                }
             }
         } catch (NumberFormatException e) {
             actualizaCambio(0, "Monto inválido");
@@ -174,14 +187,16 @@ public class VentanaCobro {
      */
     @FXML
     private void onRegistrarVenta() {
-        if (txtPago.getText().isEmpty()) {
+        if (txtPago == null || txtPago.getText().isEmpty()) {
             muestraDialogoConMensaje("Ingrese el monto recibido.");
             return;
         }
         try {
             double efectivo = Double.parseDouble(txtPago.getText());
             // El controlador finalizará la compra y actualizará el inventario
-            control.finalizarCompra(efectivo);
+            if (control != null) {
+                control.finalizarCompra(efectivo);
+            }
         } catch (NumberFormatException e) {
             muestraDialogoConMensaje("Ingrese un número válido.");
         }

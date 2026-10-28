@@ -1,3 +1,4 @@
+//Falta crear sus test unitarios para el servicio de clientes, ya que actualmente no se encuentran en el proyecto.
 package mx.uam.ayd.proyecto.negocio;
 
 import java.util.ArrayList;
@@ -82,7 +83,7 @@ public class ServicioCliente {
     public Cliente asignarTarjetaACliente(long idCliente, Tarjeta tarjeta) {
         Cliente cliente = buscarClientePorId(idCliente);
         if (cliente != null && tarjeta != null) {
-            cliente.setTarjeta(tarjeta);
+            cliente.agregarTarjeta(tarjeta);
             return clienteRepository.save(Objects.requireNonNull(cliente));
         }
         return null;
